@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "AutoFill Survey",
+  "version": "1.0",
+  "description": "For filling",
+  "icons": {
+    "16": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  },
+  "action": {
+    "default_icon": "icon.png",
+    "default_title": "AutoFill",
+    "default_popup": "src/index.html"
+  },
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
+}
