@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   //? saving value every time when user input something to the input
   document.getElementById("auto").addEventListener("input", function () {
-      localStorage.setItem("defaultValue", this.value)
+    localStorage.setItem("defaultValue", this.value)
   })
 
   //! to begin execute the main functionality of the extension
@@ -28,9 +28,19 @@ function fillFields(inputValue) {
   for (let i = 0; i < allInputs.length; i++) {
     //! To fill all visible input
     if (allInputs[i].type.toLowerCase() !== 'hidden') {
-      allInputs[i].value = inputValue
+      //! if input auto is empty then a random value will be generated
+      if (inputValue === '') {
+        allInputs[i].value = Math.floor(Math.random() * 5) + 1
+      } else {
+        allInputs[i].value = inputValue
+      }
     }
   }
 
-  document.getElementById('a_next').click()
+  try {
+    document.getElementById('a_next').click()
+  }
+  catch {
+
+  }
 }
