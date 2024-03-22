@@ -1,15 +1,10 @@
 document.addEventListener('DOMContentLoaded', function () {
+  document.getElementById("auto").value = localStorage.getItem("defaultValue")
 
 
   document.getElementById("auto").addEventListener("input", function () {
-    console.log(this.value)
-    if (!localStorage.getItem("defaultValue")) {
-      localStorage.setItem("defaultValue", "")
-    }
       localStorage.setItem("defaultValue", this.value)
-    document.getElementById("auto").value = localStorage.getItem("defaultValue")
   })
-  document.getElementById("auto").value = localStorage.getItem("defaultValue")
 
   document.getElementById('fillButton').addEventListener('click', function () {
     const inputValue = document.getElementById('auto').value;
@@ -26,7 +21,6 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function fillFields(inputValue) {
-  console.log(document.getElementsByTagName('input'))
   const allInputs = document.getElementsByTagName('input')
   for (let i = 0; i < allInputs.length; i++) {
 
