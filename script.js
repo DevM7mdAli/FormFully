@@ -22,12 +22,12 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 });
-//* function to fill all input that has ID start with c
+//* function to fill all input
 function fillFields(inputValue) {
   const allInputs = document.getElementsByTagName('input')
   for (let i = 0; i < allInputs.length; i++) {
-
-    if (allInputs[i].id.match(/^c/)) {
+    //! To fill all visible input
+    if (allInputs[i].type.toLowerCase() !== 'hidden') {
       allInputs[i].value = inputValue
     }
   }
