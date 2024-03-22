@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./src/output.css" />
+    <script src="./script.js"></script>
+    <title>AutoFill</title>
+  </head>
+  <body class="w-[200px] bg-gradient-to-r from-[#4E65FF] to-[#92EFFD] py-8">
+    <!--! logo title section-->
+    <div class="flex flex-col justify-center text-center">
+      <img src="./icon.png" alt="input logo" class="w-24 h-24 mx-auto" />
+      <h1 class="text-2xl font-semibold">FormFully</h1>
+    </div>
+
+    <!--? fill section-->
+    <div class="flex flex-col items-center justify-center pt-5">
+      <input
+        class="border-b-2 text-base border-blue-300 text-center placeholder-black bg-transparent"
+        type="text"
+        id="auto"
+        placeholder="Enter a value"
+      />
+      <button
+        class="bg-blue-300 hover:bg-blue-400 focus:bg-blue-400 active:bg-blue-500 p-2 mt-3 rounded-lg transition-colors duration-500 text-gray-800"
+        id="fillButton"
+      >
+        Fill Form
+      </button>
+    </div>
+    <footer class="text-center mt-6"><a href="https://bit.ly/45egusU" target="_blank">
+      Made by Mohammed Alajmi
+    </a></footer>
+  </body>
+</html>
