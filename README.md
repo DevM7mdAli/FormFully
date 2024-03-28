@@ -10,6 +10,12 @@ Automatically Auto fill in input fields with any value you want to save your pre
 - If you leave the value empty, it will auto fill in with the random value from 1 to 5
 - it can set any date input so it will set the date to the current date
 
+
+##  Way to install the extension
+- [Chrome web store](https://chromewebstore.google.com/detail/formfully/ojlpggfkjhgadcjdmkgdmpilhmnghlmj?hl=en&authuser=0).
+- [Edge add-ons](https://chromewebstore.google.com/detail/formfully/ojlpggfkjhgadcjdmkgdmpilhmnghlmj?hl=en&authuser=0).
+- Cloning the repo and then uploading the folder to the browser by enabling developer mode.
+
 ##  How to Use
 
 1.  **Installation**: Simply clone the repo or download it as zip folder and then unzip it after that go to extensions page in your browser and enable developer option and then upload the folder make sure it is unzipped.
