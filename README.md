@@ -13,7 +13,7 @@ Automatically Auto fill in input fields with any value you want to save your pre
 
 ##  Way to install the extension
 - [Chrome web store](https://chromewebstore.google.com/detail/formfully/ojlpggfkjhgadcjdmkgdmpilhmnghlmj?hl=en&authuser=0).
-- [Edge add-ons](https://chromewebstore.google.com/detail/formfully/ojlpggfkjhgadcjdmkgdmpilhmnghlmj?hl=en&authuser=0).
+- [Edge add-ons](https://microsoftedge.microsoft.com/addons/detail/formfully/giahhadiaaljamhigkeggghcadfnofce).
 - Cloning the repo and then uploading the folder to the browser by enabling developer mode.
 
 ##  How to Use
