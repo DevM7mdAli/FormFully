@@ -2,7 +2,6 @@
 document.addEventListener('DOMContentLoaded', () => {
   const input = document.getElementById('auto');
   const fillBtn = document.getElementById('fillButton');
-  const randomBtn = document.getElementById('randomBtn');
   const presetsWrap = document.getElementById('presets');
   const langButtons = document.querySelectorAll('.lang-btn');
 
@@ -22,13 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('defaultValue', input.value);
   });
 
-  // random button sets empty to force random per input
-  randomBtn.addEventListener('click', () => {
-    input.value = '';
-    localStorage.setItem('defaultValue', '');
-    flash(randomBtn);
-  });
-
   // language switching
   langButtons.forEach(b => b.addEventListener('click', () => setLanguage(b.dataset.lang)));
 
@@ -45,12 +37,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
-
-// simple pulse effect
-function flash(el) {
-  el.classList.add('animate-pulse');
-  setTimeout(() => el.classList.remove('animate-pulse'), 600);
-}
 
 // CONTENT SCRIPT INJECTION FUNCTION
 function fillFields(inputValue) {
