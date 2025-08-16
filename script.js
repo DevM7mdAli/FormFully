@@ -1,5 +1,5 @@
 // Popup logic & i18n (robust, simplified)
-(function initPopup(){
+(function initPopup() {
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initPopup, { once: true });
     return;
@@ -26,15 +26,15 @@
     chrome?.storage?.local.get(['defaultValue'], ({ defaultValue }) => {
       if (typeof defaultValue === 'string') input.value = defaultValue;
     });
-  } catch {}
+  } catch { }
 
   // Language
   try {
     const lang = localStorage.getItem('ff_lang') || 'en';
     if (typeof setLanguage === 'function') setLanguage(lang);
-  } catch {}
+  } catch { }
 
-  function persist() { try { chrome?.storage?.local.set({ defaultValue: input.value }); } catch {} }
+  function persist() { try { chrome?.storage?.local.set({ defaultValue: input.value }); } catch { } }
 
   input.addEventListener('input', persist, { passive: true });
 

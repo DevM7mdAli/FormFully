@@ -1,25 +1,7 @@
-// Background service worker to support keyboard shortcut command.
-// Injects same fillFields function used in popup, using saved defaultValue.
-console.log('[FormFully] Service worker loaded');
-
+// Background service worker for keyboard shortcut command.
 chrome.commands.onCommand.addListener(async (command) => {
-  if (command === 'fill-form' || command === 'fill-form-alt') {
-    console.log('[FormFully] Shortcut command received:', command);
+  if (command === 'fill-form') {
     await runFill();
-  }
-});
-
-// Context menu fallback
-chrome.runtime.onInstalled.addListener(() => {
-  try {
-    chrome.contextMenus.create({ id: 'formfully-fill', title: 'FormFully: Fill Form', contexts: ['all'] });
-  } catch (e) { console.warn('Context menu create failed', e); }
-});
-
-chrome.contextMenus.onClicked.addListener(async (info, tab) => {
-  if (info.menuItemId === 'formfully-fill') {
-    console.log('[FormFully] Context menu trigger');
-    await runFill(tab);
   }
 });
 
@@ -33,12 +15,6 @@ async function runFill(existingTab) {
       func: fillFields,
       args: [defaultValue || '']
     });
-    // Quick visual badge feedback
-    try {
-      chrome.action.setBadgeText({ text: '✓', tabId: tab.id });
-      chrome.action.setBadgeBackgroundColor({ color: '#16a34a', tabId: tab.id });
-      setTimeout(() => chrome.action.setBadgeText({ text: '', tabId: tab.id }), 1200);
-    } catch {}
   } catch (e) {
     console.error('FormFully command failed', e);
   }
@@ -60,7 +36,7 @@ function fillFields(inputValue) {
     else inp.value = inputValue;
   }
 
-  try { document.getElementById('a_next')?.click(); } catch (e) {}
+  try { document.getElementById('a_next')?.click(); } catch (e) { }
 
   function formatDate(date) { return date.toISOString().split('T')[0]; }
   function formatMonth(date) { return date.toISOString().split('T')[0].slice(0, 7); }
