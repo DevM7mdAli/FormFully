@@ -32,7 +32,7 @@ function fillFields(inputValue) {
     else if (inp.type === 'week') inp.value = formatWeek(new Date());
     else if (inp.type === 'time') inp.value = formatTime(new Date());
     else if (inp.type === 'color') inp.value = randomColor();
-    else if ((inputValue || '').trim() === '') inp.value = Math.floor(Math.random() * 100) + 1;
+    else if ((inputValue || '').trim() === '') inp.value = Math.floor(Math.random() * 5) + 1;
     else inp.value = inputValue;
   }
 
