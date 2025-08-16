@@ -28,6 +28,12 @@
   .lang-btn {
     @apply px-2 py-1 text-xs font-semibold rounded-full transition;
   }
+  .bmc-btn {
+    @apply inline-flex items-center gap-2 px-3 py-2 rounded-xl text-[11px] font-semibold tracking-wide bg-[#FFDD00] text-[#0D0C22] shadow-md hover:shadow-lg hover:brightness-105 active:scale-[0.97] transition focus:outline-none focus:ring-2 focus:ring-white/50;
+  }
+  .bmc-icon {
+    @apply w-4 h-4 shrink-0;
+  }
 }
 
 /* Utility layer additions */

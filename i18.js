@@ -6,7 +6,8 @@ window.I18N = {
     placeholder: 'Enter a number',
     hint: 'Leave empty for random per input.',
     fillBtn: 'Fill Form',
-    madeBy: 'Made by <a class="underline decoration-dotted hover:decoration-solid" target="_blank" href="https://devm7mdali.github.io">Mohammed Alajmi</a>'
+    madeBy: 'Made by <a class="underline decoration-dotted hover:decoration-solid" target="_blank" href="https://devm7mdali.github.io">Mohammed Alajmi</a>',
+    coffee: 'Buy me a coffee'
   },
   ar: {
     title: 'فورم فُلِّي',
@@ -15,7 +16,8 @@ window.I18N = {
     placeholder: 'أدخل رقماً',
     hint: 'اتركه فارغاً للحصول على قيمة عشوائية لكل حقل.',
     fillBtn: 'تعبئة النموذج',
-    madeBy: 'صُنع بواسطة <a class="underline decoration-dotted hover:decoration-solid" target="_blank" href="https://devm7mdali.github.io">محمد العجمي</a>'
+    madeBy: 'صُنع بواسطة <a class="underline decoration-dotted hover:decoration-solid" target="_blank" href="https://devm7mdali.github.io">محمد العجمي</a>',
+    coffee: 'اشترِ لي قهوة'
   }
 };
 
@@ -39,6 +41,7 @@ window.setLanguage = function setLanguage(lang) {
   window.setText('valueLabel', t.valueLabel);
   window.setText('hint', t.hint);
   window.setText('fillBtnText', t.fillBtn);
+  window.setText('coffeeText', t.coffee);
   const input = document.getElementById('auto');
   if (input) input.placeholder = t.placeholder;
   const footerMade = document.getElementById('footerMade');
