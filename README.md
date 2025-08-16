@@ -50,7 +50,7 @@ Language preference is remembered (localStorage) and updates immediately with co
 | Input Type | Strategy |
 |------------|----------|
 | text / number (with user value) | Use your provided value |
-| text / number (blank) | Random integer 1–100 |
+| text / number (blank) | Random integer 1–5 |
 | date | Today (YYYY-MM-DD) |
 | month | Current month (YYYY-MM) |
 | week | ISO week format (YYYY-Www) |
