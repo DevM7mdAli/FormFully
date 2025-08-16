@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "FormFully",
   "description": "Automatically Auto fill in input fields with any value you want to save your precious time",
-  "version": "1.1",
+  "version": "2.0",
   "icons": {
     "16": "icon.png",
     "48": "icon.png",
@@ -10,8 +10,8 @@
   },
   
   "action": {
-          "default_popup": "index.html",
-          "default_icon": "icon.png"
+    "default_popup": "index.html",
+    "default_icon": "icon.png"
   },
 
   "host_permissions": [
