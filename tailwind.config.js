@@ -10,9 +10,9 @@ module.exports = {
     extend: {
       colors: {
         // Brand gradient stops (used for backgrounds)
-        'brand-start': '#4E65FF',
-        'brand-mid': '#3b82f6', // sky-ish mid tone
-        'brand-end': '#06b6d4', // cyan-ish end tone
+        'brand-start': '#4E65FF88',
+        'brand-mid': '#3b8FfFe6', // sky-ish mid tone
+        'brand-end': '#FFFFFF77', // white-ish end tone
 
         // Accent gradient stops (used for interactive hover overlays)
         'accent-fuchsia': '#f5d0fe',
