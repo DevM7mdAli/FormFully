@@ -1,34 +1,60 @@
-// Popup logic & i18n
-document.addEventListener('DOMContentLoaded', () => {
+// Popup logic & i18n (robust, simplified)
+(function initPopup(){
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initPopup, { once: true });
+    return;
+  }
+
+  // Guard: run only inside the popup (has our root container)
+  if (!document.getElementById('fillButton')) {
+    return; // Not the popup page
+  }
+
   const input = document.getElementById('auto');
   const fillBtn = document.getElementById('fillButton');
   const presetsWrap = document.getElementById('presets');
-  const langButtons = document.querySelectorAll('.lang-btn');
+  const langButtons = Array.from(document.querySelectorAll('.lang-btn'));
 
-  // restore value & language
-  input.value = localStorage.getItem('defaultValue') || '';
-  const savedLang = localStorage.getItem('ff_lang') || 'en';
-  setLanguage(savedLang);
+  if (!input || !fillBtn) {
+    console.warn('[FormFully] Missing core elements.');
+    // Try one delayed retry (slow paint edge case)
+    return setTimeout(initPopup, 50);
+  }
 
-  // persist value
-  input.addEventListener('input', () => localStorage.setItem('defaultValue', input.value));
+  // Load saved value
+  try {
+    chrome?.storage?.local.get(['defaultValue'], ({ defaultValue }) => {
+      if (typeof defaultValue === 'string') input.value = defaultValue;
+    });
+  } catch {}
 
-  // presets
-  presetsWrap.addEventListener('click', (e) => {
+  // Language
+  try {
+    const lang = localStorage.getItem('ff_lang') || 'en';
+    if (typeof setLanguage === 'function') setLanguage(lang);
+  } catch {}
+
+  function persist() { try { chrome?.storage?.local.set({ defaultValue: input.value }); } catch {} }
+
+  input.addEventListener('input', persist, { passive: true });
+
+  presetsWrap?.addEventListener('click', (e) => {
     const btn = e.target.closest('button[data-val]');
     if (!btn) return;
     input.value = btn.getAttribute('data-val');
-    localStorage.setItem('defaultValue', input.value);
+    persist();
   });
 
-  // language switching
-  langButtons.forEach(b => b.addEventListener('click', () => setLanguage(b.dataset.lang)));
+  langButtons.forEach(btn => btn.addEventListener('click', () => {
+    if (typeof setLanguage === 'function') setLanguage(btn.dataset.lang);
+  }));
 
-  // main action
   fillBtn.addEventListener('click', () => {
-    const inputValue = input.value.trim();
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      const activeTab = tabs[0];
+    const inputValue = (input.value || '').trim();
+    if (!chrome?.tabs || !chrome?.scripting) return;
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      const activeTab = tabs && tabs[0];
+      if (!activeTab?.id) return;
       chrome.scripting.executeScript({
         target: { tabId: activeTab.id },
         function: fillFields,
@@ -36,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   });
-});
+})();
 
 // CONTENT SCRIPT INJECTION FUNCTION
 function fillFields(inputValue) {

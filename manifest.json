@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "FormFully",
   "description": "Automatically Auto fill in input fields with any value you want to save your precious time",
-  "version": "2.0",
+  "version": "2.0.1",
   "icons": {
     "16": "icon.png",
     "48": "icon.png",
@@ -19,7 +19,28 @@
   ],
   
   "permissions": [
-      "activeTab",
-      "scripting"
-  ]
+    "activeTab",
+    "scripting",
+    "storage",
+    "contextMenus"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "commands": {
+    "fill-form": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+F",
+        "mac": "Command+Shift+F"
+      },
+      "description": "Fill inputs using FormFully"
+    },
+    "fill-form-alt": {
+      "suggested_key": {
+        "default": "Alt+Shift+F",
+        "mac": "Alt+Shift+F"
+      },
+      "description": "Fill inputs using FormFully (alternate)"
+    }
+  }
 }
