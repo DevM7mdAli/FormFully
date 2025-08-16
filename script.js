@@ -14,6 +14,9 @@
   const fillBtn = document.getElementById('fillButton');
   const presetsWrap = document.getElementById('presets');
   const langButtons = Array.from(document.querySelectorAll('.lang-btn'));
+  const shortcutOpenBtn = document.getElementById('shortcutOpenBtn');
+  const shortcutModal = document.getElementById('shortcutModal');
+  const shortcutModalClose = document.getElementById('shortcutModalClose');
 
   if (!input || !fillBtn) {
     console.warn('[FormFully] Missing core elements.');
@@ -34,6 +37,13 @@
     if (typeof setLanguage === 'function') setLanguage(lang);
   } catch { }
 
+  // Highlight current platform shortcut line
+  try {
+    const isMac = /Mac/i.test(navigator.platform);
+    const target = document.getElementById(isMac ? 'shortcutMac' : 'shortcutWin');
+    target?.classList.add('font-semibold', 'text-white');
+  } catch { }
+
   function persist() { try { chrome?.storage?.local.set({ defaultValue: input.value }); } catch { } }
 
   input.addEventListener('input', persist, { passive: true });
@@ -48,6 +58,31 @@
   langButtons.forEach(btn => btn.addEventListener('click', () => {
     if (typeof setLanguage === 'function') setLanguage(btn.dataset.lang);
   }));
+
+  // Shortcut modal logic
+  function openShortcutModal() {
+    if (!shortcutModal) return;
+    shortcutModal.classList.remove('hidden');
+    // focus close for accessibility
+    shortcutModalClose?.focus();
+  }
+  function closeShortcutModal() {
+    if (!shortcutModal) return;
+    shortcutModal.classList.add('hidden');
+    shortcutOpenBtn?.focus();
+  }
+  shortcutOpenBtn?.addEventListener('click', openShortcutModal);
+  shortcutModalClose?.addEventListener('click', closeShortcutModal);
+  // Close on overlay click
+  shortcutModal?.addEventListener('click', (e) => {
+    if (e.target === shortcutModal) closeShortcutModal();
+  });
+  // Escape to close
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !shortcutModal?.classList.contains('hidden')) {
+      closeShortcutModal();
+    }
+  });
 
   fillBtn.addEventListener('click', () => {
     const inputValue = (input.value || '').trim();

@@ -32,21 +32,36 @@
             </p>
           </div>
         </div>
-        <div class="lang-switch">
-          <button
-            id="btnLangEn"
-            class="lang-btn px-2 py-1 text-xs font-semibold rounded-full bg-white text-indigo-700 shadow"
-            data-lang="en"
-          >
-            EN
-          </button>
-          <button
-            id="btnLangAr"
-            class="lang-btn px-2 py-1 text-xs font-semibold rounded-full text-white/90 hover:bg-white/40 transition"
-            data-lang="ar"
-          >
-            AR
-          </button>
+        <div class="flex flex-col gap-3">
+          <div class="lang-switch">
+            <button
+              id="btnLangEn"
+              class="lang-btn px-2 py-1 text-xs font-semibold rounded-full bg-white text-indigo-700 shadow"
+              data-lang="en"
+            >
+              EN
+            </button>
+            <button
+              id="btnLangAr"
+              class="lang-btn px-2 py-1 text-xs font-semibold rounded-full text-white/90 hover:bg-white/40 transition"
+              data-lang="ar"
+            >
+              AR
+            </button>
+          </div>
+
+          <div class="flex justify-end">
+            <button
+              id="shortcutOpenBtn"
+              class="icon-btn w-8 h-8 flex items-center justify-center text-xs font-bold"
+              type="button"
+              aria-haspopup="dialog"
+              aria-controls="shortcutModal"
+              aria-label="Shortcut info"
+            >
+              ?
+            </button>
+          </div>
         </div>
       </div>
 
@@ -176,6 +191,44 @@
           </a>
         </div>
       </footer>
+    </div>
+
+    <!-- Shortcut Modal -->
+    <div
+      id="shortcutModal"
+      class="hidden fixed inset-0 z-20 flex items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="shortcutModalTitle"
+    >
+      <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+      <div class="relative glass-panel p-4 w-full max-w-xs flex flex-col gap-3">
+        <h2 id="shortcutModalTitle" class="text-sm font-semibold tracking-wide">
+          Keyboard Shortcut
+        </h2>
+        <p
+          id="shortcutModalDesc"
+          class="text-[11px] leading-snug text-white/80"
+        >
+          Keyboard shortcut details:
+        </p>
+        <ul class="text-[11px] text-white/80 space-y-1" id="shortcutList">
+          <li id="shortcutWin">Windows / Linux: Alt + Shift + F</li>
+          <li id="shortcutMac">macOS: Alt + Shift + F</li>
+          <li id="shortcutChange" class="pt-1 text-white/65">
+            Change it at chrome://extensions/shortcuts
+          </li>
+        </ul>
+        <div class="flex justify-end">
+          <button
+            id="shortcutModalClose"
+            class="icon-btn text-[11px] px-3 h-7 flex items-center font-medium"
+            type="button"
+          >
+            Close
+          </button>
+        </div>
+      </div>
     </div>
   </body>
 </html>

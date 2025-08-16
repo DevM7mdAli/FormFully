@@ -7,7 +7,14 @@ window.I18N = {
     hint: 'Leave empty for random per input.',
     fillBtn: 'Fill Form',
     madeBy: 'Made by <a class="underline decoration-dotted hover:decoration-solid" target="_blank" href="https://devm7mdali.github.io">Mohammed Alajmi</a>',
-    coffee: 'Buy me a coffee'
+    coffee: 'Buy me a coffee',
+    shortcutInfoLabel: 'Shortcut info',
+    shortcutTitle: 'Keyboard Shortcut',
+    shortcutIntro: 'Keyboard shortcut details:',
+    shortcutWin: 'Windows / Linux: Alt + Shift + F',
+    shortcutMac: 'macOS: Option + Shift + F',
+    shortcutChange: 'Change it at chrome://extensions/shortcuts',
+    shortcutClose: 'Close'
   },
   ar: {
     title: 'فورم فُلِّي',
@@ -17,7 +24,14 @@ window.I18N = {
     hint: 'اتركه فارغاً للحصول على قيمة عشوائية لكل حقل.',
     fillBtn: 'تعبئة النموذج',
     madeBy: 'صُنع بواسطة <a class="underline decoration-dotted hover:decoration-solid" target="_blank" href="https://devm7mdali.github.io">محمد العجمي</a>',
-    coffee: 'اشترِ لي قهوة'
+    coffee: 'اشترِ لي قهوة',
+    shortcutInfoLabel: 'معلومات الاختصار',
+    shortcutTitle: 'اختصار لوحة المفاتيح',
+    shortcutIntro: 'تفاصيل اختصار لوحة المفاتيح:',
+    shortcutWin: 'ويندوز / لينكس: Alt + Shift + F',
+    shortcutMac: 'ماك: Option + Shift + F',
+    shortcutChange: 'يمكنك تغييره من chrome://extensions/shortcuts',
+    shortcutClose: 'إغلاق'
   }
 };
 
@@ -42,6 +56,14 @@ window.setLanguage = function setLanguage(lang) {
   window.setText('hint', t.hint);
   window.setText('fillBtnText', t.fillBtn);
   window.setText('coffeeText', t.coffee);
+  const shortcutOpenBtn = document.getElementById('shortcutOpenBtn');
+  if (shortcutOpenBtn) shortcutOpenBtn.setAttribute('aria-label', t.shortcutInfoLabel);
+  window.setText('shortcutModalTitle', t.shortcutTitle);
+  window.setText('shortcutModalDesc', t.shortcutIntro);
+  window.setText('shortcutWin', t.shortcutWin);
+  window.setText('shortcutMac', t.shortcutMac);
+  window.setText('shortcutChange', t.shortcutChange);
+  window.setText('shortcutModalClose', t.shortcutClose);
   const input = document.getElementById('auto');
   if (input) input.placeholder = t.placeholder;
   const footerMade = document.getElementById('footerMade');
