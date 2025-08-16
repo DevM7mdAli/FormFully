@@ -12,7 +12,7 @@ module.exports = {
         // Brand gradient stops (used for backgrounds)
         'brand-start': '#4E65FF88',
         'brand-mid': '#3b8FfFe6', // sky-ish mid tone
-        'brand-end': '#FFFFFF77', // white-ish end tone
+        'brand-end': '#FFFFF077', // white-ish end tone
 
         // Accent gradient stops (used for interactive hover overlays)
         'accent-fuchsia': '#f5d0fe',
