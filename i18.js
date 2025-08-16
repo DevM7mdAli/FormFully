@@ -1,0 +1,56 @@
+window.I18N = {
+  en: {
+    title: 'FormFully',
+    tagline: 'Instant form filler',
+    valueLabel: 'Value to fill',
+    placeholder: 'Enter a number',
+    hint: 'Leave empty for random per input.',
+    fillBtn: 'Fill Form',
+    madeBy: 'Made by <a class="underline decoration-dotted hover:decoration-solid" target="_blank" href="https://devm7mdali.github.io">Mohammed Alajmi</a>'
+  },
+  ar: {
+    title: 'فورم فُلِّي',
+    tagline: 'تعبئة النماذج فوراً',
+    valueLabel: 'القيمة المراد تعبئتها',
+    placeholder: 'أدخل رقماً',
+    hint: 'اتركه فارغاً للحصول على قيمة عشوائية لكل حقل.',
+    fillBtn: 'تعبئة النموذج',
+    madeBy: 'صُنع بواسطة <a class="underline decoration-dotted hover:decoration-solid" target="_blank" href="https://devm7mdali.github.io">محمد العجمي</a>'
+  }
+};
+
+window.setLanguage = function setLanguage(lang) {
+  if (!window.I18N[lang]) lang = 'en';
+  localStorage.setItem('ff_lang', lang);
+  document.documentElement.lang = lang;
+  document.body.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    if (b.dataset.lang === lang) {
+      b.classList.add('bg-white', 'text-indigo-700');
+      b.classList.remove('text-white/90');
+    } else {
+      b.classList.remove('bg-white', 'text-indigo-700');
+      b.classList.add('text-white/90');
+    }
+  });
+  const t = window.I18N[lang];
+  window.setText('title', t.title);
+  window.setText('tagline', t.tagline);
+  window.setText('valueLabel', t.valueLabel);
+  window.setText('hint', t.hint);
+  window.setText('fillBtnText', t.fillBtn);
+  const input = document.getElementById('auto');
+  if (input) input.placeholder = t.placeholder;
+  const footerMade = document.getElementById('footerMade');
+  if (footerMade) footerMade.innerHTML = t.madeBy;
+};
+
+window.setText = function setText(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
+};
+
+// Optionally expose helper to add new languages dynamically later
+window.registerLanguage = function registerLanguage(code, dict) {
+  window.I18N[code] = dict;
+};

@@ -1,3 +1,44 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Custom component layer */
+@layer components {
+  .preset-chip {
+    @apply px-3 py-1 rounded-full text-xs font-semibold bg-surface-glass text-white/90 hover:bg-surface-glass-hover focus:outline-none focus:ring-2 focus:ring-white/40 transition shadow-chip backdrop-blur;
+  }
+  .glass-panel {
+    @apply backdrop-blur-xl bg-surface-glass border border-white/30 shadow-2xl rounded-2xl;
+  }
+  .btn-primary {
+    @apply relative overflow-hidden rounded-2xl bg-gradient-to-r from-white to-white/70 text-primary-foreground font-semibold tracking-wide py-3 text-sm shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-white/60 transition;
+  }
+  .btn-primary .overlay-accent {
+    @apply absolute inset-0 opacity-0 group-hover:opacity-100 transition bg-accent-gradient mix-blend-overlay;
+  }
+  .input-glass {
+    @apply w-full rounded-xl bg-surface-glass focus:bg-surface-glass-hover text-white placeholder-white/60 focus:ring-2 focus:ring-white/60 focus:outline-none px-4 py-2 text-base font-medium tracking-wide shadow-inner transition;
+  }
+  .icon-btn {
+    @apply relative bg-surface-glass hover:bg-surface-glass-hover text-white rounded-xl p-2 focus:outline-none focus:ring-2 focus:ring-white/60 transition shadow;
+  }
+  .lang-switch {
+    @apply flex items-center gap-1 bg-surface-glass rounded-full p-1 shadow-inner backdrop-blur;
+  }
+  .lang-btn {
+    @apply px-2 py-1 text-xs font-semibold rounded-full transition;
+  }
+}
+
+/* Utility layer additions */
+@layer utilities {
+  .bg-brand-gradient {
+    @apply bg-gradient-to-br from-brand-start via-brand-mid to-brand-end;
+  }
+  .bg-accent-gradient {
+    @apply bg-gradient-to-r from-accent-fuchsia via-accent-rose to-accent-amber;
+  }
+  .border-glass {
+    @apply border border-white/30;
+  }
+}

@@ -1,19 +1,42 @@
-document.addEventListener('DOMContentLoaded', function () {
-  //? getting the saved value to put it in input
-  document.getElementById("auto").value = localStorage.getItem("defaultValue")
+// Popup logic & i18n
+document.addEventListener('DOMContentLoaded', () => {
+  const input = document.getElementById('auto');
+  const fillBtn = document.getElementById('fillButton');
+  const randomBtn = document.getElementById('randomBtn');
+  const presetsWrap = document.getElementById('presets');
+  const langButtons = document.querySelectorAll('.lang-btn');
 
-  //? saving value every time when user input something to the input
-  document.getElementById("auto").addEventListener("input", function () {
-    localStorage.setItem("defaultValue", this.value)
-  })
+  // restore value & language
+  input.value = localStorage.getItem('defaultValue') || '';
+  const savedLang = localStorage.getItem('ff_lang') || 'en';
+  setLanguage(savedLang);
 
-  //! to begin execute the main functionality of the extension
-  document.getElementById('fillButton').addEventListener('click', function () {
-    const inputValue = document.getElementById('auto').value;
+  // persist value
+  input.addEventListener('input', () => localStorage.setItem('defaultValue', input.value));
 
+  // presets
+  presetsWrap.addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-val]');
+    if (!btn) return;
+    input.value = btn.getAttribute('data-val');
+    localStorage.setItem('defaultValue', input.value);
+  });
+
+  // random button sets empty to force random per input
+  randomBtn.addEventListener('click', () => {
+    input.value = '';
+    localStorage.setItem('defaultValue', '');
+    flash(randomBtn);
+  });
+
+  // language switching
+  langButtons.forEach(b => b.addEventListener('click', () => setLanguage(b.dataset.lang)));
+
+  // main action
+  fillBtn.addEventListener('click', () => {
+    const inputValue = input.value.trim();
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      var activeTab = tabs[0];
-      //! inject function to the page
+      const activeTab = tabs[0];
       chrome.scripting.executeScript({
         target: { tabId: activeTab.id },
         function: fillFields,
@@ -22,85 +45,53 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 });
-//* function to fill all input
+
+// simple pulse effect
+function flash(el) {
+  el.classList.add('animate-pulse');
+  setTimeout(() => el.classList.remove('animate-pulse'), 600);
+}
+
+// CONTENT SCRIPT INJECTION FUNCTION
 function fillFields(inputValue) {
-  const allInputs = document.getElementsByTagName('input')
+  const allInputs = document.getElementsByTagName('input');
   for (let i = 0; i < allInputs.length; i++) {
-    //! To fill all visible input
-    if (allInputs[i].type.toLowerCase() !== 'hidden') {
-      //! for special cases
-      if (allInputs[i].type === 'date') {
-        allInputs[i].value = formatDate(new Date());
-      } else if (allInputs[i].type === 'month') {
-        allInputs[i].value = formatMonth(new Date());
-      } else if (allInputs[i].type === 'datetime' || allInputs[i].type === 'datetime-local') {
-        allInputs[i].value = formatDateTime(new Date());
-      } else if (allInputs[i].type === 'week') {
-        allInputs[i].value = formatWeek(new Date());
-      } else if (allInputs[i].type === 'time') {
-        allInputs[i].value = formatTime(new Date());
-      }
-      else if (allInputs[i].type === 'color') {
-        allInputs[i].value = randomColor()
-      }//! end of special cases
+    const inp = allInputs[i];
+    if (inp.type && inp.type.toLowerCase() === 'hidden') continue;
 
-      //! if input auto is empty then a random value will be generated
-      else if (inputValue === '') {
-        allInputs[i].value = Math.floor(Math.random() * 5) + 1
-      }
-      else {
-        allInputs[i].value = inputValue
-      }
-    }
+    if (inp.type === 'date') inp.value = formatDate(new Date());
+    else if (['datetime', 'datetime-local'].includes(inp.type)) inp.value = formatDateTime(new Date());
+    else if (inp.type === 'month') inp.value = formatMonth(new Date());
+    else if (inp.type === 'week') inp.value = formatWeek(new Date());
+    else if (inp.type === 'time') inp.value = formatTime(new Date());
+    else if (inp.type === 'color') inp.value = randomColor();
+    else if (inputValue === '') inp.value = Math.floor(Math.random() * 100) + 1; // bigger range
+    else inp.value = inputValue;
   }
 
-  try {
-    document.getElementById('a_next').click()
-  }
-  catch {
+  try { document.getElementById('a_next')?.click(); } catch (e) { }
 
-  }
-
-  //* related functions to convert dates
-  function formatDate(date) {
-    // Format: YYYY-MM-DD
-    return date.toISOString().split('T')[0];
-  }
-
-  function formatMonth(date) {
-    // Format: YYYY-MM
-    return date.toISOString().split('T')[0].slice(0, 7);
-  }
-  // Format date to YYYY-MM-DD
-  function formatDateTime(date) {
-    // Format: YYYY-MM-DDTHH:MM (e.g., 2024-03-27T12:00)
-    return date.toISOString().slice(0, 16);
-  }
-  // Format date to YYYY-Www
+  function formatDate(date) { return date.toISOString().split('T')[0]; }
+  function formatMonth(date) { return date.toISOString().split('T')[0].slice(0, 7); }
+  function formatDateTime(date) { return date.toISOString().slice(0, 16); }
   function formatWeek(date) {
-    // Format: YYYY-Www (e.g., 2024-W13)
     const year = date.getFullYear();
-    const weekNumber = getISOWeek(date); // Assuming you have a function to get ISO week number
+    const weekNumber = getISOWeek(date);
     return `${year}-W${weekNumber}`;
   }
-
-  // Function to get the ISO week number
   function getISOWeek(date) {
-    const weekStart = new Date(date.getFullYear(), 0, 1);
-    const diff = date - weekStart;
-    const oneWeek = 604800000; // milliseconds in a week
-    return Math.ceil((diff + ((weekStart.getDay() + 1) * 86400000)) / oneWeek);
+    const tempDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    const dayNum = tempDate.getUTCDay() || 7;
+    tempDate.setUTCDate(tempDate.getUTCDate() + 4 - dayNum);
+    const yearStart = new Date(Date.UTC(tempDate.getUTCFullYear(), 0, 1));
+    return Math.ceil((((tempDate - yearStart) / 86400000) + 1) / 7);
   }
-
-  // Format date to HH:MM
   function formatTime(date) {
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    return `${hours}:${minutes}`;
+    const h = String(date.getHours()).padStart(2, '0');
+    const m = String(date.getMinutes()).padStart(2, '0');
+    return `${h}:${m}`;
   }
-
   function randomColor() {
-    let n = (Math.random() * 0xfffff * 1000000).toString(16);
-    return '#' + n.slice(0, 6);
+    return '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
   }
 }
