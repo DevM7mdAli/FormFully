@@ -1,9 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
+import type { IconType } from "react-icons";
+import { LuCheck, LuZap, LuList, LuWand, LuDices, LuSave, LuFeather, LuCoffee } from "react-icons/lu";
+import { FaChrome, FaEdge, FaLinkedin, FaGithub } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
 
 /* ------------------------------------------------------------------ */
-/* constants                                                          */
+/* utilities                                                          */
 /* ------------------------------------------------------------------ */
+const cx = (...parts: Array<string | false | null | undefined>) =>
+  parts.filter(Boolean).join(" ");
+
 const LINKS = {
   chrome:
     "https://chromewebstore.google.com/detail/formfully/ojlpggfkjhgadcjdmkgdmpilhmnghlmj",
@@ -14,6 +21,79 @@ const LINKS = {
   twitter: "https://twitter.com/DevM7mdAli",
   linkedin: "https://www.linkedin.com/in/mohammed-alajmi-b5a327206/",
 };
+
+const SOCIAL_LINKS: Array<{ href: string; label: string; icon: IconType }> = [
+  { href: LINKS.twitter, label: "Twitter / X", icon: FaXTwitter },
+  { href: LINKS.linkedin, label: "LinkedIn", icon: FaLinkedin },
+  { href: LINKS.github, label: "GitHub", icon: FaGithub },
+];
+
+/* shared class recipes — utility-first, composed in JS to stay DRY */
+const WRAP = "w-full max-w-[1140px] mx-auto px-7 max-[720px]:px-5";
+const SECTION = "relative py-24 max-[720px]:py-[70px]";
+const GLASS = "rounded-[20px] bg-glass border border-line backdrop-blur-[14px]";
+
+const BTN =
+  "inline-flex items-center justify-center gap-[9px] font-display font-semibold tracking-[-0.01em] rounded-[14px] border border-transparent cursor-pointer whitespace-nowrap transition duration-200 active:translate-y-px";
+const BTN_PRIMARY = cx(
+  BTN,
+  "text-[15px] px-[22px] py-[13px] text-navy bg-[linear-gradient(180deg,#fff,#eef3ff)]",
+  "shadow-[0_14px_32px_-14px_rgba(20,30,90,0.55),inset_0_1px_0_rgba(255,255,255,0.8)]",
+  "hover:-translate-y-0.5 hover:shadow-[0_20px_44px_-16px_rgba(20,30,90,0.6)]"
+);
+const BTN_GHOST = cx(
+  BTN,
+  "text-[15px] px-[22px] py-[13px] text-white bg-glass-2 border-line-strong backdrop-blur-md",
+  "hover:bg-glass-3 hover:border-white"
+);
+const BTN_COFFEE = cx(
+  BTN,
+  "text-[16px] px-[26px] py-[15px] text-[#0d0c22] bg-[linear-gradient(120deg,#ffdd00,#ffc400)]",
+  "shadow-[0_14px_34px_-14px_rgba(255,200,0,0.85),inset_0_1px_0_rgba(255,255,255,0.55)]",
+  "hover:-translate-y-0.5 hover:shadow-[0_22px_48px_-16px_rgba(255,200,0,0.95)]"
+);
+
+const REVEAL =
+  "opacity-0 translate-y-[22px] transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform " +
+  "motion-reduce:opacity-100 motion-reduce:translate-y-0 motion-reduce:transition-none";
+
+/* ------------------------------------------------------------------ */
+/* primitives                                                         */
+/* ------------------------------------------------------------------ */
+const Kbd = ({ children }: { children: ReactNode }) => (
+  <span className="font-mono font-bold text-[0.85em] text-navy bg-white rounded-[7px] px-2 py-[3px] leading-none inline-flex items-center border border-white/90 shadow-[0_2px_6px_-2px_rgba(20,30,90,0.35),inset_0_-2px_0_rgba(28,38,96,0.28)]">
+    {children}
+  </span>
+);
+
+const Eyebrow = ({ children }: { children: ReactNode }) => (
+  <p className="inline-flex items-center gap-[9px] font-mono text-[12px] font-medium uppercase tracking-[0.16em] text-ice mb-[18px]">
+    <span className="w-[22px] h-px bg-[linear-gradient(90deg,#fff,transparent)]" />
+    {children}
+  </p>
+);
+
+const Grad = ({ children }: { children: ReactNode }) => (
+  <span className="bg-[linear-gradient(90deg,#fff,#cfe0ff)] bg-clip-text text-transparent">
+    {children}
+  </span>
+);
+
+const Code = ({ children }: { children: ReactNode }) => (
+  <code className="font-mono text-[0.88em] text-white bg-white/18 rounded-[5px] px-1.5 py-0.5">
+    {children}
+  </code>
+);
+
+const Brand = () => (
+  <a
+    className="inline-flex items-center gap-[11px] font-display font-bold text-[19px] text-white tracking-[-0.02em]"
+    href="#top"
+  >
+    <img src="/icon.png" alt="" className="w-8 h-8 rounded-[9px] p-0.5 bg-white/85" />
+    Formfully
+  </a>
+);
 
 /* ------------------------------------------------------------------ */
 /* live value generators — exactly what the extension does            */
@@ -48,20 +128,22 @@ function randomHex() {
 const rand1to5 = () => String(Math.floor(Math.random() * 5) + 1);
 
 /* ------------------------------------------------------------------ */
-/* scroll-reveal                                                      */
+/* scroll-reveal — removes the hide classes once in view              */
 /* ------------------------------------------------------------------ */
 function useReveal() {
   useEffect(() => {
-    const els = Array.from(document.querySelectorAll<HTMLElement>(".reveal"));
+    const els = Array.from(document.querySelectorAll<HTMLElement>("[data-reveal]"));
+    const show = (el: HTMLElement) =>
+      el.classList.remove("opacity-0", "translate-y-[22px]");
     if (!("IntersectionObserver" in window)) {
-      els.forEach((el) => el.classList.add("in"));
+      els.forEach(show);
       return;
     }
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
           if (e.isIntersecting) {
-            e.target.classList.add("in");
+            show(e.target as HTMLElement);
             io.unobserve(e.target);
           }
         });
@@ -72,75 +154,6 @@ function useReveal() {
     return () => io.disconnect();
   }, []);
 }
-
-/* ------------------------------------------------------------------ */
-/* icons                                                              */
-/* ------------------------------------------------------------------ */
-const Check = () => (
-  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <path
-      d="M5 13l4 4L19 7"
-      stroke="currentColor"
-      strokeWidth="3"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
-
-const FillBolt = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z" fill="currentColor" />
-  </svg>
-);
-
-const ChromeMark = () => (
-  <svg className="icon" viewBox="0 0 24 24" aria-hidden="true">
-    <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="1.6" />
-    <circle cx="12" cy="12" r="3.4" fill="none" stroke="currentColor" strokeWidth="1.6" />
-    <path
-      d="M12 8.6h8.4M12 8.6 7.7 4.2M12 15.4 7.7 19.8M14.9 14.6l4.2 4.6"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-    />
-  </svg>
-);
-
-const EdgeMark = () => (
-  <svg className="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <path
-      d="M21 12.4c0-5-4-8.4-8.8-8.4C7 4 3.3 7.7 3.3 12c0 3 1.7 5.3 4 6.4-1-2-.5-4.6 2.3-5.8 2.4-1 5.6-.4 6.9.4.5-1.2.5-1.9.5-2.6 0 0 3.7.3 3.7 2"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
-
-const Coffee = () => (
-  <svg className="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <path
-      d="M4 9h13a3 3 0 0 1 0 6h-1M5 9v6a4 4 0 0 0 4 4h3a4 4 0 0 0 4-4V9M8 3v2M12 3v2M16 3v2"
-      stroke="currentColor"
-      strokeWidth="1.7"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
-
-const FeatureIcon = ({ d }: { d: string }) => (
-  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <path
-      d={d}
-      stroke="currentColor"
-      strokeWidth="1.7"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
 
 /* ------------------------------------------------------------------ */
 /* hero demo — the signature: a form that fills itself                */
@@ -248,37 +261,69 @@ function FillDemo() {
   }, [fill]);
 
   return (
-    <div className="demo reveal">
-      <div className="demo-stage">
-        <div className={"demo-kbd-float" + (pressed ? " pressed" : "")} aria-hidden="true">
-          <span className="kbd">Alt</span>
-          <span className="kbd">Shift</span>
-          <span className="kbd">F</span>
+    <div className={cx("relative max-[960px]:max-w-[520px]", REVEAL)} data-reveal>
+      <div className="relative rounded-[26px] p-[26px] bg-glass-2 border border-line-strong backdrop-blur-[22px] shadow-[0_40px_80px_-40px_rgba(20,30,90,0.55),inset_0_1px_0_rgba(255,255,255,0.4)]">
+        <div
+          className={cx(
+            "absolute -top-4 right-[18px] inline-flex items-center gap-1.5 px-3 py-2 rounded-[12px] z-[3]",
+            "bg-white/90 border border-white/90 shadow-[0_14px_28px_-14px_rgba(20,30,90,0.6)] transition-[transform,box-shadow] duration-150",
+            pressed && "translate-y-0.5"
+          )}
+          aria-hidden="true"
+        >
+          <Kbd>Alt</Kbd>
+          <Kbd>Shift</Kbd>
+          <Kbd>F</Kbd>
         </div>
 
-        <div className="demo-form" aria-hidden="true">
+        <div className="grid grid-cols-2 gap-x-3.5 gap-y-[13px]" aria-hidden="true">
           {FIELDS.map((f) => {
             const v = filled[f.key];
             const isFilled = v !== undefined;
-            const cls =
-              "df-field" +
-              (f.span ? " col-span" : "") +
-              (isFilled ? " filled" : "") +
-              (active === f.key ? " active" : "");
+            const isActive = active === f.key;
             return (
-              <div className={cls} key={f.key}>
-                <span className="df-label">{f.label}</span>
-                <div className="df-input">
+              <div key={f.key} className={cx("flex flex-col gap-1.5", f.span && "col-span-full")}>
+                <span className="font-mono text-[10.5px] uppercase tracking-[0.06em] text-white/65">
+                  {f.label}
+                </span>
+                <div
+                  className={cx(
+                    "relative h-10 rounded-[11px] flex items-center px-3 font-mono text-[13.5px] text-white overflow-hidden border transition-[border-color,box-shadow,background] duration-300",
+                    isFilled
+                      ? "bg-mint/12 border-mint/70 shadow-[0_0_18px_-6px_rgba(94,240,187,0.8)]"
+                      : isActive
+                        ? "bg-white/24 border-white"
+                        : "bg-white/16 border-white/28"
+                  )}
+                >
                   {f.type === "color" && (
                     <span
-                      className="df-swatch"
+                      className="w-[22px] h-[22px] rounded-[6px] mr-[9px] shrink-0 border border-white/50 bg-white/25 transition-[background] duration-300"
                       style={isFilled ? { background: v } : undefined}
                     />
                   )}
-                  <span className="val">{v ?? ""}</span>
-                  <span className="caret" />
-                  <span className="df-check">
-                    <Check />
+                  <span
+                    className={cx(
+                      "transition-[opacity,transform] duration-[280ms]",
+                      isFilled ? "opacity-100 translate-y-0" : "opacity-0 translate-y-1"
+                    )}
+                  >
+                    {v ?? ""}
+                  </span>
+                  <span
+                    className={cx(
+                      "w-[1.5px] h-[17px] bg-white ml-px",
+                      isActive ? "opacity-100 animate-blink" : "opacity-0"
+                    )}
+                  />
+                  <span
+                    className={cx(
+                      "absolute right-2.5 w-[17px] h-[17px] rounded-full grid place-items-center bg-mint text-[#06241a]",
+                      "transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]",
+                      isFilled ? "opacity-100 scale-100" : "opacity-0 scale-50"
+                    )}
+                  >
+                    <LuCheck size={11} />
                   </span>
                 </div>
               </div>
@@ -287,25 +332,38 @@ function FillDemo() {
         </div>
 
         {/* the extension popup, in miniature */}
-        <div className="demo-bar">
-          <img className="demo-pop-logo" src="/icon.png" alt="" aria-hidden="true" />
+        <div className="mt-[18px] flex items-center gap-3 p-3.5 rounded-[15px] border border-line-strong bg-white/16">
+          <img
+            className="w-[34px] h-[34px] rounded-[9px] shrink-0 p-0.5 bg-white/85"
+            src="/icon.png"
+            alt=""
+            aria-hidden="true"
+          />
           <input
-            className="demo-value"
+            className="flex-1 min-w-0 h-[38px] rounded-[10px] text-white font-mono text-[13.5px] px-3 bg-white/16 border border-white/30 placeholder:text-white/60"
             value={value}
             onChange={(e) => setValue(e.target.value)}
             placeholder="Type a value, or leave blank for random"
             aria-label="Value to fill"
           />
-          <button className="demo-fill" onClick={fill} disabled={running}>
-            <FillBolt />
+          <button
+            className="h-[38px] px-[18px] rounded-[10px] border-0 cursor-pointer font-display font-semibold text-[13.5px] text-navy bg-white inline-flex items-center gap-[7px] whitespace-nowrap transition-[transform,box-shadow] duration-150 shadow-[0_8px_20px_-8px_rgba(20,30,90,0.6)] hover:-translate-y-px disabled:opacity-65 disabled:cursor-progress"
+            onClick={fill}
+            disabled={running}
+          >
+            <LuZap size={14} />
             {running ? "Filling…" : "Fill"}
           </button>
         </div>
 
-        <div className="demo-presets">
-          <span className="ptag">presets</span>
+        <div className="flex gap-[7px] mt-3 flex-wrap items-center">
+          <span className="font-mono text-[11px] text-white/55 mr-0.5">presets</span>
           {["1", "5", "10", "50", "100"].map((p) => (
-            <button key={p} className="preset-chip" onClick={() => setValue(p)}>
+            <button
+              key={p}
+              className="font-mono text-[12px] text-white rounded-full px-[13px] py-1 cursor-pointer bg-white/16 border border-white/28 transition-[background,border-color] duration-150 hover:bg-white/32 hover:border-white"
+              onClick={() => setValue(p)}
+            >
               {p}
             </button>
           ))}
@@ -325,13 +383,21 @@ const MQ_ITEMS = [
 function Marquee() {
   const items = [...MQ_ITEMS, ...MQ_ITEMS];
   return (
-    <div className="marquee-track">
-      {items.map((t, i) => (
-        <span className="mq-item" key={i}>
-          <span className="tag">&lt;input type="{t}"&gt;</span>
-          <span className="sep">✦</span>
-        </span>
-      ))}
+    <div
+      className="relative overflow-hidden border-y border-line py-[18px] bg-white/[0.07] group [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)] [-webkit-mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)]"
+      aria-hidden="true"
+    >
+      <div className="flex gap-3.5 w-max animate-marquee group-hover:[animation-play-state:paused] motion-reduce:animate-none">
+        {items.map((t, i) => (
+          <span
+            key={i}
+            className="inline-flex items-center gap-[9px] font-mono text-[13px] text-white/85 whitespace-nowrap"
+          >
+            <span className="text-ice">&lt;input type="{t}"&gt;</span>
+            <span className="text-white/50 text-[16px]">✦</span>
+          </span>
+        ))}
+      </div>
     </div>
   );
 }
@@ -339,12 +405,18 @@ function Marquee() {
 /* ------------------------------------------------------------------ */
 /* value ledger                                                       */
 /* ------------------------------------------------------------------ */
+const LEDGER_GRID = "grid grid-cols-[230px_1fr_160px] gap-[18px] items-center px-6 py-[15px]";
 function LedgerRow({ type, desc, out }: { type: string; desc: string; out: string }) {
   return (
-    <div className="ledger-row">
-      <span className="type">{type}</span>
-      <span className="desc">{desc}</span>
-      <span className="out">{out}</span>
+    <div
+      className={cx(
+        LEDGER_GRID,
+        "border-t border-line font-mono text-[14px] hover:bg-white/[0.07] max-[720px]:grid-cols-1 max-[720px]:gap-1"
+      )}
+    >
+      <span className="text-ice">{type}</span>
+      <span className="text-white/74 font-body text-[14.5px]">{desc}</span>
+      <span className="text-white text-right max-[720px]:text-left">{out}</span>
     </div>
   );
 }
@@ -377,56 +449,60 @@ function Bilingual() {
   const [lang, setLang] = useState<"en" | "ar">("en");
   const data = BILINGUAL[lang];
   return (
-    <section className="section" id="languages">
-      <div className="wrap">
-        <div className="bilingual-grid">
-          <div className="reveal">
-            <p className="eyebrow">Bilingual by design</p>
-            <h2 style={{ fontSize: "clamp(28px, 3.6vw, 40px)", marginBottom: 18 }}>
-              English and العربية, <span className="grad">instantly</span>.
+    <section className={SECTION} id="languages">
+      <div className={WRAP}>
+        <div className="grid grid-cols-[0.9fr_1.1fr] gap-12 items-center max-[960px]:grid-cols-1 max-[960px]:gap-8">
+          <div className={REVEAL} data-reveal>
+            <Eyebrow>Bilingual by design</Eyebrow>
+            <h2 className="text-[clamp(28px,3.6vw,40px)] mb-[18px]">
+              English and العربية, <Grad>instantly</Grad>.
             </h2>
-            <p style={{ color: "var(--muted)", fontSize: 18, maxWidth: 420 }}>
+            <p className="text-white/74 text-[18px] max-w-[420px]">
               Switch the interface between English and Arabic in a tap. Arabic
               flips the entire layout to full right-to-left with the right
               typography — and your choice is remembered next time.
             </p>
-            <div className="lang-toggle" style={{ marginTop: 28 }} role="tablist" aria-label="Language">
-              <button
-                role="tab"
-                aria-selected={lang === "en"}
-                className={lang === "en" ? "on" : ""}
-                onClick={() => setLang("en")}
-              >
-                EN
-              </button>
-              <button
-                role="tab"
-                aria-selected={lang === "ar"}
-                className={lang === "ar" ? "on" : ""}
-                onClick={() => setLang("ar")}
-              >
-                AR
-              </button>
+            <div
+              className="inline-flex p-[5px] rounded-full bg-glass-2 border border-line gap-1 mt-7"
+              role="tablist"
+              aria-label="Language"
+            >
+              {(["en", "ar"] as const).map((l) => (
+                <button
+                  key={l}
+                  role="tab"
+                  aria-selected={lang === l}
+                  onClick={() => setLang(l)}
+                  className={cx(
+                    "font-mono text-[13px] font-medium rounded-full px-5 py-2 cursor-pointer transition-colors border-0",
+                    lang === l ? "text-navy bg-white" : "text-white/78 bg-transparent"
+                  )}
+                >
+                  {l.toUpperCase()}
+                </button>
+              ))}
             </div>
           </div>
 
-          <div className="lang-card reveal" dir={data.dir}>
-            {data.rows.map((r) => (
-              <div className="lc-row" key={r.label}>
-                <span className="lc-label">{r.label}</span>
-                <div className="lc-input">{r.value}</div>
+          <div
+            className={cx(GLASS, "p-7", REVEAL, data.dir === "rtl" && "text-right")}
+            dir={data.dir}
+            data-reveal
+          >
+            {data.rows.map((r, i) => (
+              <div
+                key={r.label}
+                className={cx("flex flex-col gap-1.5 py-3", i > 0 && "border-t border-line")}
+              >
+                <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-white/60">
+                  {r.label}
+                </span>
+                <div className="h-[42px] rounded-[11px] flex items-center px-3.5 font-mono text-[14px] text-white bg-white/16 border border-white/28">
+                  {r.value}
+                </div>
               </div>
             ))}
-            <p
-              style={{
-                marginTop: 18,
-                fontFamily: "var(--mono)",
-                fontSize: 12,
-                color: "#e4ecff",
-              }}
-            >
-              {data.note}
-            </p>
+            <p className="mt-[18px] font-mono text-[12px] text-ice">{data.note}</p>
           </div>
         </div>
       </div>
@@ -444,8 +520,11 @@ const FAQS: Faq[] = [
     a: (
       <>
         Yes — completely free, on both Chrome and Edge. If it saves you time you
-        can <a href={LINKS.coffee} style={{ color: "var(--coffee)" }}>buy the
-        author a coffee</a>, but there's no paywall, account, or upsell.
+        can{" "}
+        <a href={LINKS.coffee} className="text-[#ffdd00]">
+          buy the author a coffee
+        </a>
+        , but there's no paywall, account, or upsell.
       </>
     ),
   },
@@ -455,7 +534,7 @@ const FAQS: Faq[] = [
       <>
         No. There are no network requests, analytics, or trackers. The only
         things stored are your default fill value and language preference, kept
-        locally with <code>chrome.storage</code> on your machine.
+        locally with <Code>chrome.storage</Code> on your machine.
       </>
     ),
   },
@@ -463,9 +542,9 @@ const FAQS: Faq[] = [
     q: "What exactly gets filled?",
     a: (
       <>
-        Every <code>&lt;input&gt;</code> that's visible on the page — hidden
-        fields are skipped. Type-aware fields like <code>date</code>,{" "}
-        <code>time</code>, <code>week</code> and <code>color</code> get sensible
+        Every <Code>&lt;input&gt;</Code> that's visible on the page — hidden
+        fields are skipped. Type-aware fields like <Code>date</Code>,{" "}
+        <Code>time</Code>, <Code>week</Code> and <Code>color</Code> get sensible
         generated values; text and number fields use your value, or a random
         number when you leave it blank.
       </>
@@ -475,10 +554,10 @@ const FAQS: Faq[] = [
     q: "Why not Cmd + Shift + F on macOS?",
     a: (
       <>
-        Chrome reserves <code>Cmd + Shift + F</code> for DevTools search, so the
-        command won't fire. Formfully uses <code>Alt + Shift + F</code> on every
+        Chrome reserves <Code>Cmd + Shift + F</Code> for DevTools search, so the
+        command won't fire. Formfully uses <Code>Alt + Shift + F</Code> on every
         platform — and you can rebind it anytime at{" "}
-        <code>chrome://extensions/shortcuts</code>.
+        <Code>chrome://extensions/shortcuts</Code>.
       </>
     ),
   },
@@ -486,8 +565,8 @@ const FAQS: Faq[] = [
     q: "Can I change the keyboard shortcut?",
     a: (
       <>
-        Yes. Open <code>chrome://extensions/shortcuts</code>, find the Formfully
-        “Fill inputs” command, click the pencil, and set any combo that isn't
+        Yes. Open <Code>chrome://extensions/shortcuts</Code>, find the Formfully
+        "Fill inputs" command, click the pencil, and set any combo that isn't
         already reserved by the browser.
       </>
     ),
@@ -507,28 +586,45 @@ const FAQS: Faq[] = [
 function FAQ() {
   const [open, setOpen] = useState<number | null>(0);
   return (
-    <section className="section" id="faq">
-      <div className="wrap">
-        <div className="section-head reveal">
-          <p className="eyebrow">Questions</p>
-          <h2>Everything you might ask</h2>
+    <section className={SECTION} id="faq">
+      <div className={WRAP}>
+        <div className={cx("max-w-[640px] mb-[52px]", REVEAL)} data-reveal>
+          <Eyebrow>Questions</Eyebrow>
+          <h2 className="text-[clamp(30px,4.4vw,46px)]">Everything you might ask</h2>
         </div>
-        <div className="faq-list reveal">
-          {FAQS.map((f, i) => (
-            <div className={"faq-item" + (open === i ? " open" : "")} key={f.q}>
-              <button
-                className="faq-q"
-                aria-expanded={open === i}
-                onClick={() => setOpen(open === i ? null : i)}
-              >
-                {f.q}
-                <span className="faq-sign" aria-hidden="true" />
-              </button>
-              <div className="faq-a">
-                <p>{f.a}</p>
+        <div className={cx("border-t border-line", REVEAL)} data-reveal>
+          {FAQS.map((f, i) => {
+            const isOpen = open === i;
+            return (
+              <div key={f.q} className="border-b border-line">
+                <button
+                  className="w-full bg-transparent border-0 text-white font-display font-medium text-[19px] text-left py-6 px-1 cursor-pointer flex items-center justify-between gap-5 transition-colors hover:text-ice"
+                  aria-expanded={isOpen}
+                  onClick={() => setOpen(isOpen ? null : i)}
+                >
+                  {f.q}
+                  <span
+                    className={cx(
+                      "relative shrink-0 w-[26px] h-[26px] text-white transition-transform duration-300",
+                      isOpen && "rotate-45"
+                    )}
+                    aria-hidden="true"
+                  >
+                    <span className="absolute top-1/2 left-1 right-1 h-0.5 -translate-y-1/2 bg-current rounded-sm" />
+                    <span className="absolute left-1/2 top-1 bottom-1 w-0.5 -translate-x-1/2 bg-current rounded-sm" />
+                  </span>
+                </button>
+                <div
+                  className={cx(
+                    "overflow-hidden transition-[max-height] duration-300",
+                    isOpen ? "max-h-[320px]" : "max-h-0"
+                  )}
+                >
+                  <p className="text-white/74 text-[16px] pb-[26px] px-1 max-w-[760px]">{f.a}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
@@ -547,24 +643,38 @@ function Nav() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
   return (
-    <nav className={"nav" + (scrolled ? " scrolled" : "")}>
-      <div className="wrap nav-inner">
-        <a className="brand" href="#top">
-          <img src="/icon.png" alt="" />
-          Formfully
-        </a>
-        <div className="nav-links">
-          <a className="navlink" href="#how">How it works</a>
-          <a className="navlink" href="#features">Features</a>
-          <a className="navlink" href="#values">Values</a>
-          <a className="navlink" href="#faq">FAQ</a>
+    <nav
+      className={cx(
+        "sticky top-0 z-50 border-b transition-[background,border-color] duration-300",
+        scrolled
+          ? "bg-[rgba(83,101,230,0.55)] backdrop-blur-xl border-white/[0.18]"
+          : "bg-transparent border-transparent"
+      )}
+    >
+      <div className={cx(WRAP, "flex items-center justify-between h-[70px]")}>
+        <Brand />
+        <div className="flex items-center gap-[30px] max-[960px]:hidden">
+          {[
+            ["How it works", "#how"],
+            ["Features", "#features"],
+            ["Values", "#values"],
+            ["FAQ", "#faq"],
+          ].map(([label, href]) => (
+            <a
+              key={href}
+              href={href}
+              className="text-[14.5px] text-white/78 transition-colors hover:text-white"
+            >
+              {label}
+            </a>
+          ))}
         </div>
-        <div className="nav-cta">
-          <a className="btn btn-ghost" href={LINKS.github} target="_blank" rel="noopener">
+        <div className="flex items-center gap-3">
+          <a className={cx(BTN_GHOST, "max-[720px]:hidden")} href={LINKS.github} target="_blank" rel="noopener">
             GitHub
           </a>
-          <a className="btn btn-primary" href={LINKS.chrome} target="_blank" rel="noopener">
-            <ChromeMark />
+          <a className={BTN_PRIMARY} href={LINKS.chrome} target="_blank" rel="noopener">
+            <FaChrome size={18} />
             Add to Chrome
           </a>
         </div>
@@ -576,29 +686,29 @@ function Nav() {
 /* ------------------------------------------------------------------ */
 /* features                                                           */
 /* ------------------------------------------------------------------ */
-const FEATURES = [
+const FEATURES: Array<{ icon: IconType; title: string; body: string }> = [
   {
-    icon: "M4 7h16M4 12h10M4 17h7",
+    icon: LuList,
     title: "Fills every visible field",
     body: "One action populates every input on the page. Hidden fields stay untouched.",
   },
   {
-    icon: "M12 3v18M5 10l7-7 7 7",
+    icon: LuWand,
     title: "Field-aware values",
     body: "Dates, times, weeks and colors each get a value that actually fits the field type.",
   },
   {
-    icon: "M7 8h10M7 12h6M4 4h16v12H4zM9 21l3-3 3 3",
+    icon: LuDices,
     title: "Blank = smart random",
     body: "Leave the value empty and every field gets its own random number — ideal for quick stress tests.",
   },
   {
-    icon: "M4 8h16v12H4zM12 4v4M8 4v4M16 4v4M9 14l2 2 4-4",
+    icon: LuSave,
     title: "Remembers your value",
     body: "Your default fill value is saved and reused by both the popup and the keyboard shortcut.",
   },
   {
-    icon: "M9 18V5l12-2v13M6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM9 11l12-2",
+    icon: LuFeather,
     title: "Light & framework-free",
     body: "Pure JavaScript on Manifest V3. No heavy bundles, no slowdown on your tabs.",
   },
@@ -614,54 +724,55 @@ function App() {
       <Nav />
 
       {/* HERO */}
-      <header className="hero">
-        <div className="wrap hero-grid">
-          <div className="hero-copy">
-            <span className="hero-badge reveal">
-              <span className="dot" />
+      <header className="relative pt-[72px] pb-[90px]">
+        <div className={cx(WRAP, "grid grid-cols-[1.05fr_0.95fr] gap-16 items-center max-[960px]:grid-cols-1 max-[960px]:gap-12")}>
+          <div className="max-w-[560px]">
+            <span
+              className="inline-flex items-center gap-2.5 font-mono text-[12.5px] text-white bg-glass-2 border border-line-strong rounded-full pl-2 pr-3.5 py-1.5 mb-[26px] backdrop-blur-md opacity-0 translate-y-[22px] transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:opacity-100 motion-reduce:translate-y-0"
+              data-reveal
+            >
+              <span className="w-[7px] h-[7px] rounded-full bg-mint shadow-[0_0_0_4px_rgba(94,240,187,0.25)]" />
               For testers, QA &amp; demo builders
             </span>
-            <h1 className="reveal">
+            <h1 className={cx("text-[clamp(40px,6.4vw,70px)] font-bold leading-[0.98] [text-shadow:0_4px_30px_rgba(20,30,90,0.25)]", REVEAL)} data-reveal>
               Fill the whole form
-              <span className="line2">
-                in <span className="grad">one keystroke.</span>
+              <span className="block">
+                in <Grad>one keystroke.</Grad>
               </span>
             </h1>
-            <p className="hero-sub reveal">
-              Formfully drops a value into <b>every visible field</b> on the
-              page — instantly. Set it once, press the shortcut, and skip the
+            <p className={cx("mt-[26px] text-[19px] text-white/85 max-w-[480px]", REVEAL)} data-reveal>
+              Formfully drops a value into <b className="text-white font-semibold">every visible field</b> on
+              the page — instantly. Set it once, press the shortcut, and skip the
               tab-tab-type grind.
             </p>
-            <div className="hero-cta reveal">
-              <a className="btn btn-primary" href={LINKS.chrome} target="_blank" rel="noopener">
-                <ChromeMark />
+            <div className={cx("mt-[34px] flex flex-wrap gap-3.5 items-center", REVEAL)} data-reveal>
+              <a className={BTN_PRIMARY} href={LINKS.chrome} target="_blank" rel="noopener">
+                <FaChrome size={18} />
                 Add to Chrome
               </a>
-              <a className="btn btn-ghost" href={LINKS.edge} target="_blank" rel="noopener">
-                <EdgeMark />
+              <a className={BTN_GHOST} href={LINKS.edge} target="_blank" rel="noopener">
+                <FaEdge size={18} />
                 Get it on Edge
               </a>
             </div>
-            <p className="hero-shortcut reveal">
+            <p className={cx("mt-[22px] text-[14px] text-white/70 flex items-center gap-2 flex-wrap", REVEAL)} data-reveal>
               or just press
-              <span className="kbd">Alt</span>
-              <span className="kbd">Shift</span>
-              <span className="kbd">F</span>
+              <Kbd>Alt</Kbd>
+              <Kbd>Shift</Kbd>
+              <Kbd>F</Kbd>
               — try it on this page
             </p>
-            <div className="hero-trust reveal">
-              <div className="stat">
-                <span className="n">1 press</span>
-                <span className="l">fills the page</span>
-              </div>
-              <div className="stat">
-                <span className="n">0 requests</span>
-                <span className="l">nothing leaves your browser</span>
-              </div>
-              <div className="stat">
-                <span className="n">EN / عربي</span>
-                <span className="l">full RTL support</span>
-              </div>
+            <div className={cx("mt-10 flex gap-7 flex-wrap max-[720px]:gap-5", REVEAL)} data-reveal>
+              {[
+                ["1 press", "fills the page"],
+                ["0 requests", "nothing leaves your browser"],
+                ["EN / عربي", "full RTL support"],
+              ].map(([n, l]) => (
+                <div key={l} className="flex flex-col gap-0.5">
+                  <span className="font-display font-bold text-2xl text-white">{n}</span>
+                  <span className="text-[12.5px] text-white/65">{l}</span>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -670,77 +781,108 @@ function App() {
       </header>
 
       {/* MARQUEE */}
-      <div className="marquee" aria-hidden="true">
-        <Marquee />
-      </div>
+      <Marquee />
 
       {/* HOW IT WORKS */}
-      <section className="section" id="how">
-        <div className="wrap">
-          <div className="section-head reveal">
-            <p className="eyebrow">Three steps</p>
-            <h2>From empty form to filled in seconds</h2>
-            <p>No setup, no profiles to configure. Open it, press once, move on.</p>
+      <section className={SECTION} id="how">
+        <div className={WRAP}>
+          <div className={cx("max-w-[640px] mb-[52px]", REVEAL)} data-reveal>
+            <Eyebrow>Three steps</Eyebrow>
+            <h2 className="text-[clamp(30px,4.4vw,46px)]">From empty form to filled in seconds</h2>
+            <p className="mt-[18px] text-white/74 text-[18px]">
+              No setup, no profiles to configure. Open it, press once, move on.
+            </p>
           </div>
-          <div className="steps">
-            <div className="step reveal">
-              <div className="step-n">1</div>
-              <h3>Set a value</h3>
-              <p>
-                Type a number or text in the popup — or tap a preset. Leave it
-                blank to get a random value in every field.
-              </p>
-            </div>
-            <div className="step reveal">
-              <div className="step-n">2</div>
-              <h3>Press the shortcut</h3>
-              <p>Hit the button, or fire it from anywhere on the page.</p>
-              <p className="step-kbd">
-                <span className="kbd">Alt</span> <span className="kbd">Shift</span>{" "}
-                <span className="kbd">F</span>
-              </p>
-            </div>
-            <div className="step reveal">
-              <div className="step-n">3</div>
-              <h3>Every field fills</h3>
-              <p>
-                Watch the whole form populate at once — dates, times, colors and
-                all — ready to submit or screenshot.
-              </p>
-            </div>
+          <div className="grid grid-cols-3 gap-[22px] max-[720px]:grid-cols-1">
+            {[
+              {
+                n: "1",
+                h: "Set a value",
+                p: "Type a number or text in the popup — or tap a preset. Leave it blank to get a random value in every field.",
+                kbd: false,
+              },
+              {
+                n: "2",
+                h: "Press the shortcut",
+                p: "Hit the button, or fire it from anywhere on the page.",
+                kbd: true,
+              },
+              {
+                n: "3",
+                h: "Every field fills",
+                p: "Watch the whole form populate at once — dates, times, colors and all — ready to submit or screenshot.",
+                kbd: false,
+              },
+            ].map((s) => (
+              <div key={s.n} className={cx(GLASS, "relative p-[26px] pt-[30px]", REVEAL)} data-reveal>
+                <div className="font-mono font-bold text-[14px] text-navy w-[34px] h-[34px] rounded-[10px] bg-white grid place-items-center mb-[18px] shadow-[0_6px_16px_-8px_rgba(20,30,90,0.5)]">
+                  {s.n}
+                </div>
+                <h3 className="text-xl mb-[9px]">{s.h}</h3>
+                <p className="text-white/74 text-[15.5px]">{s.p}</p>
+                {s.kbd && (
+                  <p className="mt-3.5 flex gap-1.5">
+                    <Kbd>Alt</Kbd>
+                    <Kbd>Shift</Kbd>
+                    <Kbd>F</Kbd>
+                  </p>
+                )}
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* FEATURES */}
-      <section className="section" id="features">
-        <div className="wrap">
-          <div className="section-head reveal">
-            <p className="eyebrow">Features</p>
-            <h2>Small extension, serious time saved</h2>
-            <p>Everything a tester needs to stop typing the same value into twenty boxes.</p>
+      <section className={SECTION} id="features">
+        <div className={WRAP}>
+          <div className={cx("max-w-[640px] mb-[52px]", REVEAL)} data-reveal>
+            <Eyebrow>Features</Eyebrow>
+            <h2 className="text-[clamp(30px,4.4vw,46px)]">Small extension, serious time saved</h2>
+            <p className="mt-[18px] text-white/74 text-[18px]">
+              Everything a tester needs to stop typing the same value into twenty boxes.
+            </p>
           </div>
-          <div className="bento">
-            <div className="card hero-card reveal">
+          <div className="grid grid-cols-6 gap-[18px] max-[960px]:grid-cols-2 max-[720px]:grid-cols-1">
+            <div
+              className={cx(
+                "rounded-[20px] border border-line backdrop-blur-[14px] relative p-[26px] overflow-hidden flex flex-col justify-between min-h-[230px]",
+                "col-span-3 max-[960px]:col-span-2 max-[720px]:col-span-1",
+                "bg-[linear-gradient(150deg,rgba(255,255,255,0.22),rgba(255,255,255,0.08))]",
+                REVEAL
+              )}
+              data-reveal
+            >
               <div>
-                <div className="ic">
-                  <FillBolt />
+                <div className="w-[42px] h-[42px] rounded-[12px] grid place-items-center text-white mb-[18px] border border-line-strong bg-white/18">
+                  <LuZap size={21} />
                 </div>
-                <h3>One keystroke, the whole page</h3>
-                <p>
-                  The core of Formfully: a single global shortcut that fills
-                  every visible input at once.
+                <h3 className="text-[19px] mb-2">One keystroke, the whole page</h3>
+                <p className="text-white/74 text-[15px]">
+                  The core of Formfully: a single global shortcut that fills every
+                  visible input at once.
                 </p>
               </div>
-              <div className="big-kbd">⌥ + ⇧ + F</div>
+              <div className="font-mono font-bold text-[clamp(26px,3vw,38px)] text-white tracking-[-0.01em]">
+                ⌥ + ⇧ + F
+              </div>
             </div>
             {FEATURES.map((f) => (
-              <div className="card span-2 reveal" key={f.title}>
-                <div className="ic">
-                  <FeatureIcon d={f.icon} />
+              <div
+                key={f.title}
+                className={cx(
+                  GLASS,
+                  "relative p-[26px] overflow-hidden transition hover:border-line-strong hover:bg-glass-2 hover:-translate-y-[3px]",
+                  "col-span-2 max-[720px]:col-span-1",
+                  REVEAL
+                )}
+                data-reveal
+              >
+                <div className="w-[42px] h-[42px] rounded-[12px] grid place-items-center text-white mb-[18px] border border-line-strong bg-white/18">
+                  <f.icon size={21} />
                 </div>
-                <h3>{f.title}</h3>
-                <p>{f.body}</p>
+                <h3 className="text-[19px] mb-2">{f.title}</h3>
+                <p className="text-white/74 text-[15px]">{f.body}</p>
               </div>
             ))}
           </div>
@@ -748,23 +890,21 @@ function App() {
       </section>
 
       {/* VALUE LEDGER */}
-      <section className="section" id="values">
-        <div className="wrap">
-          <div className="section-head reveal">
-            <p className="eyebrow">How it chooses values</p>
-            <h2>The right value for every input type</h2>
-            <p>
+      <section className={SECTION} id="values">
+        <div className={WRAP}>
+          <div className={cx("max-w-[640px] mb-[52px]", REVEAL)} data-reveal>
+            <Eyebrow>How it chooses values</Eyebrow>
+            <h2 className="text-[clamp(30px,4.4vw,46px)]">The right value for every input type</h2>
+            <p className="mt-[18px] text-white/74 text-[18px]">
               Formfully reads each field's type and generates something that
-              actually validates — not just “test” pasted everywhere.
+              actually validates — not just "test" pasted everywhere.
             </p>
           </div>
-          <div className="ledger reveal">
-            <div className="ledger-row head">
+          <div className={cx(GLASS, "overflow-hidden", REVEAL)} data-reveal>
+            <div className={cx(LEDGER_GRID, "font-mono text-[11.5px] uppercase tracking-[0.12em] text-white bg-white/12 max-[720px]:hidden")}>
               <span>Input type</span>
-              <span className="desc" style={{ fontFamily: "var(--mono)" }}>
-                Strategy
-              </span>
-              <span className="out">Example</span>
+              <span>Strategy</span>
+              <span className="text-right">Example</span>
             </div>
             <LedgerRow type="text / number" desc="Your value, or a random 1–5 when blank" out="5" />
             <LedgerRow type="date" desc="Today, formatted for the field" out={todayISO()} />
@@ -781,39 +921,43 @@ function App() {
       <Bilingual />
 
       {/* PRIVACY */}
-      <section className="section" id="privacy">
-        <div className="wrap">
-          <div className="privacy reveal">
+      <section className={SECTION} id="privacy">
+        <div className={WRAP}>
+          <div
+            className={cx(
+              GLASS,
+              "relative p-14 grid grid-cols-2 gap-12 items-center max-[960px]:grid-cols-1 max-[960px]:gap-8 max-[720px]:p-6",
+              REVEAL
+            )}
+            data-reveal
+          >
             <div>
-              <p className="eyebrow">Private by default</p>
-              <h2>
-                Nothing ever <span className="grad">leaves your browser</span>.
+              <Eyebrow>Private by default</Eyebrow>
+              <h2 className="text-[clamp(28px,3.6vw,40px)]">
+                Nothing ever <Grad>leaves your browser</Grad>.
               </h2>
-              <p className="lead">
+              <p className="mt-[18px] text-white/74 text-[17px]">
                 No network calls. No analytics. No accounts. Formfully runs
                 entirely on your machine and asks for the three permissions it
                 actually needs — nothing more.
               </p>
             </div>
-            <div className="perm-list">
-              <div className="perm">
-                <span className="pname">activeTab</span>
-                <span className="pwhy">
-                  Inject the fill script into the current tab — only when you ask.
-                </span>
-              </div>
-              <div className="perm">
-                <span className="pname">scripting</span>
-                <span className="pwhy">
-                  Run the fill safely on the page (required by Manifest V3).
-                </span>
-              </div>
-              <div className="perm">
-                <span className="pname">storage</span>
-                <span className="pwhy">
-                  Remember your default value and language — stored locally.
-                </span>
-              </div>
+            <div className="flex flex-col gap-3">
+              {[
+                ["activeTab", "Inject the fill script into the current tab — only when you ask."],
+                ["scripting", "Run the fill safely on the page (required by Manifest V3)."],
+                ["storage", "Remember your default value — stored locally."],
+              ].map(([name, why]) => (
+                <div
+                  key={name}
+                  className="grid grid-cols-[130px_1fr] gap-4 items-center p-4 rounded-[12px] border border-line bg-white/[0.1] max-[720px]:grid-cols-1 max-[720px]:gap-1.5"
+                >
+                  <span className="font-mono text-[13px] rounded-[7px] px-2 py-[3px] justify-self-start text-[#0c3a2a] bg-mint">
+                    {name}
+                  </span>
+                  <span className="text-[14px] text-white/74">{why}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -823,22 +967,29 @@ function App() {
       <FAQ />
 
       {/* SUPPORT */}
-      <section className="section tight" id="support">
-        <div className="wrap">
-          <div className="support reveal">
-            <div className="cup">☕</div>
-            <h2>Like it? Keep it caffeinated.</h2>
-            <p>
+      <section className="relative py-[60px] max-[720px]:py-[70px]" id="support">
+        <div className={WRAP}>
+          <div
+            className={cx(
+              "relative text-center rounded-[26px] py-16 px-10 overflow-hidden backdrop-blur-[16px] border border-[rgba(255,221,0,0.5)] max-[720px]:p-6",
+              "bg-glass-2 bg-[radial-gradient(70%_120%_at_50%_0%,rgba(255,221,0,0.22),transparent_60%)]",
+              REVEAL
+            )}
+            data-reveal
+          >
+            <div className="text-[44px] leading-none mb-[18px]">☕</div>
+            <h2 className="text-[clamp(28px,4vw,42px)]">Like it? Keep it caffeinated.</h2>
+            <p className="mx-auto mt-4 mb-[30px] text-white/82 max-w-[520px] text-[17px]">
               Formfully is free and always will be. If it's saved you from a few
               hundred keystrokes, a coffee keeps it maintained and improving.
             </p>
-            <a className="btn btn-coffee" href={LINKS.coffee} target="_blank" rel="noopener">
-              <Coffee />
+            <a className={BTN_COFFEE} href={LINKS.coffee} target="_blank" rel="noopener">
+              <LuCoffee size={18} />
               Buy me a coffee
             </a>
-            <p className="made">
+            <p className="mt-[26px] text-[14px] text-white/70">
               Built by{" "}
-              <a href={LINKS.author} target="_blank" rel="noopener">
+              <a href={LINKS.author} target="_blank" rel="noopener" className="text-white border-b border-dotted border-white/60">
                 Mohammed Alajmi
               </a>{" "}
               for testers, QA, and builders.
@@ -848,56 +999,77 @@ function App() {
       </section>
 
       {/* FOOTER */}
-      <footer className="footer">
-        <div className="wrap">
-          <div className="footer-grid">
+      <footer className="border-t border-line pt-[54px] pb-10 bg-[rgba(83,101,230,0.18)]">
+        <div className={WRAP}>
+          <div className="grid grid-cols-[1.4fr_1fr_1fr_1fr] gap-9 max-[960px]:grid-cols-2 max-[960px]:gap-7 max-[720px]:grid-cols-1">
             <div>
-              <a className="brand" href="#top">
-                <img src="/icon.png" alt="" />
-                Formfully
-              </a>
-              <p className="footer-blurb">
+              <div className="mb-3.5">
+                <Brand />
+              </div>
+              <p className="text-white/70 text-[14.5px] max-w-[280px]">
                 Instant, intelligent, bilingual form filling for the people who
                 fill forms all day.
               </p>
             </div>
-            <div className="footer-col">
-              <h4>Install</h4>
-              <a href={LINKS.chrome} target="_blank" rel="noopener">Chrome Web Store</a>
-              <a href={LINKS.edge} target="_blank" rel="noopener">Edge Add-ons</a>
-            </div>
-            <div className="footer-col">
-              <h4>Learn</h4>
-              <a href="#how">How it works</a>
-              <a href="#features">Features</a>
-              <a href="#values">Value types</a>
-              <a href="#faq">FAQ</a>
-            </div>
-            <div className="footer-col">
-              <h4>Project</h4>
-              <a href={LINKS.github} target="_blank" rel="noopener">GitHub</a>
-              <a href={LINKS.author} target="_blank" rel="noopener">Author</a>
-              <a href={LINKS.coffee} target="_blank" rel="noopener">Support</a>
-            </div>
+            {[
+              {
+                h: "Install",
+                links: [
+                  ["Chrome Web Store", LINKS.chrome],
+                  ["Edge Add-ons", LINKS.edge],
+                ],
+              },
+              {
+                h: "Learn",
+                links: [
+                  ["How it works", "#how"],
+                  ["Features", "#features"],
+                  ["Value types", "#values"],
+                  ["FAQ", "#faq"],
+                ],
+              },
+              {
+                h: "Project",
+                links: [
+                  ["GitHub", LINKS.github],
+                  ["Author", LINKS.author],
+                  ["Support", LINKS.coffee],
+                ],
+              },
+            ].map((col) => (
+              <div key={col.h}>
+                <h4 className="font-mono text-[11.5px] uppercase tracking-[0.12em] text-white/60 mb-4 font-medium">
+                  {col.h}
+                </h4>
+                {col.links.map(([label, href]) => (
+                  <a
+                    key={label}
+                    href={href}
+                    target={href.startsWith("#") ? undefined : "_blank"}
+                    rel={href.startsWith("#") ? undefined : "noopener"}
+                    className="block text-white/85 text-[14.5px] py-[5px] transition-colors hover:text-white"
+                  >
+                    {label}
+                  </a>
+                ))}
+              </div>
+            ))}
           </div>
-          <div className="footer-bottom">
+          <div className="mt-11 pt-6 border-t border-line flex items-center justify-between gap-4 text-white/65 text-[13.5px] font-mono max-[720px]:flex-col max-[720px]:items-start">
             <span>© {new Date().getFullYear()} Formfully · MIT licensed</span>
-            <div className="footer-social">
-              <a href={LINKS.twitter} target="_blank" rel="noopener" aria-label="Twitter / X">
-                <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-                  <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865z" />
-                </svg>
-              </a>
-              <a href={LINKS.linkedin} target="_blank" rel="noopener" aria-label="LinkedIn">
-                <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-                  <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854zm4.943 12.248V6.169H2.542v7.225zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248S2.4 3.226 2.4 3.934c0 .694.521 1.248 1.327 1.248zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016l.016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225z" />
-                </svg>
-              </a>
-              <a href={LINKS.github} target="_blank" rel="noopener" aria-label="GitHub">
-                <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-                  <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8" />
-                </svg>
-              </a>
+            <div className="flex gap-3.5">
+              {SOCIAL_LINKS.map((s) => (
+                <a
+                  key={s.label}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener"
+                  aria-label={s.label}
+                  className="w-9 h-9 rounded-[10px] grid place-items-center text-white border border-line bg-glass transition hover:bg-glass-2 hover:border-white hover:-translate-y-0.5"
+                >
+                  <s.icon size={17} aria-hidden={true} />
+                </a>
+              ))}
             </div>
           </div>
         </div>
