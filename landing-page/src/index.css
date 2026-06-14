@@ -47,6 +47,17 @@
   html {
     scroll-behavior: smooth;
   }
+  /* Arabic — Cairo replaces Space Grotesk/Inter; keeps mono as-is */
+  :lang(ar) body {
+    font-family: "Cairo", system-ui, sans-serif;
+  }
+  :lang(ar) h1,
+  :lang(ar) h2,
+  :lang(ar) h3 {
+    font-family: "Cairo", system-ui, sans-serif;
+    letter-spacing: 0;
+    line-height: 1.2;
+  }
   @media (prefers-reduced-motion: reduce) {
     html {
       scroll-behavior: auto;
