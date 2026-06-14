@@ -422,7 +422,7 @@ function Bilingual() {
                 marginTop: 18,
                 fontFamily: "var(--mono)",
                 fontSize: 12,
-                color: "var(--cyan)",
+                color: "#e4ecff",
               }}
             >
               {data.note}
@@ -486,9 +486,9 @@ const FAQS: Faq[] = [
     q: "Can I change the keyboard shortcut?",
     a: (
       <>
-        Yes. Open <code>chrome://extensions/shortcuts</code>, find “FormFully —
-        Fill inputs”, click the pencil, and set any combo that isn't already
-        reserved by the browser.
+        Yes. Open <code>chrome://extensions/shortcuts</code>, find the Formfully
+        “Fill inputs” command, click the pencil, and set any combo that isn't
+        already reserved by the browser.
       </>
     ),
   },
@@ -496,9 +496,9 @@ const FAQS: Faq[] = [
     q: "Which browsers are supported?",
     a: (
       <>
-        Any Chromium-based browser. It's published on the Chrome Web Store and
-        Microsoft Edge Add-ons, and also runs on Brave, Arc, Opera and Vivaldi
-        via “Load unpacked”.
+        It's published on the Chrome Web Store and Microsoft Edge Add-ons. Any
+        other Chromium-based browser can run it by loading the unpacked folder
+        in developer mode.
       </>
     ),
   },
@@ -594,8 +594,8 @@ const FEATURES = [
   },
   {
     icon: "M4 8h16v12H4zM12 4v4M8 4v4M16 4v4M9 14l2 2 4-4",
-    title: "Persistent value",
-    body: "Your default value and language are remembered across the popup and the shortcut.",
+    title: "Remembers your value",
+    body: "Your default fill value is saved and reused by both the popup and the keyboard shortcut.",
   },
   {
     icon: "M9 18V5l12-2v13M6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM9 11l12-2",
@@ -772,7 +772,7 @@ function App() {
             <LedgerRow type="week" desc="The current ISO week number" out={isoWeek()} />
             <LedgerRow type="time" desc="The current time" out={nowTime()} />
             <LedgerRow type="datetime-local" desc="Current date and time" out={`${todayISO()}T${nowTime()}`} />
-            <LedgerRow type="color" desc="A random hex color" out="#6366f1" />
+            <LedgerRow type="color" desc="A random hex color" out="#4e65ff" />
           </div>
         </div>
       </section>
