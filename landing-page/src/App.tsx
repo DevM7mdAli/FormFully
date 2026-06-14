@@ -721,7 +721,7 @@ function Nav() {
             {isAr ? "EN" : "عربي"}
           </button>
           <a
-            className={cx(BTN_GHOST, "max-[720px]:hidden")}
+            className={BTN_GHOST}
             href={LINKS.github}
             target="_blank"
             rel="noopener"
@@ -735,7 +735,7 @@ function Nav() {
             rel="noopener"
           >
             <FaChrome size={18} />
-            {t("nav.addToChrome")}
+            <p className="hidden sm:block">{t("nav.addToChrome")}</p>
           </a>
         </div>
       </div>
