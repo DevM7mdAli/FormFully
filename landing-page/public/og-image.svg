@@ -1,0 +1,124 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none"
+  xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Brand gradient background -->
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#5365e6"/>
+      <stop offset="48%"  stop-color="#5a82ee"/>
+      <stop offset="100%" stop-color="#6f9ff3"/>
+    </linearGradient>
+
+    <!-- Atmospheric glow — top-right -->
+    <radialGradient id="glow1" cx="1050" cy="-30" r="500" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#dce8ff" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#dce8ff" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Atmospheric glow — top-left -->
+    <radialGradient id="glow2" cx="80" cy="20" r="440" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#96a5f8" stop-opacity="0.38"/>
+      <stop offset="100%" stop-color="#96a5f8" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Mint glow behind shortcut pill -->
+    <radialGradient id="mintGlow" cx="310" cy="530" r="180" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#5ef0bb" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#5ef0bb" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow1)"/>
+  <rect width="1200" height="630" fill="url(#glow2)"/>
+  <rect width="1200" height="630" fill="url(#mintGlow)"/>
+
+  <!-- Outer glass card -->
+  <rect x="52" y="48" width="1096" height="534" rx="28"
+        fill="rgba(255,255,255,0.09)" stroke="rgba(255,255,255,0.22)" stroke-width="1.5"/>
+
+  <!-- ── Logo row ─────────────────────────────────────────────── -->
+  <!-- Icon: rounded square -->
+  <rect x="96" y="100" width="68" height="68" rx="16"
+        fill="rgba(255,255,255,0.92)"/>
+  <!-- Checkmark inside icon -->
+  <path d="M116 134 l15 15 27-27"
+        stroke="#1c2660" stroke-width="4.5"
+        stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Wordmark -->
+  <text x="182" y="146"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
+        font-size="36" font-weight="700" fill="white" letter-spacing="-0.5">Formfully</text>
+
+  <!-- Separator line -->
+  <line x1="96" y1="200" x2="1104" y2="200"
+        stroke="rgba(255,255,255,0.16)" stroke-width="1"/>
+
+  <!-- ── Main headline ─────────────────────────────────────────── -->
+  <text x="96" y="294"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
+        font-size="72" font-weight="700" fill="white" letter-spacing="-2">Fill the whole form</text>
+
+  <text x="96" y="376"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
+        font-size="72" font-weight="700" letter-spacing="-2">
+    <tspan fill="rgba(255,255,255,0.65)">in </tspan>
+    <tspan fill="#cfe0ff">one keystroke.</tspan>
+  </text>
+
+  <!-- ── Subline ───────────────────────────────────────────────── -->
+  <text x="96" y="434"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
+        font-size="24" fill="rgba(255,255,255,0.68)" letter-spacing="-0.2">
+    Free Chrome &amp; Edge extension for testers, QA engineers &amp; demo builders
+  </text>
+
+  <!-- ── Keyboard shortcut pill ───────────────────────────────── -->
+  <rect x="96" y="480" width="292" height="54" rx="14"
+        fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.36)" stroke-width="1.5"/>
+
+  <!-- Key caps: Alt -->
+  <rect x="112" y="493" width="52" height="28" rx="7"
+        fill="white"/>
+  <text x="138" y="512" text-anchor="middle"
+        font-family="'JetBrains Mono', 'Courier New', monospace"
+        font-size="13" font-weight="700" fill="#1c2660">Alt</text>
+
+  <!-- Plus -->
+  <text x="175" y="512" text-anchor="middle"
+        font-family="system-ui" font-size="16" fill="rgba(255,255,255,0.5)">+</text>
+
+  <!-- Key caps: Shift -->
+  <rect x="188" y="493" width="56" height="28" rx="7"
+        fill="white"/>
+  <text x="216" y="512" text-anchor="middle"
+        font-family="'JetBrains Mono', 'Courier New', monospace"
+        font-size="13" font-weight="700" fill="#1c2660">Shift</text>
+
+  <!-- Plus -->
+  <text x="257" y="512" text-anchor="middle"
+        font-family="system-ui" font-size="16" fill="rgba(255,255,255,0.5)">+</text>
+
+  <!-- Key cap: F -->
+  <rect x="266" y="493" width="32" height="28" rx="7"
+        fill="white"/>
+  <text x="282" y="512" text-anchor="middle"
+        font-family="'JetBrains Mono', 'Courier New', monospace"
+        font-size="14" font-weight="700" fill="#1c2660">F</text>
+
+  <!-- ── Free badge ─────────────────────────────────────────────── -->
+  <rect x="408" y="480" width="110" height="54" rx="14"
+        fill="rgba(94,240,187,0.18)" stroke="rgba(94,240,187,0.55)" stroke-width="1.5"/>
+  <text x="463" y="513" text-anchor="middle"
+        font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+        font-size="20" font-weight="700" fill="#5ef0bb">Free</text>
+
+  <!-- ── Decorative dots (bottom-right) ───────────────────────── -->
+  <circle cx="1040" cy="498" r="4"  fill="rgba(255,255,255,0.28)"/>
+  <circle cx="1064" cy="482" r="3"  fill="rgba(255,255,255,0.18)"/>
+  <circle cx="1088" cy="510" r="5"  fill="rgba(255,255,255,0.14)"/>
+  <circle cx="1016" cy="518" r="3"  fill="rgba(255,255,255,0.22)"/>
+  <circle cx="1052" cy="540" r="2"  fill="rgba(255,255,255,0.16)"/>
+  <circle cx="1080" cy="540" r="3.5" fill="rgba(255,255,255,0.12)"/>
+</svg>

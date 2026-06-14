@@ -39,6 +39,9 @@ const SOCIAL_LINKS: Array<{ href: string; label: string; icon: IconType }> = [
   { href: LINKS.github, label: "GitHub", icon: FaGithub },
 ];
 
+/* Vite replaces import.meta.env.BASE_URL with the configured base (/FormFully/) at build time */
+const ICON_URL = `${import.meta.env.BASE_URL}icon.png`;
+
 /* shared class recipes — utility-first, composed in JS to stay DRY */
 const WRAP = "w-full max-w-[1140px] mx-auto px-7 max-[720px]:px-5";
 const SECTION = "relative py-24 max-[720px]:py-[70px]";
@@ -108,7 +111,7 @@ const Brand = () => (
     href="#top"
   >
     <img
-      src="/icon.png"
+      src={ICON_URL}
       alt=""
       className="w-8 h-8 rounded-[9px] p-0.5 bg-white/85"
     />
@@ -391,7 +394,7 @@ function FillDemo() {
         <div className="mt-[18px] flex items-center gap-3 p-3.5 rounded-[15px] border border-line-strong bg-white/16">
           <img
             className="w-[34px] h-[34px] rounded-[9px] shrink-0 p-0.5 bg-white/85"
-            src="/icon.png"
+            src={ICON_URL}
             alt=""
             aria-hidden="true"
           />

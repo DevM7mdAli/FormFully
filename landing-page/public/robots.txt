@@ -1,0 +1,9 @@
+# Note: this file is served at /FormFully/robots.txt, not at the domain root.
+# Crawlers read /robots.txt from the root domain (mohammed-alajmi.me).
+# Add the sitemap URL below to your root repo's robots.txt, or submit it
+# directly via Google Search Console.
+
+User-agent: *
+Allow: /FormFully/
+
+Sitemap: https://mohammed-alajmi.me/FormFully/sitemap.xml

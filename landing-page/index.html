@@ -1,27 +1,192 @@
 <!doctype html>
-<html lang="en">
+<!--
+  Production URL: https://mohammed-alajmi.me/FormFully/
+  og:image — export to PNG for best social-platform support:
+    npx svgexport public/og-image.svg public/og-image.png 2:1
+  then update og:image / twitter:image lines below to .png.
+-->
+<html lang="en" dir="ltr">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#5a82ee" />
+
+    <!-- ── Primary SEO ─────────────────────────────────────────── -->
+    <title>Formfully — Fill Web Forms Instantly | Free Chrome &amp; Edge Extension</title>
     <meta
       name="description"
-      content="Formfully fills every visible field on a page in one keystroke. Field-aware values, blank-for-random, bilingual EN/AR, and nothing ever leaves your browser. Free for Chrome & Edge."
+      content="Fill every visible field on any webpage with one keyboard shortcut (Alt+Shift+F). Smart type-aware values for dates, colors &amp; numbers. Free Chrome &amp; Edge extension for testers and QA engineers."
     />
-    <meta property="og:title" content="Formfully — fill the whole form in one keystroke" />
     <meta
-      property="og:description"
-      content="A keyboard shortcut that fills every field on the page. Built for testers, QA, and demo builders."
+      name="keywords"
+      content="chrome extension form filler, autofill forms, auto fill extension, form filling shortcut, web testing tool, QA automation, fill forms chrome, browser extension, edge extension, form filler"
     />
-    <meta property="og:type" content="website" />
+    <meta name="author" content="Mohammed Alajmi" />
+    <meta
+      name="robots"
+      content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+    />
+    <meta name="application-name" content="Formfully" />
+    <link rel="canonical" href="https://mohammed-alajmi.me/FormFully/" />
+
+    <!-- ── Hreflang (same URL, client-side language switch) ────── -->
+    <link rel="alternate" hreflang="en"        href="https://mohammed-alajmi.me/FormFully/" />
+    <link rel="alternate" hreflang="ar"        href="https://mohammed-alajmi.me/FormFully/" />
+    <link rel="alternate" hreflang="x-default" href="https://mohammed-alajmi.me/FormFully/" />
+
+    <!-- ── Open Graph ──────────────────────────────────────────── -->
+    <meta property="og:type"              content="website" />
+    <meta property="og:url"               content="https://mohammed-alajmi.me/FormFully/" />
+    <meta property="og:site_name"         content="Formfully" />
+    <meta property="og:title"
+          content="Formfully — Fill Web Forms Instantly | Free Chrome Extension" />
+    <meta property="og:description"
+          content="Fill every visible field on any webpage with one keyboard shortcut. Smart values for dates, colors &amp; numbers. Free Chrome &amp; Edge extension for testers and QA engineers." />
+    <meta property="og:image"             content="https://mohammed-alajmi.me/FormFully/og-image.svg" />
+    <meta property="og:image:width"       content="1200" />
+    <meta property="og:image:height"      content="630" />
+    <meta property="og:image:alt"         content="Formfully — Fill the whole form in one keystroke" />
+    <meta property="og:image:type"        content="image/svg+xml" />
+    <meta property="og:locale"            content="en_US" />
+    <meta property="og:locale:alternate"  content="ar_SA" />
+
+    <!-- ── Twitter / X Card ────────────────────────────────────── -->
+    <meta name="twitter:card"        content="summary_large_image" />
+    <meta name="twitter:site"        content="@DevM7mdAli" />
+    <meta name="twitter:creator"     content="@DevM7mdAli" />
+    <meta name="twitter:title"       content="Formfully — Fill Web Forms Instantly" />
+    <meta name="twitter:description"
+          content="Fill every visible field on any webpage with one keystroke. Smart values for dates, colors &amp; numbers. Free Chrome &amp; Edge extension." />
+    <meta name="twitter:image"       content="https://mohammed-alajmi.me/FormFully/og-image.svg" />
+    <meta name="twitter:image:alt"   content="Formfully — Fill the whole form in one keystroke" />
+
+    <!-- ── Icons &amp; platform colour ──────────────────────────── -->
+    <!-- %BASE_URL% is replaced by Vite at build time with /FormFully/ -->
+    <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
+    <link rel="apple-touch-icon"          href="%BASE_URL%icon.png" />
+    <meta name="theme-color"        content="#5a82ee" />
+    <meta name="msapplication-TileColor" content="#5a82ee" />
+
+    <!-- ── DNS prefetch for external resources ─────────────────── -->
+    <link rel="dns-prefetch" href="https://chromewebstore.google.com" />
+    <link rel="dns-prefetch" href="https://microsoftedge.microsoft.com" />
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+
+    <!-- ── Fonts ───────────────────────────────────────────────── -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Cairo:wght@400;600;700&display=swap"
       rel="stylesheet"
     />
-    <title>Formfully — fill the whole form in one keystroke</title>
+
+    <!-- ── Structured Data ─────────────────────────────────────── -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://mohammed-alajmi.me/FormFully/#website",
+          "url": "https://mohammed-alajmi.me/FormFully/",
+          "name": "Formfully",
+          "description": "Fill every visible field on any webpage with one keyboard shortcut.",
+          "inLanguage": ["en", "ar"]
+        },
+        {
+          "@type": "SoftwareApplication",
+          "@id": "https://mohammed-alajmi.me/FormFully/#app",
+          "name": "Formfully",
+          "url": "https://chromewebstore.google.com/detail/formfully/ojlpggfkjhgadcjdmkgdmpilhmnghlmj",
+          "description": "Formfully fills every visible field on any webpage instantly with a single keyboard shortcut (Alt+Shift+F). It generates type-aware values for date, time, week, color, text and number inputs. Bilingual English and Arabic support with full RTL layout. Free for Chrome and Edge.",
+          "applicationCategory": "BrowserApplication",
+          "applicationSubCategory": "Developer Tools",
+          "operatingSystem": "Chrome, Microsoft Edge, Chromium",
+          "browserRequirements": "Requires a Chromium-based browser",
+          "softwareVersion": "1.0",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          },
+          "featureList": [
+            "Fill all visible form fields with one keyboard shortcut",
+            "Type-aware values for date, time, week, color inputs",
+            "Smart random values when input is left blank",
+            "Bilingual English and Arabic support with RTL layout",
+            "Persistent default fill value via chrome.storage",
+            "Zero network requests — fully private",
+            "Manifest V3 compliant"
+          ],
+          "author": {
+            "@type": "Person",
+            "name": "Mohammed Alajmi",
+            "url": "https://devm7mdali.github.io",
+            "sameAs": [
+              "https://github.com/DevM7mdAli",
+              "https://twitter.com/DevM7mdAli",
+              "https://www.linkedin.com/in/mohammed-alajmi-b5a327206/"
+            ]
+          },
+          "isAccessibleForFree": true,
+          "license": "https://opensource.org/licenses/MIT"
+        },
+        {
+          "@type": "FAQPage",
+          "@id": "https://mohammed-alajmi.me/FormFully/#faq",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Is Formfully free?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes — completely free on both Chrome and Edge. There is no paywall, no account, and no upsell. Optional donations via Buy Me a Coffee are welcome but never required."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Does any of my data leave the browser?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "No. Formfully makes zero network requests and has no analytics or trackers. The only data stored is your default fill value and language preference, saved locally via chrome.storage on your machine."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What exactly gets filled?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Every input element that is visible on the page. Hidden fields are skipped. Type-aware fields such as date, time, week, and color receive sensible generated values. Text and number fields use your preset value, or a random 1 to 5 when left blank."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Why not Cmd + Shift + F on macOS?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Chrome reserves Cmd + Shift + F for DevTools search, so that combination will not fire. Formfully uses Alt + Shift + F on every platform. You can rebind it anytime at chrome://extensions/shortcuts."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Can I change the keyboard shortcut?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. Open chrome://extensions/shortcuts in your browser, find the Formfully Fill inputs command, click the pencil icon, and set any key combination that is not already reserved by the browser."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Which browsers are supported?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Formfully is published on the Chrome Web Store and Microsoft Edge Add-ons store. Any other Chromium-based browser can also run it by loading the unpacked extension folder in developer mode."
+              }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>
