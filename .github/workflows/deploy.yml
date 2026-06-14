@@ -3,8 +3,6 @@ name: Deploy landing page to GitHub Pages
 on:
   push:
     branches: [feat/landing-page]
-    paths:
-      - "landing-page/**"
   workflow_dispatch: # allow manual trigger from GitHub UI
 
 permissions:
