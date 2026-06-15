@@ -390,8 +390,16 @@ function FillDemo() {
           })}
         </div>
 
+        {/* try it now hint */}
+        <div className="flex items-center gap-2 mb-[16px]">
+          <span className="inline-block w-2 h-2 rounded-full bg-mint animate-pulse" />
+          <span className="font-mono text-[11px] font-semibold text-mint uppercase tracking-[0.08em]">
+            Try it now
+          </span>
+        </div>
+
         {/* the extension popup, in miniature */}
-        <div className="mt-[18px] flex items-center gap-3 p-3.5 rounded-[15px] border border-line-strong bg-white/16">
+        <div className="mt-0 flex items-center gap-3 p-3.5 rounded-[15px] border border-line-strong bg-white/16">
           <img
             className="w-[34px] h-[34px] rounded-[9px] shrink-0 p-0.5 bg-white/85"
             src={ICON_URL}
@@ -399,16 +407,18 @@ function FillDemo() {
             aria-hidden="true"
           />
           <input
-            className="flex-1 min-w-0 h-[38px] rounded-[10px] text-white font-mono text-[13.5px] px-3 bg-white/16 border border-white/30 placeholder:text-white/60"
+            className="flex-1 min-w-0 h-[38px] rounded-[10px] text-white font-mono text-[13.5px] px-3 bg-white/16 border border-white/30 placeholder:text-white/60 focus:outline-none focus:border-mint/60 focus:ring-4 focus:ring-mint/20 transition-all duration-200"
             value={value}
             onChange={(e) => setValue(e.target.value)}
             placeholder={t("demo.placeholder")}
             aria-label={t("demo.valueLabel")}
+            autoFocus
           />
           <button
-            className="h-[38px] px-[18px] rounded-[10px] border-0 cursor-pointer font-display font-semibold text-[13.5px] text-navy bg-white inline-flex items-center gap-[7px] whitespace-nowrap transition-[transform,box-shadow] duration-150 shadow-[0_8px_20px_-8px_rgba(20,30,90,0.6)] hover:-translate-y-px disabled:opacity-65 disabled:cursor-progress"
+            className="h-[38px] px-[18px] rounded-[10px] border-0 cursor-pointer font-display font-semibold text-[13.5px] text-navy bg-white inline-flex items-center gap-[7px] whitespace-nowrap transition-[transform,box-shadow,filter] duration-200 shadow-[0_8px_20px_-8px_rgba(20,30,90,0.6)] hover:-translate-y-px hover:shadow-[0_12px_28px_-8px_rgba(20,30,90,0.8)] disabled:opacity-65 disabled:cursor-progress active:translate-y-0.5"
             onClick={fill}
             disabled={running}
+            title={t("demo.fill")}
           >
             <LuZap size={14} />
             {running ? t("demo.filling") : t("demo.fill")}
