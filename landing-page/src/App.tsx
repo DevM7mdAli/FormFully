@@ -15,7 +15,6 @@ import { FaChrome, FaEdge, FaLinkedin, FaGithub } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { useTranslation, Trans } from "react-i18next";
 import { switchLang } from "./i18n";
-import ReactPlayer from "react-player";
 
 /* ------------------------------------------------------------------ */
 /* utilities                                                          */
@@ -943,13 +942,12 @@ function App() {
             )}
             data-reveal
           >
-            <ReactPlayer
-              {...({
-                url: "https://youtu.be/gWSfH33ZQ7c?si=S2XR89q-waLq1GpB",
-                controls: true,
-                width: "100%",
-                height: "100%",
-              } as any)}
+            <iframe
+              className="w-full h-full rounded-[20px]"
+              src="https://www.youtube.com/embed/gWSfH33ZQ7c?controls=1&modestbranding=1"
+              title="Formfully demo video"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
             />
           </div>
         </div>
