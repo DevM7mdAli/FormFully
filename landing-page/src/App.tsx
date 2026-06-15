@@ -15,6 +15,7 @@ import { FaChrome, FaEdge, FaLinkedin, FaGithub } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { useTranslation, Trans } from "react-i18next";
 import { switchLang } from "./i18n";
+import ReactPlayer from "react-player";
 
 /* ------------------------------------------------------------------ */
 /* utilities                                                          */
@@ -918,6 +919,38 @@ function App() {
                 )}
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* VIDEO DEMO */}
+      <section className={SECTION} id="demo-video">
+        <div className={WRAP}>
+          <div className={cx("max-w-[640px] mb-[52px]", REVEAL)} data-reveal>
+            <Eyebrow>{t("video.eyebrow")}</Eyebrow>
+            <h2 className="text-[clamp(30px,4.4vw,46px)]">
+              {t("video.title")}
+            </h2>
+            <p className="mt-[18px] text-white/74 text-[18px]">
+              {t("video.subtitle")}
+            </p>
+          </div>
+          <div
+            className={cx(
+              GLASS,
+              "relative p-0 overflow-hidden aspect-video max-w-[900px]",
+              REVEAL,
+            )}
+            data-reveal
+          >
+            <ReactPlayer
+              {...({
+                url: "https://youtu.be/gWSfH33ZQ7c?si=S2XR89q-waLq1GpB",
+                controls: true,
+                width: "100%",
+                height: "100%",
+              } as any)}
+            />
           </div>
         </div>
       </section>

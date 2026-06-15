@@ -55,6 +55,12 @@ const en = {
       "Watch the whole form populate at once — dates, times, colors and all — ready to submit or screenshot.",
   },
 
+  video: {
+    eyebrow: "See it in action",
+    title: "Watch Formfully in real time",
+    subtitle: "See how the extension fills an entire form with a single keystroke.",
+  },
+
   features: {
     eyebrow: "Features",
     title: "Small extension, serious time saved",
