@@ -20,11 +20,13 @@ FormFully is a lightweight browser extension that saves you time while testing o
 ## ✨ Features
 - Backward-compatible Classic mode with the original one-value workflow
 - Opt-in Smart mode for Google Forms and general web forms
+- Saved custom field rules such as `Group number → 12`, with the most specific matching rule taking priority
 - Smart matching for full/first/last name, email, phone, company, address, city, country, URL, job title, and more
 - Support for inputs, textareas, native selects, contenteditable fields, radio groups, checkbox questions, and accessible custom controls
 - Framework-compatible `input` and `change` events for React and other controlled form libraries
 - Safe defaults: Smart mode preserves existing values and skips passwords, files, payment/security fields, consent, marketing, and submission buttons
 - Leave the Classic value blank to auto‑generate random numbers (1–5) per input
+- Classic mode randomly selects one option in each unanswered radio group
 - Field aware formatting:
 	- `date`, `month`, `week`, `time`, `datetime-local`
 	- `color` gets a random hex
@@ -77,6 +79,8 @@ Classic mode also preserves the existing `a_next` click behavior for compatible 
 
 Smart mode uses field type, `autocomplete`, name/id, placeholder, ARIA attributes, associated labels, nearby question text, and English/Arabic keywords. Profile details are saved locally. Any blank profile item receives a safe demo value, while generic questions use the optional “Default answer.”
 
+For uncommon fields, add a custom rule using the field’s visible label or a distinctive keyword and the value to fill. Rules are saved locally and override the built-in Smart guess. They also select matching options in supported dropdown, radio, and checkbox questions.
+
 Smart mode never submits the form or moves to the next page. Existing answers are preserved.
 
 ## 🚀 Installation
@@ -109,9 +113,9 @@ The keyboard shortcut uses whichever mode is currently selected.
 |------------|-----|
 | `activeTab` | Inject fill script into the current page when requested |
 | `scripting` | Execute the fill function safely (MV3 requirement) |
-| `storage` | Persist the selected mode, Classic value, and optional Smart profile |
+| `storage` | Persist the selected mode, Classic value, optional Smart profile, and custom field rules |
 
-Privacy: No data leaves your browser. There are no network requests, analytics, or trackers inside the extension. Classic values and Smart profile details stay in `chrome.storage.local` on the device.
+Privacy: No data leaves your browser. There are no network requests, analytics, or trackers inside the extension. Classic values, Smart profile details, and custom rules stay in `chrome.storage.local` on the device.
 
 ## 🧩 Tech Stack
 * Manifest V3
@@ -130,6 +134,7 @@ Ideas welcome: configurable presets, per‑domain profiles, side panel, options 
 ## 🗒️ Changelog (Highlights)
 | Version | Summary |
 |---------|---------|
+| 2.2.0 | Added saved Smart custom-field rules and random Classic radio-group selection |
 | 2.1.0 | Added opt-in Smart mode for Google Forms and general forms; Classic remains the default and unchanged |
 | 2.0.2 | Shortcut modal (platform specific), simplified command, footer size tweak |
 | 2.0.1 | Added keyboard shortcut, background service worker, storage migration |

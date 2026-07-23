@@ -55,6 +55,22 @@
   .status-message {
     @apply -mt-2 rounded-lg bg-white/15 px-3 py-2 text-center text-[11px] leading-snug text-white/90;
   }
+  .custom-count {
+    @apply min-w-5 rounded-full bg-white/15 px-1.5 py-0.5 text-center text-[9px] font-bold text-white/80;
+  }
+  .custom-rule-row {
+    @apply grid items-end gap-2;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  }
+  .custom-rule-label {
+    @apply flex min-w-0 flex-col gap-1 text-[9px] font-medium text-white/70;
+  }
+  .custom-remove {
+    @apply mb-px flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 text-sm font-bold text-white/75 transition hover:bg-red-500/30 hover:text-white focus:outline-none focus:ring-2 focus:ring-white/50;
+  }
+  .custom-add {
+    @apply mt-3 flex w-full items-center justify-center gap-1.5 rounded-lg border border-dashed border-white/30 bg-white/5 px-3 py-2 text-[11px] font-semibold text-white/85 transition hover:bg-white/15 focus:outline-none focus:ring-2 focus:ring-white/50 disabled:cursor-not-allowed disabled:opacity-50;
+  }
   .bmc-btn {
     @apply inline-flex items-center gap-2 px-3 py-2 rounded-xl text-[11px] font-semibold tracking-wide bg-[#FFDD00] text-[#0D0C22] shadow-md hover:shadow-lg hover:brightness-105 active:scale-[0.97] transition focus:outline-none focus:ring-2 focus:ring-white/50;
   }

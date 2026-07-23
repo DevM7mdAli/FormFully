@@ -18,7 +18,10 @@ test('Popup defaults to Classic, persists mode changes, and supports Arabic RTL'
     storage: {
       local: {
         get(keys, callback) {
-          callback({ defaultValue: '5' });
+          callback({
+            defaultValue: '5',
+            customRules: [{ field: 'Group number', value: '12' }]
+          });
         },
         set(value) {
           writes.push(value);
@@ -40,11 +43,25 @@ test('Popup defaults to Classic, persists mode changes, and supports Arabic RTL'
   const smart = window.document.getElementById('smartModeTab');
   assert.equal(classic.getAttribute('aria-selected'), 'true');
   assert.equal(window.document.getElementById('auto').value, '5');
+  assert.equal(window.document.querySelectorAll('.custom-rule-row').length, 1);
+  assert.equal(
+    window.document.querySelector('[data-custom-property="field"]').value,
+    'Group number'
+  );
 
   smart.click();
   assert.equal(smart.getAttribute('aria-selected'), 'true');
   assert.equal(window.document.getElementById('smartPanel').classList.contains('hidden'), false);
   assert.ok(writes.some(value => value.fillMode === 'smart'));
+
+  window.document.getElementById('addCustomRule').click();
+  assert.equal(window.document.querySelectorAll('.custom-rule-row').length, 2);
+  const addedField = window.document.querySelectorAll('[data-custom-property="field"]')[1];
+  addedField.value = 'Employee ID';
+  addedField.dispatchEvent(new window.Event('input', { bubbles: true }));
+  assert.ok(writes.some(value =>
+    value.customRules?.some(rule => rule.field === 'Employee ID')
+  ));
 
   window.document.getElementById('btnLangAr').click();
   assert.equal(window.document.body.dir, 'rtl');

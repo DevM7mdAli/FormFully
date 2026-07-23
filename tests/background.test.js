@@ -64,9 +64,11 @@ test('Keyboard shortcut defaults existing users to Classic mode', async () => {
 
 test('Keyboard shortcut uses the saved Smart mode and profile', async () => {
   const profile = { fullName: 'Alex Morgan', email: 'alex@example.com' };
-  const worker = createWorker({ fillMode: 'smart', smartProfile: profile });
+  const customRules = [{ field: 'Group number', value: '12' }];
+  const worker = createWorker({ fillMode: 'smart', smartProfile: profile, customRules });
   await worker.runCommand('fill-form');
 
   assert.equal(worker.getInjection().args[0].mode, 'smart');
   assert.deepEqual(worker.getInjection().args[0].profile, profile);
+  assert.deepEqual(worker.getInjection().args[0].customRules, customRules);
 });

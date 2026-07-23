@@ -17,6 +17,7 @@ async function fillFields(settings) {
     for (let i = 0; i < allInputs.length; i++) {
       const inp = allInputs[i];
       if (inp.type && inp.type.toLowerCase() === 'hidden') continue;
+      if (inp.type && inp.type.toLowerCase() === 'radio') continue;
 
       if (inp.type === 'date') inp.value = formatDate(new Date());
       else if (['datetime', 'datetime-local'].includes(inp.type)) inp.value = formatDateTime(new Date());
@@ -28,8 +29,30 @@ async function fillFields(settings) {
       else inp.value = inputValue;
     }
 
+    // Classic keeps its established value behavior and now also answers radio groups.
+    const radioGroups = new Map();
+    Array.from(new Set(document.querySelectorAll('input[type="radio"], [role="radio"]')))
+      .filter(radio => !radio.disabled && radio.getAttribute('aria-disabled') !== 'true' &&
+        (isVisible(radio) || isVisible(radio.closest('label'))))
+      .forEach(radio => {
+        const container = radio.closest('fieldset, [role="listitem"], .Qr7Oae') ||
+          radio.parentElement || radio;
+        const key = radio.name || container;
+        if (!radioGroups.has(key)) radioGroups.set(key, []);
+        radioGroups.get(key).push(radio);
+      });
+    let selectedRadios = 0;
+    radioGroups.forEach(group => {
+      if (group.some(radio => radio.checked || radio.getAttribute('aria-checked') === 'true')) return;
+      const choice = group[Math.floor(Math.random() * group.length)];
+      try {
+        choice.click();
+        selectedRadios++;
+      } catch (e) { }
+    });
+
     try { document.getElementById('a_next')?.click(); } catch (e) { }
-    return { mode: 'classic', filled: allInputs.length };
+    return { mode: 'classic', filled: allInputs.length, selectedRadios };
   }
 
   const profile = Object.assign({
@@ -145,6 +168,50 @@ async function fillFields(settings) {
     if (container) pieces.push(String(container.innerText || container.textContent || '').slice(0, 500));
     return normalize(pieces.filter(Boolean).join(' '));
   }
+  const customRules = (Array.isArray(config.customRules) ? config.customRules : [])
+    .slice(0, 12)
+    .map(rule => ({
+      field: normalize(String(rule?.field ?? '').slice(0, 120)),
+      value: String(rule?.value ?? '').trim().slice(0, 500)
+    }))
+    .filter(rule => rule.field && rule.value)
+    .sort((a, b) => b.field.length - a.field.length);
+  function customRuleFor(descriptor) {
+    const normalizedDescriptor = normalize(descriptor);
+    return customRules.find(rule => normalizedDescriptor.includes(rule.field)) || null;
+  }
+  function getChoiceDescriptor(element) {
+    const pieces = [
+      element.value,
+      element.getAttribute('aria-label'),
+      element.getAttribute('data-value'),
+      element.textContent
+    ];
+    if (element.labels) {
+      Array.from(element.labels).forEach(label => pieces.push(label.textContent));
+    }
+    return normalize(pieces.filter(Boolean).join(' '));
+  }
+  function getChoiceGroupDescriptor(group) {
+    const first = group[0];
+    const container = first?.closest(
+      '[role="listitem"], .Qr7Oae, fieldset, .form-group, .field, .question'
+    );
+    return normalize([
+      first?.name,
+      first?.getAttribute('aria-label'),
+      container?.innerText || container?.textContent,
+      getDescriptor(first)
+    ].filter(Boolean).join(' '));
+  }
+  function choiceForRule(group, rule) {
+    if (!rule) return null;
+    const desired = normalize(rule.value);
+    return group.find(choice => {
+      const candidate = getChoiceDescriptor(choice);
+      return candidate === desired || candidate.includes(desired) || desired.includes(candidate);
+    }) || null;
+  }
   function isSensitive(element, descriptor) {
     const type = normalize(element.getAttribute('type'));
     return type === 'password' || containsAny(descriptor, [
@@ -234,8 +301,8 @@ async function fillFields(settings) {
   }
   function fillSelect(select, descriptor) {
     if (!overwrite && !isEmpty(select)) return false;
-    const kind = classify(select, descriptor);
-    const preferred = normalize(valueFor(select, kind));
+    const customRule = customRuleFor(descriptor);
+    const preferred = normalize(customRule?.value || valueFor(select, classify(select, descriptor)));
     const options = Array.from(select.options).filter(option => !option.disabled && String(option.value).trim());
     const match = options.find(option => {
       const candidate = normalize(`${option.value} ${option.textContent}`);
@@ -278,7 +345,11 @@ async function fillFields(settings) {
       summary.skipped++;
       continue;
     }
-    const value = trimToConstraints(element, valueFor(element, classify(element, descriptor)));
+    const customRule = customRuleFor(descriptor);
+    const value = trimToConstraints(
+      element,
+      customRule?.value || valueFor(element, classify(element, descriptor))
+    );
     try {
       setNativeValue(element, value);
       summary.filled++;
@@ -299,7 +370,8 @@ async function fillFields(settings) {
   });
   nativeGroups.forEach(group => {
     if (group.some(element => element.checked) || group.some(isConsentChoice)) return;
-    const choice = group[0];
+    const customRule = customRuleFor(getChoiceGroupDescriptor(group));
+    const choice = choiceForRule(group, customRule) || group[0];
     try {
       choice.click();
       summary.filled++;
@@ -322,8 +394,10 @@ async function fillFields(settings) {
   customGroups.forEach(group => {
     if (group.some(element => element.getAttribute('aria-checked') === 'true') ||
         group.some(isConsentChoice)) return;
+    const customRule = customRuleFor(getChoiceGroupDescriptor(group));
+    const choice = choiceForRule(group, customRule) || group[0];
     try {
-      group[0].click();
+      choice.click();
       summary.filled++;
     } catch (e) {
       summary.skipped++;
@@ -335,14 +409,20 @@ async function fillFields(settings) {
     .filter(element => !['INPUT', 'SELECT'].includes(element.tagName) && isVisible(element) &&
       element.getAttribute('aria-disabled') !== 'true');
   for (const select of customSelects) {
-    if (!overwrite && normalize(select.getAttribute('aria-label') || select.textContent) &&
+    const descriptor = getDescriptor(select);
+    const customRule = customRuleFor(descriptor);
+    if (!customRule && !overwrite && normalize(select.getAttribute('aria-label') || select.textContent) &&
         select.getAttribute('aria-expanded') !== 'false') continue;
     try {
       select.click();
       await new Promise(resolve => setTimeout(resolve, 50));
       const options = Array.from(document.querySelectorAll('[role="option"]'))
         .filter(option => isVisible(option) && option.getAttribute('aria-disabled') !== 'true');
-      const option = options.find(item => normalize(item.textContent) &&
+      const desired = normalize(customRule?.value);
+      const option = (desired && options.find(item => {
+        const candidate = normalize(item.textContent);
+        return candidate === desired || candidate.includes(desired) || desired.includes(candidate);
+      })) || options.find(item => normalize(item.textContent) &&
         !containsAny(normalize(item.textContent), ['choose', 'select', 'اختيار']));
       if (option) {
         option.click();

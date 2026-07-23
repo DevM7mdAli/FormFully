@@ -29,9 +29,15 @@ test('Classic mode retains the original all-input behavior and next click', asyn
     <input id="number" type="number">
     <input id="hidden" type="hidden" value="unchanged">
     <input id="date" type="date">
+    <fieldset>
+      <input id="radio-one" type="radio" name="classic-choice" value="one">
+      <input id="radio-two" type="radio" name="classic-choice" value="two">
+      <input id="radio-three" type="radio" name="classic-choice" value="three">
+    </fieldset>
     <button id="a_next">Next</button>
   `);
   const { document } = dom.window;
+  dom.window.Math.random = () => 0.99;
   let nextClicks = 0;
   document.getElementById('a_next').addEventListener('click', () => nextClicks++);
 
@@ -42,7 +48,31 @@ test('Classic mode retains the original all-input behavior and next click', asyn
   assert.equal(document.getElementById('number').value, '42');
   assert.equal(document.getElementById('hidden').value, 'unchanged');
   assert.match(document.getElementById('date').value, /^\d{4}-\d{2}-\d{2}$/);
+  assert.equal(document.querySelectorAll('input[name="classic-choice"]:checked').length, 1);
+  assert.equal(document.getElementById('radio-three').checked, true);
+  assert.equal(document.getElementById('radio-three').value, 'three');
+  assert.equal(result.selectedRadios, 1);
   assert.equal(nextClicks, 1);
+});
+
+test('Classic mode randomly selects accessible custom radio controls', async () => {
+  const dom = createPage(`
+    <div role="listitem">
+      <div role="radio" aria-checked="false">Alpha</div>
+      <div role="radio" aria-checked="false">Beta</div>
+    </div>
+  `);
+  const { document } = dom.window;
+  dom.window.Math.random = () => 0.99;
+  document.querySelectorAll('[role="radio"]').forEach(radio => {
+    radio.addEventListener('click', () => radio.setAttribute('aria-checked', 'true'));
+  });
+
+  const result = await dom.window.__fillFields({ mode: 'classic', legacyValue: '42' });
+
+  assert.equal(document.querySelectorAll('[aria-checked="true"]').length, 1);
+  assert.equal(document.querySelectorAll('[role="radio"]')[1].getAttribute('aria-checked'), 'true');
+  assert.equal(result.selectedRadios, 1);
 });
 
 test('Smart mode fills a mixed form without overwriting or touching sensitive fields', async () => {
@@ -118,6 +148,45 @@ test('Smart mode understands Arabic labels and safe generated defaults', async (
   assert.equal(document.getElementById('arabic-phone').value, '5551234567');
 });
 
+test('Saved custom rules override Smart guesses and match select and radio options', async () => {
+  const dom = createPage(`
+    <label>Group number <input id="group-number" type="number"></label>
+    <label>Group nickname <input id="group-name"></label>
+    <label>T-shirt size
+      <select id="shirt-size">
+        <option value="">Choose</option>
+        <option value="small">Small</option>
+        <option value="large">Large</option>
+      </select>
+    </label>
+    <fieldset>
+      <legend>Group color</legend>
+      <label><input id="red" type="radio" name="color" value="red"> Red</label>
+      <label><input id="blue" type="radio" name="color" value="blue"> Blue</label>
+    </fieldset>
+    <label>Account password <input id="custom-password" type="password"></label>
+  `);
+  const { document } = dom.window;
+
+  await dom.window.__fillFields({
+    mode: 'smart',
+    customRules: [
+      { field: 'group', value: 'Team A' },
+      { field: 'group number', value: '42' },
+      { field: 'T-shirt size', value: 'Large' },
+      { field: 'Group color', value: 'Blue' },
+      { field: 'Account password', value: 'must-not-fill' }
+    ]
+  });
+
+  assert.equal(document.getElementById('group-number').value, '42');
+  assert.equal(document.getElementById('group-name').value, 'Team A');
+  assert.equal(document.getElementById('shirt-size').value, 'large');
+  assert.equal(document.getElementById('blue').checked, true);
+  assert.equal(document.getElementById('red').checked, false);
+  assert.equal(document.getElementById('custom-password').value, '');
+});
+
 test('Smart mode fills Google-Forms-style text and accessible choices', async () => {
   const dom = createPage(`
     <div class="Qr7Oae" role="listitem">
@@ -142,11 +211,16 @@ test('Smart mode fills Google-Forms-style text and accessible choices', async ()
 
   const result = await dom.window.__fillFields({
     mode: 'smart',
-    profile: { email: 'forms@example.com' }
+    profile: { email: 'forms@example.com' },
+    customRules: [{ field: 'Choose one', value: 'Second option' }]
   });
 
   assert.equal(document.getElementById('google-email').value, 'forms@example.com');
   assert.equal(document.querySelectorAll('#radio-question [aria-checked="true"]').length, 1);
+  assert.equal(
+    document.querySelector('#radio-question [role="radio"]:nth-of-type(3)').getAttribute('aria-checked'),
+    'true'
+  );
   assert.equal(document.querySelectorAll('#checkbox-question [aria-checked="true"]').length, 1);
   assert.ok(result.filled >= 3);
 });

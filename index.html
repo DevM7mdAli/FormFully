@@ -217,6 +217,25 @@
             </label>
           </div>
         </details>
+        <details id="customFieldsDetails" class="smart-details">
+          <summary class="flex items-center justify-between gap-2">
+            <span id="customFieldsText">Custom fields</span>
+            <span id="customRuleCount" class="custom-count">0</span>
+          </summary>
+          <div class="pt-3">
+            <p id="customFieldsHint" class="text-[10px] leading-snug text-white/70">
+              Match a field label or keyword and fill your saved value.
+            </p>
+            <div id="customRules" class="mt-3 flex flex-col gap-2"></div>
+            <p id="customRulesEmpty" class="mt-3 text-center text-[10px] text-white/55">
+              No custom fields yet.
+            </p>
+            <button id="addCustomRule" type="button" class="custom-add">
+              <span aria-hidden="true">+</span>
+              <span id="addCustomRuleText">Add custom field</span>
+            </button>
+          </div>
+        </details>
         <p id="smartPrivacy" class="text-[10px] leading-snug text-white/65">
           Stored only on this device. Passwords, files, and payment fields are skipped.
         </p>

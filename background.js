@@ -15,15 +15,22 @@ async function runFill(existingTab) {
     const {
       defaultValue = '',
       fillMode = 'classic',
-      smartProfile = {}
-    } = await chrome.storage.local.get(['defaultValue', 'fillMode', 'smartProfile']);
+      smartProfile = {},
+      customRules = []
+    } = await chrome.storage.local.get([
+      'defaultValue',
+      'fillMode',
+      'smartProfile',
+      'customRules'
+    ]);
     await chrome.scripting.executeScript({
       target: { tabId: tab.id },
       func: fillFields,
       args: [{
         mode: fillMode === 'smart' ? 'smart' : 'classic',
         legacyValue: defaultValue || '',
-        profile: smartProfile
+        profile: smartProfile,
+        customRules
       }]
     });
   } catch (e) {

@@ -4,7 +4,7 @@ window.I18N = {
     tagline: 'Instant form filler',
     valueLabel: 'Value to fill',
     placeholder: 'Enter a number or text',
-    hint: 'Leave empty for random per input.',
+    hint: 'Leave empty for random values. Unanswered radio groups are selected randomly.',
     fillBtn: 'Fill Form',
     fillSmartBtn: 'Smart Fill',
     modeLabel: 'Fill mode',
@@ -21,6 +21,15 @@ window.I18N = {
     smartCity: 'City',
     smartCountry: 'Country',
     smartFallback: 'Default answer',
+    customFields: 'Custom fields',
+    customFieldsHint: 'Match a field label or keyword and fill your saved value.',
+    customRulesEmpty: 'No custom fields yet.',
+    addCustomRule: 'Add custom field',
+    customFieldLabel: 'Field label',
+    customFieldPlaceholder: 'Group number',
+    customValueLabel: 'Value',
+    customValuePlaceholder: '12',
+    removeCustomRule: 'Remove custom field',
     smartPrivacy: 'Stored only on this device. Passwords, files, and payment fields are skipped.',
     filling: 'Filling…',
     fillSuccess: '{count} fields filled.',
@@ -42,7 +51,7 @@ window.I18N = {
     tagline: 'تعبئة النماذج فوراً',
     valueLabel: 'القيمة المراد تعبئتها',
     placeholder: 'أدخل رقماً او نصا',
-    hint: 'اتركه فارغاً للحصول على قيمة عشوائية لكل حقل.',
+    hint: 'اتركه فارغاً لقيم عشوائية. يتم اختيار إجابة عشوائية لمجموعات الخيارات غير المجابة.',
     fillBtn: 'تعبئة النموذج',
     fillSmartBtn: 'تعبئة ذكية',
     modeLabel: 'وضع التعبئة',
@@ -59,6 +68,15 @@ window.I18N = {
     smartCity: 'المدينة',
     smartCountry: 'الدولة',
     smartFallback: 'الإجابة الافتراضية',
+    customFields: 'حقول مخصصة',
+    customFieldsHint: 'طابق اسم الحقل أو كلمة منه واملأ القيمة المحفوظة.',
+    customRulesEmpty: 'لا توجد حقول مخصصة بعد.',
+    addCustomRule: 'إضافة حقل مخصص',
+    customFieldLabel: 'اسم الحقل',
+    customFieldPlaceholder: 'رقم المجموعة',
+    customValueLabel: 'القيمة',
+    customValuePlaceholder: '12',
+    removeCustomRule: 'حذف الحقل المخصص',
     smartPrivacy: 'تُحفظ على هذا الجهاز فقط. يتم تجاهل كلمات المرور والملفات وبيانات الدفع.',
     filling: 'جارٍ التعبئة…',
     fillSuccess: 'تمت تعبئة {count} حقلاً.',
@@ -110,6 +128,10 @@ window.setLanguage = function setLanguage(lang) {
   window.setText('smartCityLabel', t.smartCity);
   window.setText('smartCountryLabel', t.smartCountry);
   window.setText('smartFallbackLabel', t.smartFallback);
+  window.setText('customFieldsText', t.customFields);
+  window.setText('customFieldsHint', t.customFieldsHint);
+  window.setText('customRulesEmpty', t.customRulesEmpty);
+  window.setText('addCustomRuleText', t.addCustomRule);
   window.setText('smartPrivacy', t.smartPrivacy);
   const modeTabs = document.getElementById('modeTabs');
   if (modeTabs) modeTabs.setAttribute('aria-label', t.modeLabel);

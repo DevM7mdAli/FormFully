@@ -13,12 +13,20 @@
   const smartPanel = document.getElementById('smartPanel');
   const modeTabs = Array.from(document.querySelectorAll('[data-mode]'));
   const profileInputs = Array.from(document.querySelectorAll('[data-profile-key]'));
+  const customRulesWrap = document.getElementById('customRules');
+  const customRulesEmpty = document.getElementById('customRulesEmpty');
+  const customRuleCount = document.getElementById('customRuleCount');
+  const customFieldsDetails = document.getElementById('customFieldsDetails');
+  const addCustomRuleBtn = document.getElementById('addCustomRule');
   const presetsWrap = document.getElementById('presets');
   const langButtons = Array.from(document.querySelectorAll('.lang-btn'));
   const fillStatus = document.getElementById('fillStatus');
   const shortcutOpenBtn = document.getElementById('shortcutOpenBtn');
   const shortcutModal = document.getElementById('shortcutModal');
   const shortcutModalClose = document.getElementById('shortcutModalClose');
+  const MAX_CUSTOM_RULES = 12;
+  let customRuleSequence = 0;
+  let customRuleState = [];
   let currentMode = 'classic';
 
   if (!legacyInput) {
@@ -76,10 +84,85 @@
     try { chrome.storage.local.set({ smartProfile: getProfile() }); } catch (e) { }
   }
 
+  function cleanCustomRules(rules) {
+    return (Array.isArray(rules) ? rules : []).slice(0, MAX_CUSTOM_RULES).map(rule => ({
+      id: `custom-${++customRuleSequence}`,
+      field: String(rule?.field || '').slice(0, 120),
+      value: String(rule?.value || '').slice(0, 500)
+    }));
+  }
+
+  function getCustomRules() {
+    return customRuleState
+      .map(({ field, value }) => ({ field: field.trim(), value: value.trim() }))
+      .filter(rule => rule.field && rule.value);
+  }
+
+  function persistCustomRules() {
+    const rules = customRuleState.map(({ field, value }) => ({ field, value }));
+    try { chrome.storage.local.set({ customRules: rules }); } catch (e) { }
+  }
+
+  function renderCustomRules(focusId) {
+    if (!customRulesWrap) return;
+    const t = currentTranslations();
+    const fragment = document.createDocumentFragment();
+
+    customRuleState.forEach(rule => {
+      const row = document.createElement('div');
+      row.className = 'custom-rule-row';
+      row.dataset.ruleId = rule.id;
+
+      const fieldLabel = document.createElement('label');
+      fieldLabel.className = 'custom-rule-label';
+      const fieldText = document.createElement('span');
+      fieldText.textContent = t.customFieldLabel || 'Field label';
+      const fieldInput = document.createElement('input');
+      fieldInput.className = 'input-glass input-compact';
+      fieldInput.type = 'text';
+      fieldInput.value = rule.field;
+      fieldInput.placeholder = t.customFieldPlaceholder || 'Group number';
+      fieldInput.dataset.customProperty = 'field';
+      fieldInput.maxLength = 120;
+      fieldLabel.append(fieldText, fieldInput);
+
+      const valueLabel = document.createElement('label');
+      valueLabel.className = 'custom-rule-label';
+      const valueText = document.createElement('span');
+      valueText.textContent = t.customValueLabel || 'Value';
+      const valueInput = document.createElement('input');
+      valueInput.className = 'input-glass input-compact';
+      valueInput.type = 'text';
+      valueInput.value = rule.value;
+      valueInput.placeholder = t.customValuePlaceholder || '12';
+      valueInput.dataset.customProperty = 'value';
+      valueInput.maxLength = 500;
+      valueLabel.append(valueText, valueInput);
+
+      const remove = document.createElement('button');
+      remove.className = 'custom-remove';
+      remove.type = 'button';
+      remove.dataset.removeCustomRule = rule.id;
+      remove.setAttribute('aria-label', t.removeCustomRule || 'Remove custom field');
+      remove.textContent = '×';
+
+      row.append(fieldLabel, valueLabel, remove);
+      fragment.append(row);
+    });
+
+    customRulesWrap.replaceChildren(fragment);
+    customRulesEmpty?.classList.toggle('hidden', customRuleState.length > 0);
+    if (customRuleCount) customRuleCount.textContent = String(customRuleState.length);
+    if (addCustomRuleBtn) addCustomRuleBtn.disabled = customRuleState.length >= MAX_CUSTOM_RULES;
+    if (focusId) {
+      customRulesWrap.querySelector(`[data-rule-id="${focusId}"] input`)?.focus();
+    }
+  }
+
   try {
     chrome.storage.local.get(
-      ['defaultValue', 'fillMode', 'smartProfile'],
-      ({ defaultValue, fillMode, smartProfile }) => {
+      ['defaultValue', 'fillMode', 'smartProfile', 'customRules'],
+      ({ defaultValue, fillMode, smartProfile, customRules }) => {
         if (typeof defaultValue === 'string') legacyInput.value = defaultValue;
         if (smartProfile && typeof smartProfile === 'object') {
           profileInputs.forEach(field => {
@@ -87,6 +170,8 @@
             if (typeof value === 'string') field.value = value;
           });
         }
+        customRuleState = cleanCustomRules(customRules);
+        renderCustomRules();
         updateModeUI(fillMode, false);
       }
     );
@@ -108,6 +193,32 @@
   legacyInput.addEventListener('input', persistLegacyValue, { passive: true });
   profileInputs.forEach(field => field.addEventListener('input', persistProfile, { passive: true }));
 
+  addCustomRuleBtn?.addEventListener('click', () => {
+    if (customRuleState.length >= MAX_CUSTOM_RULES) return;
+    const rule = { id: `custom-${++customRuleSequence}`, field: '', value: '' };
+    customRuleState.push(rule);
+    customFieldsDetails?.setAttribute('open', '');
+    persistCustomRules();
+    renderCustomRules(rule.id);
+  });
+
+  customRulesWrap?.addEventListener('input', event => {
+    const input = event.target.closest('input[data-custom-property]');
+    const row = input?.closest('[data-rule-id]');
+    const rule = customRuleState.find(item => item.id === row?.dataset.ruleId);
+    if (!input || !rule) return;
+    rule[input.dataset.customProperty] = input.value;
+    persistCustomRules();
+  });
+
+  customRulesWrap?.addEventListener('click', event => {
+    const button = event.target.closest('button[data-remove-custom-rule]');
+    if (!button) return;
+    customRuleState = customRuleState.filter(rule => rule.id !== button.dataset.removeCustomRule);
+    persistCustomRules();
+    renderCustomRules();
+  });
+
   presetsWrap?.addEventListener('click', event => {
     const button = event.target.closest('button[data-val]');
     if (!button) return;
@@ -128,6 +239,7 @@
 
   langButtons.forEach(button => button.addEventListener('click', () => {
     if (typeof setLanguage === 'function') setLanguage(button.dataset.lang);
+    renderCustomRules();
     updateModeUI(currentMode, false);
   }));
 
@@ -186,7 +298,8 @@
         args: [{
           mode: currentMode,
           legacyValue: legacyInput.value.trim(),
-          profile
+          profile,
+          customRules: getCustomRules()
         }]
       }, results => {
         fillBtn.disabled = false;
