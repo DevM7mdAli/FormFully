@@ -200,6 +200,7 @@ type Field = {
   type: FieldType;
   span?: boolean;
 };
+type DemoMode = "classic" | "smart";
 
 const FIELDS: Field[] = [
   { key: "name", labelKey: "demo.name", type: "text" },
@@ -211,7 +212,7 @@ const FIELDS: Field[] = [
   { key: "msg", labelKey: "demo.msg", type: "text", span: true },
 ];
 
-function valueFor(field: Field, input: string): string {
+function valueFor(field: Field, input: string, mode: DemoMode): string {
   switch (field.type) {
     case "date":
       return todayISO();
@@ -222,12 +223,18 @@ function valueFor(field: Field, input: string): string {
     case "color":
       return randomHex();
     default:
+      if (mode === "smart") {
+        if (field.key === "name") return "Alex Morgan";
+        if (field.key === "email") return "alex@example.com";
+        if (field.key === "msg") return "12";
+      }
       return input || rand1to5();
   }
 }
 
 function FillDemo() {
   const { t } = useTranslation();
+  const [mode, setMode] = useState<DemoMode>("smart");
   const [value, setValue] = useState("");
   const [filled, setFilled] = useState<Record<string, string>>({});
   const [active, setActive] = useState<string | null>(null);
@@ -240,7 +247,7 @@ function FillDemo() {
     timers.current = [];
   };
 
-  const fill = useCallback(() => {
+  const fill = useCallback((targetMode: DemoMode = mode) => {
     clearTimers();
     setRunning(true);
     setFilled({});
@@ -248,7 +255,7 @@ function FillDemo() {
 
     const results = FIELDS.map((f) => ({
       key: f.key,
-      value: valueFor(f, value.trim()),
+      value: valueFor(f, value.trim(), targetMode),
     }));
     const reduce = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
@@ -280,7 +287,7 @@ function FillDemo() {
       );
     };
     step();
-  }, [value]);
+  }, [mode, value]);
 
   useEffect(() => {
     const id = window.setTimeout(fill, 850);
@@ -394,38 +401,78 @@ function FillDemo() {
         <div className="flex items-center gap-2 mb-[16px]">
           <span className="inline-block w-2 h-2 rounded-full bg-mint animate-pulse" />
           <span className="font-mono text-[11px] font-semibold text-mint uppercase tracking-[0.08em]">
-            Try it now
+            {t("demo.tryIt")}
           </span>
         </div>
 
         {/* the extension popup, in miniature */}
-        <div className="mt-0 flex items-center gap-3 p-3.5 rounded-[15px] border border-line-strong bg-white/16">
-          <img
-            className="w-[34px] h-[34px] rounded-[9px] shrink-0 p-0.5 bg-white/85"
-            src={ICON_URL}
-            alt=""
-            aria-hidden="true"
-          />
-          <input
-            className="flex-1 min-w-0 h-[38px] rounded-[10px] text-white font-mono text-[13.5px] px-3 bg-white/16 border border-white/30 placeholder:text-white/60 focus:outline-none focus:border-mint/60 focus:ring-4 focus:ring-mint/20 transition-all duration-200"
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            placeholder={t("demo.placeholder")}
-            aria-label={t("demo.valueLabel")}
-            autoFocus
-          />
-          <button
-            className="h-[38px] px-[18px] rounded-[10px] border-0 cursor-pointer font-display font-semibold text-[13.5px] text-navy bg-white inline-flex items-center gap-[7px] whitespace-nowrap transition-[transform,box-shadow,filter] duration-200 shadow-[0_8px_20px_-8px_rgba(20,30,90,0.6)] hover:-translate-y-px hover:shadow-[0_12px_28px_-8px_rgba(20,30,90,0.8)] disabled:opacity-65 disabled:cursor-progress active:translate-y-0.5"
-            onClick={fill}
-            disabled={running}
-            title={t("demo.fill")}
+        <div className="mt-0 p-3.5 rounded-[15px] border border-line-strong bg-white/16">
+          <div
+            className="grid grid-cols-2 gap-1 p-1 mb-3 rounded-[11px] bg-navy/15"
+            role="tablist"
+            aria-label={t("demo.modeLabel")}
           >
-            <LuZap size={14} />
-            {running ? t("demo.filling") : t("demo.fill")}
-          </button>
+            {(["classic", "smart"] as const).map((item) => (
+              <button
+                key={item}
+                role="tab"
+                aria-selected={mode === item}
+                className={cx(
+                  "rounded-[8px] py-1.5 border-0 cursor-pointer font-display font-semibold text-[12px] transition",
+                  mode === item
+                    ? "bg-white text-navy shadow-sm"
+                    : "bg-transparent text-white/68",
+                )}
+                onClick={() => {
+                  setMode(item);
+                  setFilled({});
+                  window.setTimeout(() => fill(item), 80);
+                }}
+              >
+                {t(`demo.${item}`)}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-3">
+            <img
+              className="w-[34px] h-[34px] rounded-[9px] shrink-0 p-0.5 bg-white/85"
+              src={ICON_URL}
+              alt=""
+              aria-hidden="true"
+            />
+            {mode === "classic" ? (
+              <input
+                className="flex-1 min-w-0 h-[38px] rounded-[10px] text-white font-mono text-[13.5px] px-3 bg-white/16 border border-white/30 placeholder:text-white/60 focus:outline-none focus:border-mint/60 focus:ring-4 focus:ring-mint/20 transition-all duration-200"
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+                placeholder={t("demo.placeholder")}
+                aria-label={t("demo.valueLabel")}
+              />
+            ) : (
+              <div className="flex-1 min-w-0 grid grid-cols-[1fr_auto_0.65fr] gap-2 items-center">
+                <span className="h-[38px] px-3 rounded-[10px] bg-white/16 border border-white/30 flex items-center font-mono text-[11px] text-white/85 truncate">
+                  {t("demo.customField")}
+                </span>
+                <span className="text-white/50" aria-hidden="true">→</span>
+                <span className="h-[38px] px-3 rounded-[10px] bg-mint/12 border border-mint/55 flex items-center font-mono text-[13px] text-white">
+                  12
+                </span>
+              </div>
+            )}
+            <button
+              className="h-[38px] px-[18px] rounded-[10px] border-0 cursor-pointer font-display font-semibold text-[13.5px] text-navy bg-white inline-flex items-center gap-[7px] whitespace-nowrap transition-[transform,box-shadow,filter] duration-200 shadow-[0_8px_20px_-8px_rgba(20,30,90,0.6)] hover:-translate-y-px hover:shadow-[0_12px_28px_-8px_rgba(20,30,90,0.8)] disabled:opacity-65 disabled:cursor-progress active:translate-y-0.5"
+              onClick={() => fill()}
+              disabled={running}
+              title={t("demo.fill")}
+            >
+              <LuZap size={14} />
+              {running ? t("demo.filling") : t("demo.fill")}
+            </button>
+          </div>
         </div>
 
-        <div className="flex gap-[7px] mt-3 flex-wrap items-center">
+        <div className={cx("gap-[7px] mt-3 flex-wrap items-center", mode === "classic" ? "flex" : "hidden")}>
           <span className="font-mono text-[11px] text-white/55 me-0.5">
             {t("demo.presetsLabel")}
           </span>
@@ -485,6 +532,102 @@ function Marquee() {
 }
 
 /* ------------------------------------------------------------------ */
+/* two modes                                                          */
+/* ------------------------------------------------------------------ */
+function Modes() {
+  const { t } = useTranslation();
+  return (
+    <section className={SECTION} id="modes">
+      <div className={WRAP}>
+        <div className={cx("max-w-[700px] mb-[52px]", REVEAL)} data-reveal>
+          <Eyebrow>{t("modes.eyebrow")}</Eyebrow>
+          <h2 className="text-[clamp(30px,4.4vw,46px)]">{t("modes.title")}</h2>
+          <p className="mt-[18px] text-white/74 text-[18px]">{t("modes.subtitle")}</p>
+        </div>
+        <div className="grid grid-cols-2 gap-5 max-[820px]:grid-cols-1">
+          <article className={cx(GLASS, "p-7", REVEAL)} data-reveal>
+            <div className="flex items-start justify-between gap-4 mb-7">
+              <div>
+                <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-white/55">
+                  {t("modes.classicTag")}
+                </span>
+                <h3 className="text-[28px] mt-1">{t("modes.classicTitle")}</h3>
+              </div>
+              <div className="w-11 h-11 rounded-[13px] grid place-items-center bg-white/14 border border-line">
+                <LuDices size={22} />
+              </div>
+            </div>
+            <p className="text-white/74 mb-7">{t("modes.classicBody")}</p>
+            <div className="p-4 rounded-[14px] bg-white/[0.09] border border-line mb-6">
+              <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-white/55">
+                {t("modes.classicValue")}
+              </span>
+              <div className="mt-2 h-11 rounded-[10px] bg-white/14 border border-white/25 px-3 flex items-center font-mono text-white">
+                50
+              </div>
+            </div>
+            <ul className="space-y-3">
+              {(["0", "1", "2"] as const).map((key) => (
+                <li key={key} className="flex items-start gap-2.5 text-[14.5px] text-white/78">
+                  <LuCheck className="mt-1 shrink-0 text-mint" size={15} />
+                  {t(`modes.classicPoint${key}`)}
+                </li>
+              ))}
+            </ul>
+          </article>
+
+          <article
+            className={cx(
+              "rounded-[20px] p-7 border border-mint/45 backdrop-blur-[16px] bg-[linear-gradient(145deg,rgba(94,240,187,0.14),rgba(255,255,255,0.1))] shadow-[0_24px_60px_-36px_rgba(7,58,43,0.8)]",
+              REVEAL,
+            )}
+            data-reveal
+          >
+            <div className="flex items-start justify-between gap-4 mb-7">
+              <div>
+                <span className="inline-flex rounded-full px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.11em] text-[#073a2b] bg-mint">
+                  {t("modes.smartTag")}
+                </span>
+                <h3 className="text-[28px] mt-2">{t("modes.smartTitle")}</h3>
+              </div>
+              <div className="w-11 h-11 rounded-[13px] grid place-items-center bg-mint/16 border border-mint/35">
+                <LuWand size={22} />
+              </div>
+            </div>
+            <p className="text-white/78 mb-7">{t("modes.smartBody")}</p>
+            <div className="p-4 rounded-[14px] bg-[#162459]/25 border border-mint/28 mb-6">
+              <div className="flex justify-between gap-3 mb-3">
+                <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-white/55">
+                  {t("modes.customRule")}
+                </span>
+                <span className="font-mono text-[10px] text-mint">{t("modes.saved")}</span>
+              </div>
+              <div className="grid grid-cols-[1fr_auto_0.55fr] gap-2 items-center">
+                <span className="h-11 rounded-[10px] bg-white/14 border border-white/25 px-3 flex items-center font-mono text-[13px] text-white">
+                  {t("modes.ruleField")}
+                </span>
+                <span className="text-white/45" aria-hidden="true">→</span>
+                <span className="h-11 rounded-[10px] bg-mint/13 border border-mint/45 px-3 flex items-center font-mono text-[14px] text-white">
+                  12
+                </span>
+              </div>
+            </div>
+            <ul className="space-y-3">
+              {(["0", "1", "2"] as const).map((key) => (
+                <li key={key} className="flex items-start gap-2.5 text-[14.5px] text-white/82">
+                  <LuCheck className="mt-1 shrink-0 text-mint" size={15} />
+                  {t(`modes.smartPoint${key}`)}
+                </li>
+              ))}
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /* value ledger                                                       */
 /* ------------------------------------------------------------------ */
 const LEDGER_GRID =
@@ -523,18 +666,18 @@ const BILINGUAL = {
   en: {
     dir: "ltr" as const,
     rows: [
-      { label: "Full name", value: "5" },
-      { label: "Email", value: "5" },
-      { label: "Quantity", value: "5" },
+      { label: "Full name", value: "Alex Morgan" },
+      { label: "Email", value: "alex@example.com" },
+      { label: "Group number", value: "12" },
     ],
     note: "English · left-to-right",
   },
   ar: {
     dir: "rtl" as const,
     rows: [
-      { label: "الاسم الكامل", value: "٥" },
-      { label: "البريد الإلكتروني", value: "5" },
-      { label: "الكمية", value: "٥" },
+      { label: "الاسم الكامل", value: "أحمد محمد" },
+      { label: "البريد الإلكتروني", value: "ahmad@example.com" },
+      { label: "رقم المجموعة", value: "12" },
     ],
     note: "العربية · من اليمين إلى اليسار",
   },
@@ -708,8 +851,8 @@ function Nav() {
         <div className="flex items-center gap-[30px] max-[960px]:hidden">
           {[
             [t("nav.howItWorks"), "#how"],
+            [t("nav.modes"), "#modes"],
             [t("nav.features"), "#features"],
-            [t("nav.values"), "#values"],
             [t("nav.faq"), "#faq"],
           ].map(([label, href]) => (
             <a
@@ -894,6 +1037,9 @@ function App() {
 
       {/* MARQUEE */}
       <Marquee />
+
+      {/* MODES */}
+      <Modes />
 
       {/* HOW IT WORKS */}
       <section className={SECTION} id="how">

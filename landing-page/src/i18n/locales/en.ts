@@ -1,6 +1,7 @@
 const en = {
   nav: {
     howItWorks: "How it works",
+    modes: "Modes",
     features: "Features",
     values: "Values",
     faq: "FAQ",
@@ -8,18 +9,18 @@ const en = {
   },
 
   hero: {
-    badge: "For testers, QA & demo builders",
-    title1: "Fill the whole form",
-    title2: "in",
-    titleAccent: "one keystroke.",
+    badge: "Formfully 2.2 · Classic + Smart",
+    title1: "Every form.",
+    title2: "Your data.",
+    titleAccent: "One click.",
     description:
-      "Formfully drops a value into <strong>every visible field</strong> on the page — instantly. Set it once, press the shortcut, and skip the tab-tab-type grind.",
+      "Keep the original one-value speed, or switch to <strong>Smart mode</strong> for names, email, Google Forms, saved custom fields, choices, and more.",
     addToChrome: "Add to Chrome",
     getOnEdge: "Get it on Edge",
     shortcutHint: "or just press",
     shortcutSuffix: "— try it on this page",
-    stat1n: "1 press",
-    stat1l: "fills the page",
+    stat1n: "2 modes",
+    stat1l: "Classic and Smart",
     stat2n: "0 requests",
     stat2l: "nothing leaves your browser",
     stat3n: "EN / عربي",
@@ -33,54 +34,87 @@ const en = {
     time: "Time",
     week: "Week",
     color: "Brand color",
-    msg: "Reference",
+    msg: "Group number",
     placeholder: "Type a value, or leave blank for random",
     presetsLabel: "presets",
     fill: "Fill",
     filling: "Filling…",
     valueLabel: "Value to fill",
+    tryIt: "Try both modes",
+    modeLabel: "Fill mode",
+    classic: "Classic",
+    smart: "Smart",
+    customField: "Group number",
+  },
+
+  modes: {
+    eyebrow: "Two focused workflows",
+    title: "Familiar when you want it. Smarter when you need it.",
+    subtitle:
+      "Classic stays exactly where existing users expect it. Smart adds context-aware filling without making the simple workflow complicated.",
+    classicTag: "The original workflow",
+    classicTitle: "Classic",
+    classicBody:
+      "Set one value and fill the page instantly. Leave it blank for generated values and random unanswered radio choices.",
+    classicValue: "Value to fill",
+    classicPoint0: "The original behavior remains the default",
+    classicPoint1: "Type-aware dates, times, weeks, and colors",
+    classicPoint2: "Random selection for unanswered radio groups",
+    smartTag: "New in 2.2",
+    smartTitle: "Smart",
+    smartBody:
+      "Use a locally saved profile and let Formfully understand labels, field purpose, and accessible controls across modern forms.",
+    customRule: "Saved custom field",
+    saved: "Saved locally",
+    ruleField: "Group number",
+    smartPoint0: "Google Forms and general website forms",
+    smartPoint1: "Names, email, phone, company, address, and more",
+    smartPoint2: "Custom label → value rules that override guesses",
   },
 
   how: {
     eyebrow: "Three steps",
     title: "From empty form to filled in seconds",
-    subtitle: "No setup, no profiles to configure. Open it, press once, move on.",
-    step0h: "Set a value",
+    subtitle: "Start with the original workflow, or teach Smart mode the details you reuse.",
+    step0h: "Choose your mode",
     step0p:
-      "Type a number or text in the popup — or tap a preset. Leave it blank to get a random value in every field.",
-    step1h: "Press the shortcut",
-    step1p: "Hit the button, or fire it from anywhere on the page.",
-    step2h: "Every field fills",
+      "Use Classic for one shared value, or Smart for profile-aware filling across complex forms.",
+    step1h: "Save what matters",
+    step1p:
+      "Add your profile once. For unusual questions, save a simple rule such as Group number → 12.",
+    step2h: "Fill from anywhere",
     step2p:
-      "Watch the whole form populate at once — dates, times, colors and all — ready to submit or screenshot.",
+      "Click the button or use the shortcut. Your selected mode and saved rules work together automatically.",
   },
 
   video: {
-    eyebrow: "See it in action",
-    title: "Watch Formfully in real time",
-    subtitle: "See how the extension fills an entire form with a single keystroke.",
+    eyebrow: "Classic mode in action",
+    title: "The original one-keystroke workflow",
+    subtitle: "See the fast Classic experience that existing Formfully users already know.",
   },
 
   features: {
     eyebrow: "Features",
-    title: "Small extension, serious time saved",
-    subtitle: "Everything a tester needs to stop typing the same value into twenty boxes.",
-    mainTitle: "One keystroke, the whole page",
+    title: "Built for real forms, not just simple inputs",
+    subtitle: "A lightweight extension with enough context to handle the forms people actually use.",
+    mainTitle: "One shortcut, whichever mode you chose",
     mainBody:
-      "The core of Formfully: a single global shortcut that fills every visible input at once.",
-    item0title: "Fills every visible field",
-    item0body: "One action populates every input on the page. Hidden fields stay untouched.",
-    item1title: "Field-aware values",
+      "The popup and Alt + Shift + F share the same selected mode, profile, Classic value, and saved rules.",
+    item0title: "Works across modern forms",
+    item0body:
+      "Smart mode handles inputs, textareas, selects, contenteditable fields, and accessible controls.",
+    item1title: "Understands field context",
     item1body:
-      "Dates, times, weeks and colors each get a value that actually fits the field type.",
-    item2title: "Blank = smart random",
+      "Labels, autocomplete, placeholders, ARIA text, and nearby question copy guide each answer.",
+    item2title: "Saved custom rules",
     item2body:
-      "Leave the value empty and every field gets its own random number — ideal for quick stress tests.",
-    item3title: "Remembers your value",
+      "Map an unusual label or keyword to your own value. The most specific matching rule wins.",
+    item3title: "Safe by default",
     item3body:
-      "Your default fill value is saved and reused by both the popup and the keyboard shortcut.",
-    item4title: "Light & framework-free",
-    item4body: "Pure JavaScript on Manifest V3. No heavy bundles, no slowdown on your tabs.",
+      "Existing answers stay in place. Passwords, files, payment details, consent, and submit actions are skipped.",
+    item4title: "Framework-friendly",
+    item4body:
+      "Native input and change events keep React and other controlled form libraries in sync.",
   },
 
   values: {
@@ -111,7 +145,7 @@ const en = {
     eyebrow: "Bilingual by design",
     title: "English and العربية,",
     titleAccent: "instantly",
-    body: "Switch the interface between English and Arabic in a tap. Arabic flips the entire layout to full right-to-left with the right typography — and your choice is remembered next time.",
+    body: "Switch the interface between English and Arabic in a tap. Smart mode also recognizes common English and Arabic field labels, while the popup keeps full right-to-left support.",
   },
 
   privacy: {
@@ -124,7 +158,7 @@ const en = {
     perm1name: "scripting",
     perm1why: "Run the fill safely on the page (required by Manifest V3).",
     perm2name: "storage",
-    perm2why: "Remember your default value — stored locally.",
+    perm2why: "Remember your mode, profile, default value, and custom rules — stored locally.",
   },
 
   faq: {
@@ -133,11 +167,11 @@ const en = {
     q0: "Is Formfully free?",
     a0: 'Yes — completely free, on both Chrome and Edge. If it saves you time you can <a>buy the author a coffee</a>, but there\'s no paywall, account, or upsell.',
     q1: "Does any of my data leave the browser?",
-    a1: "No. There are no network requests, analytics, or trackers. The only things stored are your default fill value and language preference, kept locally with <code>chrome.storage</code> on your machine.",
-    q2: "What exactly gets filled?",
-    a2: "Every <inputTag>&lt;input&gt;</inputTag> that's visible on the page — hidden fields are skipped. Type-aware fields like <date>date</date>, <time>time</time>, <week>week</week> and <color>color</color> get sensible generated values; text and number fields use your value, or a random number when you leave it blank.",
-    q3: "Why not Cmd + Shift + F on macOS?",
-    a3: "Chrome reserves <cmdF>Cmd + Shift + F</cmdF> for DevTools search, so the command won't fire. Formfully uses <altF>Alt + Shift + F</altF> on every platform — and you can rebind it anytime at <shortcuts>chrome://extensions/shortcuts</shortcuts>.",
+    a1: "No. There are no network requests, analytics, or trackers. Your selected mode, profile, Classic value, custom rules, and language preference stay locally on your machine.",
+    q2: "What is the difference between Classic and Smart?",
+    a2: "Classic keeps the original one-value workflow and type-aware generated values. Smart understands field meaning, fills profile details, supports more control types, preserves existing answers, and applies your saved custom rules.",
+    q3: "How do custom fields work?",
+    a3: "Add a visible field label or distinctive keyword and the value you want. A rule like <strong>Group number → 12</strong> is saved locally and takes priority over Smart mode's built-in guess.",
     q4: "Can I change the keyboard shortcut?",
     a4: 'Yes. Open <shortcuts>chrome://extensions/shortcuts</shortcuts>, find the Formfully "Fill inputs" command, click the pencil, and set any combo that isn\'t already reserved by the browser.',
     q5: "Which browsers are supported?",
@@ -155,7 +189,7 @@ const en = {
 
   footer: {
     tagline:
-      "Instant, intelligent, bilingual form filling for the people who fill forms all day.",
+      "Classic speed and Smart context for the people who fill forms all day.",
     colInstall: "Install",
     colLearn: "Learn",
     colProject: "Project",
@@ -163,7 +197,7 @@ const en = {
     edgeAddons: "Edge Add-ons",
     howItWorks: "How it works",
     features: "Features",
-    valueTypes: "Value types",
+    valueTypes: "Classic values",
     faq: "FAQ",
     github: "GitHub",
     author: "Author",
