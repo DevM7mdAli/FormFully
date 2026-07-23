@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./src/output.css" />
     <script defer src="./i18.js"></script>
+    <script defer src="./form-filler.js"></script>
     <script defer src="./script.js"></script>
     <title>FormFully</title>
   </head>
@@ -65,8 +66,40 @@
         </div>
       </div>
 
-      <!-- Value Input -->
-      <div class="flex flex-col gap-2">
+      <!-- Mode switch: Classic remains the default for existing users. -->
+      <div
+        id="modeTabs"
+        class="mode-tabs"
+        role="tablist"
+        aria-label="Fill mode"
+      >
+        <button
+          id="classicModeTab"
+          class="mode-tab mode-tab-active"
+          type="button"
+          role="tab"
+          aria-selected="true"
+          aria-controls="classicPanel"
+          data-mode="classic"
+        >
+          <span id="classicModeText">Classic</span>
+          <span id="classicModeBadge" class="mode-badge">Original</span>
+        </button>
+        <button
+          id="smartModeTab"
+          class="mode-tab"
+          type="button"
+          role="tab"
+          aria-selected="false"
+          aria-controls="smartPanel"
+          data-mode="smart"
+        >
+          <span id="smartModeText">Smart</span>
+        </button>
+      </div>
+
+      <!-- Original value input -->
+      <div id="classicPanel" class="flex flex-col gap-2" role="tabpanel">
         <label
           id="valueLabel"
           for="auto"
@@ -88,11 +121,118 @@
         </p>
       </div>
 
+      <!-- Opt-in profile-aware fill -->
+      <div id="smartPanel" class="hidden flex-col gap-3" role="tabpanel">
+        <p id="smartIntro" class="text-[11px] leading-snug text-white/80">
+          Add your details once. Blank fields use safe demo values.
+        </p>
+        <div class="grid grid-cols-2 gap-2">
+          <label class="profile-field col-span-2">
+            <span id="smartNameLabel">Full name</span>
+            <input
+              id="smartFullName"
+              data-profile-key="fullName"
+              class="input-glass input-compact"
+              type="text"
+              autocomplete="name"
+              placeholder="Alex Morgan"
+            />
+          </label>
+          <label class="profile-field col-span-2">
+            <span id="smartEmailLabel">Email</span>
+            <input
+              id="smartEmail"
+              data-profile-key="email"
+              class="input-glass input-compact"
+              type="email"
+              autocomplete="email"
+              placeholder="alex@example.com"
+            />
+          </label>
+          <label class="profile-field">
+            <span id="smartPhoneLabel">Phone</span>
+            <input
+              id="smartPhone"
+              data-profile-key="phone"
+              class="input-glass input-compact"
+              type="tel"
+              autocomplete="tel"
+              placeholder="+966…"
+            />
+          </label>
+          <label class="profile-field">
+            <span id="smartCompanyLabel">Company</span>
+            <input
+              id="smartCompany"
+              data-profile-key="company"
+              class="input-glass input-compact"
+              type="text"
+              autocomplete="organization"
+              placeholder="Acme"
+            />
+          </label>
+        </div>
+        <details class="smart-details">
+          <summary id="moreDetailsText">More details</summary>
+          <div class="grid grid-cols-2 gap-2 pt-3">
+            <label class="profile-field col-span-2">
+              <span id="smartAddressLabel">Address</span>
+              <input
+                id="smartAddress"
+                data-profile-key="address"
+                class="input-glass input-compact"
+                type="text"
+                autocomplete="street-address"
+              />
+            </label>
+            <label class="profile-field">
+              <span id="smartCityLabel">City</span>
+              <input
+                id="smartCity"
+                data-profile-key="city"
+                class="input-glass input-compact"
+                type="text"
+                autocomplete="address-level2"
+              />
+            </label>
+            <label class="profile-field">
+              <span id="smartCountryLabel">Country</span>
+              <input
+                id="smartCountry"
+                data-profile-key="country"
+                class="input-glass input-compact"
+                type="text"
+                autocomplete="country-name"
+              />
+            </label>
+            <label class="profile-field col-span-2">
+              <span id="smartFallbackLabel">Default answer</span>
+              <input
+                id="smartFallback"
+                data-profile-key="fallback"
+                class="input-glass input-compact"
+                type="text"
+                placeholder="Test response"
+              />
+            </label>
+          </div>
+        </details>
+        <p id="smartPrivacy" class="text-[10px] leading-snug text-white/65">
+          Stored only on this device. Passwords, files, and payment fields are skipped.
+        </p>
+      </div>
+
       <!-- Action Button -->
       <button id="fillButton" class="group btn-primary">
         <span id="fillBtnText" class="relative z-10">Fill Form</span>
         <div class="overlay-accent"></div>
       </button>
+      <p
+        id="fillStatus"
+        class="hidden status-message"
+        role="status"
+        aria-live="polite"
+      ></p>
 
       <!-- Footer -->
       <footer

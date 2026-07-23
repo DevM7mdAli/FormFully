@@ -12,11 +12,19 @@
 ---
 
 ## Overview
-FormFully is a lightweight browser extension that saves you time while testing or demoing web forms. Define a value once (or leave it blank for smart randomization) and fill every visible input on the page with a single click or shortcut. It understands different input types (dates, time, color, week, month) and auto‑generates sensible context aware values.
+FormFully is a lightweight browser extension that saves you time while testing or completing web forms. Version 2.1 adds two deliberately separate modes:
+
+- **Classic** is the original FormFully behavior and remains the default, so existing users and workflows continue to work unchanged.
+- **Smart** is an opt-in, profile-aware filler for Google Forms and general web forms. It understands names, email, phone, company, address, common field types, textareas, selects, and accessible choice controls.
 
 ## ✨ Features
-- One‑click fill for all visible `<input>` elements (excluding hidden fields)
-- Leave the value blank to auto‑generate random numbers (1–5) per field
+- Backward-compatible Classic mode with the original one-value workflow
+- Opt-in Smart mode for Google Forms and general web forms
+- Smart matching for full/first/last name, email, phone, company, address, city, country, URL, job title, and more
+- Support for inputs, textareas, native selects, contenteditable fields, radio groups, checkbox questions, and accessible custom controls
+- Framework-compatible `input` and `change` events for React and other controlled form libraries
+- Safe defaults: Smart mode preserves existing values and skips passwords, files, payment/security fields, consent, marketing, and submission buttons
+- Leave the Classic value blank to auto‑generate random numbers (1–5) per input
 - Field aware formatting:
 	- `date`, `month`, `week`, `time`, `datetime-local`
 	- `color` gets a random hex
@@ -47,6 +55,11 @@ The popup’s shortcut modal also lists platform specific guidance.
 Language preference is remembered (localStorage) and updates immediately with correct direction & typography.
 
 ## 🧠 How It Chooses Values
+
+### Classic mode
+
+Classic mode intentionally keeps the established behavior:
+
 | Input Type | Strategy |
 |------------|----------|
 | text / number (with user value) | Use your provided value |
@@ -57,6 +70,14 @@ Language preference is remembered (localStorage) and updates immediately with co
 | time | Current time (HH:MM) |
 | datetime / datetime-local | Current ISO slice (YYYY-MM-DDTHH:MM) |
 | color | Random hex `#RRGGBB` |
+
+Classic mode also preserves the existing `a_next` click behavior for compatible legacy workflows.
+
+### Smart mode
+
+Smart mode uses field type, `autocomplete`, name/id, placeholder, ARIA attributes, associated labels, nearby question text, and English/Arabic keywords. Profile details are saved locally. Any blank profile item receives a safe demo value, while generic questions use the optional “Default answer.”
+
+Smart mode never submits the form or moves to the next page. Existing answers are preserved.
 
 ## 🚀 Installation
 ### From Stores
@@ -71,11 +92,12 @@ Language preference is remembered (localStorage) and updates immediately with co
 
 ## 🧪 Usage
 1. Click the FormFully icon to open the popup
-2. Enter a default value, or leave blank for random values
-3. (Optional) Tap a preset chip (1,5,10,50,100) to quickly set a value
-4. Switch language (EN / AR) if desired
-5. Press the Fill Form button OR use `Alt + Shift + F`
-6. Observe inputs auto‑populate (any element with `id="a_next"` is auto‑clicked if present)
+2. Keep **Classic** selected for the original one-value behavior, or select **Smart**
+3. In Classic, enter a value or leave it blank for random values
+4. In Smart, optionally add your name, email, phone, company, and other details
+5. Press the fill button or use `Alt + Shift + F`
+
+The keyboard shortcut uses whichever mode is currently selected.
 
 ## 📸 Screenshot
 <div align="center">
@@ -87,9 +109,9 @@ Language preference is remembered (localStorage) and updates immediately with co
 |------------|-----|
 | `activeTab` | Inject fill script into the current page when requested |
 | `scripting` | Execute the fill function safely (MV3 requirement) |
-| `storage` | Persist your default fill value & language |
+| `storage` | Persist the selected mode, Classic value, and optional Smart profile |
 
-Privacy: No data leaves your browser. There are no network requests, analytics, or trackers inside the extension. Your stored default value stays local.
+Privacy: No data leaves your browser. There are no network requests, analytics, or trackers inside the extension. Classic values and Smart profile details stay in `chrome.storage.local` on the device.
 
 ## 🧩 Tech Stack
 * Manifest V3
@@ -108,6 +130,7 @@ Ideas welcome: configurable presets, per‑domain profiles, side panel, options 
 ## 🗒️ Changelog (Highlights)
 | Version | Summary |
 |---------|---------|
+| 2.1.0 | Added opt-in Smart mode for Google Forms and general forms; Classic remains the default and unchanged |
 | 2.0.2 | Shortcut modal (platform specific), simplified command, footer size tweak |
 | 2.0.1 | Added keyboard shortcut, background service worker, storage migration |
 | 2.0.0 | Major redesign: glass UI, Arabic support (RTL), presets, i18n extraction, donation button |

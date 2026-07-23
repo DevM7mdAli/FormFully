@@ -3,8 +3,9 @@ module.exports = {
   content: [
     "./index.html",
     "./script.js",
+    "./i18.js",
+    "./form-filler.js",
     "./src/**/*.{html,js,ts}",
-    "./**/*.{html,js}"
   ],
   theme: {
     extend: {
@@ -47,4 +48,3 @@ module.exports = {
   },
   plugins: [],
 }
-

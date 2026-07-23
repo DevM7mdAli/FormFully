@@ -28,6 +28,33 @@
   .lang-btn {
     @apply px-2 py-1 text-xs font-semibold rounded-full transition;
   }
+  .mode-tabs {
+    @apply grid grid-cols-2 gap-1 rounded-xl bg-black/10 p-1 shadow-inner;
+  }
+  .mode-tab {
+    @apply flex items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-xs font-semibold text-white/70 transition focus:outline-none focus:ring-2 focus:ring-white/50;
+  }
+  .mode-tab-active {
+    @apply bg-white text-indigo-700 shadow;
+  }
+  .mode-badge {
+    @apply rounded-full bg-indigo-100 px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wide text-indigo-700;
+  }
+  .profile-field {
+    @apply flex flex-col gap-1 text-[10px] font-medium text-white/80;
+  }
+  .input-compact {
+    @apply px-3 py-1.5 text-sm font-normal tracking-normal;
+  }
+  .smart-details {
+    @apply rounded-xl border border-white/20 bg-white/10 px-3 py-2;
+  }
+  .smart-details summary {
+    @apply cursor-pointer text-[11px] font-semibold text-white/85 outline-none;
+  }
+  .status-message {
+    @apply -mt-2 rounded-lg bg-white/15 px-3 py-2 text-center text-[11px] leading-snug text-white/90;
+  }
   .bmc-btn {
     @apply inline-flex items-center gap-2 px-3 py-2 rounded-xl text-[11px] font-semibold tracking-wide bg-[#FFDD00] text-[#0D0C22] shadow-md hover:shadow-lg hover:brightness-105 active:scale-[0.97] transition focus:outline-none focus:ring-2 focus:ring-white/50;
   }
