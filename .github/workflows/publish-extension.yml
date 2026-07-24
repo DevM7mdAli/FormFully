@@ -1,0 +1,144 @@
+name: Publish browser extension
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      store:
+        description: Store to retry
+        required: true
+        default: both
+        type: choice
+        options:
+          - both
+          - chrome
+          - edge
+
+permissions:
+  contents: read
+
+concurrency:
+  group: browser-store-release
+  cancel-in-progress: false
+
+jobs:
+  package:
+    name: Test and package
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      version: ${{ steps.release.outputs.version }}
+
+    steps:
+      - name: Check out release
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run extension tests
+        run: npm test
+
+      - name: Read release version
+        id: release
+        shell: bash
+        run: |
+          version="$(node -p "require('./manifest.json').version")"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Build production package
+        run: npm run package:extension -- --output dist/formfully-extension.zip
+        env:
+          RELEASE_TAG: ${{ github.ref_type == 'tag' && github.ref_name || '' }}
+
+      - name: Upload immutable release artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: formfully-v${{ steps.release.outputs.version }}
+          path: |
+            dist/formfully-extension.zip
+            dist/formfully-extension.zip.sha256
+          if-no-files-found: error
+          retention-days: 30
+
+  publish-chrome:
+    name: Submit to Chrome Web Store
+    needs: package
+    if: github.event_name != 'workflow_dispatch' || inputs.store == 'both' || inputs.store == 'chrome'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: browser-store-production
+
+    steps:
+      - name: Check out release tooling
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      - name: Download verified package
+        uses: actions/download-artifact@v7
+        with:
+          name: formfully-v${{ needs.package.outputs.version }}
+          path: dist
+
+      - name: Verify package checksum
+        working-directory: dist
+        run: sha256sum --check formfully-extension.zip.sha256
+
+      - name: Upload and submit Chrome release
+        run: npm run publish:chrome -- --artifact dist/formfully-extension.zip
+        env:
+          CHROME_CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
+          CHROME_CLIENT_SECRET: ${{ secrets.CHROME_CLIENT_SECRET }}
+          CHROME_REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
+          CHROME_PUBLISHER_ID: ${{ secrets.CHROME_PUBLISHER_ID }}
+          CHROME_EXTENSION_ID: ${{ secrets.CHROME_EXTENSION_ID }}
+
+  publish-edge:
+    name: Submit to Microsoft Edge Add-ons
+    needs: package
+    if: github.event_name != 'workflow_dispatch' || inputs.store == 'both' || inputs.store == 'edge'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: browser-store-production
+
+    steps:
+      - name: Check out release tooling
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      - name: Download verified package
+        uses: actions/download-artifact@v7
+        with:
+          name: formfully-v${{ needs.package.outputs.version }}
+          path: dist
+
+      - name: Verify package checksum
+        working-directory: dist
+        run: sha256sum --check formfully-extension.zip.sha256
+
+      - name: Upload and submit Edge release
+        run: npm run publish:edge -- --artifact dist/formfully-extension.zip
+        env:
+          EDGE_CLIENT_ID: ${{ secrets.EDGE_CLIENT_ID }}
+          EDGE_API_KEY: ${{ secrets.EDGE_API_KEY }}
+          EDGE_PRODUCT_ID: ${{ secrets.EDGE_PRODUCT_ID }}
+          EDGE_CERTIFICATION_NOTES: ${{ vars.EDGE_CERTIFICATION_NOTES }}
+          RELEASE_VERSION: ${{ needs.package.outputs.version }}

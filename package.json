@@ -1,6 +1,9 @@
 {
   "scripts": {
     "build:css": "tailwindcss -i ./src/input.css -o ./src/output.css",
+    "package:extension": "npm run build:css && node scripts/package-extension.mjs",
+    "publish:chrome": "node scripts/publish-stores.mjs --store chrome",
+    "publish:edge": "node scripts/publish-stores.mjs --store edge",
     "tailwind": "tailwindcss -i ./src/input.css -o ./src/output.css --watch",
     "test": "node --test tests/*.test.js"
   },

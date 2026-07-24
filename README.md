@@ -131,6 +131,12 @@ Privacy: No data leaves your browser. There are no network requests, analytics, 
 
 Ideas welcome: configurable presets, per‑domain profiles, side panel, options page for advanced patterns.
 
+## 📦 Store Releases
+
+Chrome Web Store and Microsoft Edge Add-ons updates are automated through GitHub Actions. A version tag such as `v2.3.0` must exactly match the version in `manifest.json`; the workflow then tests, packages, checksum-verifies, and submits the same ZIP to both stores.
+
+Maintainer setup, required secrets, release steps, retry controls, and safety behavior are documented in [Browser store release automation](./docs/store-release.md).
+
 ## 🗒️ Changelog (Highlights)
 | Version | Summary |
 |---------|---------|
