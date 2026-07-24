@@ -2,6 +2,8 @@
 	<img src="./apps/extension/icon.png" width="108" alt="FormFully icon" />
 	<h1>FormFully</h1>
 	<p><em>Instant, intelligent, bilingual form filling.</em></p>
+	<a href="https://mohammed-alajmi.me/FormFully/" target="_blank">Website</a>
+	·
 	<a href="https://chromewebstore.google.com/detail/formfully/ojlpggfkjhgadcjdmkgdmpilhmnghlmj" target="_blank">Chrome Web Store</a>
 	·
 	<a href="https://microsoftedge.microsoft.com/addons/detail/formfully/giahhadiaaljamhigkeggghcadfnofce" target="_blank">Edge Add‑ons</a>
@@ -16,6 +18,8 @@ FormFully is a lightweight browser extension that saves you time while testing o
 
 - **Classic** is the original FormFully behavior and remains the default, so existing users and workflows continue to work unchanged.
 - **Smart** is an opt-in, profile-aware filler for Google Forms and general web forms. It understands names, email, phone, company, address, common field types, textareas, selects, and accessible choice controls.
+
+Website: [mohammed-alajmi.me/FormFully](https://mohammed-alajmi.me/FormFully/)
 
 ## ✨ Features
 - Backward-compatible Classic mode with the original one-value workflow
