@@ -36,16 +36,16 @@ Website: [mohammed-alajmi.me/FormFully](https://mohammed-alajmi.me/FormFully/)
 	- `color` gets a random hex
 - Bilingual UI: English + Arabic with full RTL support & instant switching
 - Persistent value stored via `chrome.storage` (shared across popup & shortcut)
-- Global keyboard shortcut: `Alt + Shift + F` (customizable)
+- Global keyboard shortcut: `Alt + Shift + F` on Windows/Linux or `Option + Shift + F` on macOS (customizable)
 - Accessible glassmorphism UI with semantic focus styles
 - Smart week number (ISO week) & date/time generation
 - Lightweight: pure JS + Tailwind build (no heavy frameworks)
 - Buy Me A Coffee support link integrated
 
 ## ⌨️ Keyboard Shortcut
-Default: `Alt + Shift + F` on all platforms.
+Default: `Alt + Shift + F` on Windows/Linux and `Option + Shift + F` on macOS.
 
-Why not `Cmd + Shift + F` on macOS? Chrome reserves that combo for global search in DevTools, so the extension command will not fire. You can customize the shortcut anytime:
+The legacy `fill-form-alt` command ID remains registered because Chrome retains shortcut assignments by command ID across updates. Removing it would silently break Option + Shift + F for existing macOS users. You can customize the shortcut anytime:
 1. Open `chrome://extensions/shortcuts`
 2. Locate “FormFully – Fill inputs using FormFully”
 3. Click the pencil icon and press your preferred combo (avoid reserved ones)

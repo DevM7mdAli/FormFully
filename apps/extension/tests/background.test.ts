@@ -7,6 +7,11 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const source = fs.readFileSync(path.join(root, 'dist/background.js'), 'utf8');
+const manifest = JSON.parse(
+  fs.readFileSync(path.join(root, 'manifest.json'), 'utf8')
+) as {
+  commands?: Record<string, { suggested_key?: { mac?: string } }>;
+};
 
 interface CapturedInjection {
   target: { tabId: number };
@@ -64,6 +69,14 @@ function createWorker(storedValues: Record<string, unknown>) {
   };
 }
 
+test('Manifest preserves both released shortcut command IDs', () => {
+  assert.ok(manifest.commands?.['fill-form']);
+  assert.equal(
+    manifest.commands?.['fill-form-alt']?.suggested_key?.mac,
+    'Option+Shift+F'
+  );
+});
+
 test('Keyboard shortcut defaults existing users to Classic mode', async () => {
   const worker = createWorker({ defaultValue: '9' });
   await worker.runCommand('fill-form');
@@ -72,6 +85,15 @@ test('Keyboard shortcut defaults existing users to Classic mode', async () => {
   assert.equal(worker.getInjection().target.tabId, 17);
   assert.equal(worker.getInjection().args[0].mode, 'classic');
   assert.equal(worker.getInjection().args[0].legacyValue, '9');
+});
+
+test('Legacy Option+Shift+F command remains supported for existing macOS users', async () => {
+  const worker = createWorker({ defaultValue: '17' });
+  await worker.runCommand('fill-form-alt');
+
+  assert.equal(worker.getInjection().target.tabId, 17);
+  assert.equal(worker.getInjection().args[0].mode, 'classic');
+  assert.equal(worker.getInjection().args[0].legacyValue, '17');
 });
 
 test('Keyboard shortcut uses the saved Smart mode and profile', async () => {
