@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2023", "DOM"],
+    "module": "ESNext",
+    "moduleDetection": "legacy",
+    "types": ["chrome"],
+    "rootDir": "src",
+    "outDir": "dist",
+    "noEmitOnError": true,
+    "removeComments": false
+  },
+  "include": ["src/**/*.ts"]
+}

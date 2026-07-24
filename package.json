@@ -1,15 +1,27 @@
 {
+  "name": "formfully",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.0.0",
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "scripts": {
-    "build:css": "tailwindcss -i ./src/input.css -o ./src/output.css",
-    "package:extension": "npm run build:css && node scripts/package-extension.mjs",
-    "publish:chrome": "node scripts/publish-stores.mjs --store chrome",
-    "publish:edge": "node scripts/publish-stores.mjs --store edge",
-    "tailwind": "tailwindcss -i ./src/input.css -o ./src/output.css --watch",
-    "test": "node --test tests/*.test.js"
+    "dev:landing": "pnpm --filter @formfully/landing-page dev",
+    "build": "pnpm build:extension && pnpm build:landing",
+    "build:extension": "pnpm --filter @formfully/extension build",
+    "build:landing": "pnpm --filter @formfully/landing-page build",
+    "build:sites": "pnpm --filter @formfully/landing-page build:sites",
+    "typecheck": "pnpm --filter @formfully/extension typecheck && pnpm --filter @formfully/landing-page typecheck && tsc -p tsconfig.tooling.json",
+    "lint": "pnpm --filter @formfully/landing-page lint",
+    "test": "pnpm build:extension && pnpm --filter @formfully/extension test && node --import tsx --test tooling/tests/*.test.ts",
+    "package:extension": "pnpm build:extension && node --import tsx tooling/extension/package.ts",
+    "publish:chrome": "node --import tsx tooling/release/publish-stores.ts --store chrome",
+    "publish:edge": "node --import tsx tooling/release/publish-stores.ts --store edge"
   },
   "devDependencies": {
-    "jsdom": "^29.1.1",
-    "tailwindcss": "^3.4.1"
-  },
-  "packageManager": "pnpm@10.0.0+sha512.b8fef5494bd3fe4cbd4edabd0745df2ee5be3e4b0b8b08fa643aa3e4c6702ccc0f00d68fa8a8c9858a735a0032485a44990ed2810526c875e416f001b17df12b"
+    "@types/node": "^24.12.3",
+    "tsx": "^4.20.6",
+    "typescript": "~6.0.2"
+  }
 }

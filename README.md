@@ -1,5 +1,5 @@
 <div align="center">
-	<img src="./icon.png" width="108" alt="FormFully icon" />
+	<img src="./apps/extension/icon.png" width="108" alt="FormFully icon" />
 	<h1>FormFully</h1>
 	<p><em>Instant, intelligent, bilingual form filling.</em></p>
 	<a href="https://chromewebstore.google.com/detail/formfully/ojlpggfkjhgadcjdmkgdmpilhmnghlmj" target="_blank">Chrome Web Store</a>
@@ -89,10 +89,12 @@ Smart mode never submits the form or moves to the next page. Existing answers ar
 * Edge: [Install](https://microsoftedge.microsoft.com/addons/detail/formfully/giahhadiaaljamhigkeggghcadfnofce)
 
 ### Manual (Dev Mode)
-1. Clone the repo or download & unzip
-2. Visit `chrome://extensions` (or equivalent)
-3. Enable Developer Mode
-4. Click “Load unpacked” and select the project folder
+1. Clone the repository
+2. Run `pnpm install`
+3. Run `pnpm build:extension`
+4. Visit `chrome://extensions` (or the equivalent Edge page)
+5. Enable Developer Mode
+6. Click “Load unpacked” and select `apps/extension/dist`
 
 ## 🧪 Usage
 1. Click the FormFully icon to open the popup
@@ -105,7 +107,7 @@ The keyboard shortcut uses whichever mode is currently selected.
 
 ## 📸 Screenshot
 <div align="center">
-	<img src="./assets/sample-run.png" alt="FormFully popup screenshot" width="340" />
+	<img src="./apps/extension/assets/sample-run.png" alt="FormFully popup screenshot" width="340" />
 </div>
 
 ## 🔐 Permissions & Privacy
@@ -119,9 +121,34 @@ Privacy: No data leaves your browser. There are no network requests, analytics, 
 
 ## 🧩 Tech Stack
 * Manifest V3
-* Vanilla JavaScript (no frameworks)
+* Strict TypeScript compiled to framework-free JavaScript
 * TailwindCSS (utility + a few custom component classes)
-* i18n via lightweight in‑repo dictionary (`i18.js`)
+* i18n via a lightweight typed in-repo dictionary
+* React, Vite, and TypeScript for the landing page
+* pnpm workspaces with one repository lockfile
+
+## 🗂️ Repository Structure
+
+```text
+apps/
+  extension/      Browser extension source, tests, manifest, and build output
+  landing-page/   React landing page and hosting configuration
+tooling/
+  extension/      Deterministic extension build and packaging tools
+  release/        Chrome and Edge publishing clients
+  tests/          Release automation tests
+docs/             Maintainer documentation
+```
+
+Common commands:
+
+| Command | Purpose |
+| --- | --- |
+| `pnpm install` | Install the entire workspace from one lockfile |
+| `pnpm typecheck` | Strictly type-check both apps and release tooling |
+| `pnpm test` | Build the extension and run all behavior/automation tests |
+| `pnpm build` | Build the extension and landing page |
+| `pnpm package:extension` | Create the reviewed store ZIP and checksum |
 
 ## 🤝 Contributing
 1. Fork & create a feature branch
@@ -133,7 +160,7 @@ Ideas welcome: configurable presets, per‑domain profiles, side panel, options 
 
 ## 📦 Store Releases
 
-Chrome Web Store and Microsoft Edge Add-ons updates are automated through GitHub Actions. A version tag such as `v2.3.0` must exactly match the version in `manifest.json`; the workflow then tests, packages, checksum-verifies, and submits the same ZIP to both stores.
+Chrome Web Store and Microsoft Edge Add-ons updates are automated through GitHub Actions. A version tag such as `v2.3.0` must exactly match the version in `apps/extension/manifest.json`; the workflow then tests, packages, checksum-verifies, and submits the same ZIP to both stores.
 
 Maintainer setup, required secrets, release steps, retry controls, and safety behavior are documented in [Browser store release automation](./docs/store-release.md).
 

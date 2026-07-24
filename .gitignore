@@ -1,2 +1,20 @@
-node_modules
-/dist/
+# Dependencies
+node_modules/
+
+# Generated builds and release artifacts
+dist/
+apps/*/dist/
+*.tsbuildinfo
+
+# Logs and local configuration
+*.log
+*.local
+.env
+.env.*
+!.env.example
+
+# Editors and operating systems
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json

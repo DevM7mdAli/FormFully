@@ -58,7 +58,7 @@ Edge API keys expire. Record the expiry date and rotate `EDGE_API_KEY` before it
 
 ## Releasing a version
 
-1. Update `manifest.json` to a higher store version, using one to four dot-separated integers.
+1. Update `apps/extension/manifest.json` to a higher store version, using one to four dot-separated integers.
 2. Update the changelog and commit the release.
 3. Create a tag that exactly matches the manifest version:
 
@@ -76,9 +76,9 @@ If only one store needs a retry, open **Actions > Publish browser extension > Ru
 Run:
 
 ```bash
-npm ci
-npm test
-npm run package:extension
+pnpm install --frozen-lockfile
+pnpm test
+pnpm package:extension
 unzip -l dist/formfully-extension.zip
 ```
 
@@ -89,11 +89,11 @@ The ZIP intentionally contains only these runtime files:
 - `index.html`
 - `background.js`
 - `form-filler.js`
-- `i18.js`
-- `script.js`
-- `src/output.css`
+- `i18n.js`
+- `popup.js`
+- `styles.css`
 
-Tests, source CSS, documentation, dependency folders, landing-page files, and repository metadata are excluded from the store package.
+Tests, TypeScript source, source CSS, documentation, dependency folders, landing-page files, and repository metadata are excluded from the store package.
 
 The packager also writes `dist/formfully-extension.zip.sha256`. Both store jobs verify this checksum after downloading the GitHub artifact.
 
