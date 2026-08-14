@@ -17,6 +17,48 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  commitlint:
+    name: Validate commit messages
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out source history
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate pull request commits
+        if: github.event_name == 'pull_request'
+        run: >-
+          pnpm exec commitlint --from "${{ github.event.pull_request.base.sha }}"
+          --to "${{ github.event.pull_request.head.sha }}" --verbose
+
+      - name: Validate pushed commits
+        if: github.event_name == 'push' && github.event.before != '0000000000000000000000000000000000000000'
+        run: >-
+          pnpm exec commitlint --from "${{ github.event.before }}"
+          --to "${{ github.sha }}" --verbose
+
+      - name: Validate an initial push
+        if: github.event_name == 'push' && github.event.before == '0000000000000000000000000000000000000000'
+        run: >-
+          pnpm exec commitlint --from "$(git rev-list --max-parents=0 HEAD)"
+          --to "${{ github.sha }}" --verbose
+
   verify:
     name: Test, validate, and package
     runs-on: ubuntu-latest
@@ -116,3 +158,92 @@ jobs:
             !${{ runner.temp }}/safari/**/build/**
           if-no-files-found: error
           retention-days: 14
+
+  release:
+    name: Create a versioned GitHub Release
+    needs: [commitlint, verify, safari]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    concurrency:
+      group: semantic-release-main
+      cancel-in-progress: false
+
+    steps:
+      - name: Check out the verified commit and tags
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.RELEASE_TOKEN || github.token }}
+
+      - name: Confirm this verified commit is current
+        id: current
+        run: |
+          git fetch origin main --tags
+          if [ "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)" ]; then
+            echo "release=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "release=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Enable Corepack
+        if: steps.current.outputs.release == 'true'
+        run: corepack enable
+
+      - name: Set up Node.js
+        if: steps.current.outputs.release == 'true'
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        if: steps.current.outputs.release == 'true'
+        run: pnpm install --frozen-lockfile
+
+      - name: Re-run source verification before release preparation
+        if: steps.current.outputs.release == 'true'
+        run: pnpm verify
+
+      - name: Bootstrap the existing extension version
+        if: steps.current.outputs.release == 'true'
+        id: bootstrap
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN || github.token }}
+        run: |
+          if git tag --list 'v[0-9]*' | grep -q .; then
+            echo "created=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          version="$(node -p "require('./apps/extension/manifest.base.json').version")"
+          node --import tsx tooling/release/set-version.ts "$version"
+          pnpm package:extension
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/extension/manifest.base.json apps/extension/package.json
+          if ! git diff --cached --quiet; then
+            git commit -m "chore(release): $version [skip ci]"
+          fi
+          git tag -a "v$version" -m "Release v$version"
+          git push origin HEAD:main "v$version"
+          gh release create "v$version" \
+            "artifacts/formfully-chrome-$version.zip" \
+            "artifacts/formfully-chrome-$version.zip.sha256" \
+            "artifacts/formfully-firefox-$version.zip" \
+            "artifacts/formfully-firefox-$version.zip.sha256" \
+            "artifacts/formfully-safari-$version.zip" \
+            "artifacts/formfully-safari-$version.zip.sha256" \
+            --title "FormFully $version" \
+            --generate-notes
+          echo "created=true" >> "$GITHUB_OUTPUT"
+
+      - name: Create the next semantic release
+        if: steps.current.outputs.release == 'true' && steps.bootstrap.outputs.created != 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN || github.token }}
+        run: pnpm release

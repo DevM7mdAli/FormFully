@@ -1,6 +1,7 @@
 {
   "name": "@formfully/extension",
   "private": true,
+  "version": "2.2.1",
   "type": "module",
   "scripts": {
     "build": "node --import tsx ../../tooling/extension/build.ts",

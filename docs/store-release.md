@@ -1,8 +1,10 @@
-# Browser store release automation
+# Browser release automation
 
-The `Publish browser extension` workflow tests FormFully, validates the Firefox build, compiles the generated Safari extension project with Xcode, and creates separate checksummed ZIPs for Chrome, Firefox, and Safari. It submits the Chrome package to Chrome Web Store and Microsoft Edge Add-ons and attaches every browser package to the GitHub Release.
+The `Verify` workflow validates commit messages, tests FormFully, validates the Firefox build, compiles the generated Safari extension project with Xcode, and creates separate checksummed ZIPs for Chrome, Firefox, and Safari.
 
-Tag releases publish to both stores. A manual run can retry Chrome, Edge, or both independently.
+On a successful `main` push, its release job creates a GitHub Release with all three ZIPs and their SHA-256 checksum files. The first release uses the version already in `apps/extension/manifest.base.json`. Later releases follow conventional commits: `fix:` makes a patch release, `feat:` makes a minor release, and `BREAKING CHANGE:` makes a major release.
+
+The separate `Publish browser extension` workflow submits the Chromium ZIP to Chrome Web Store and Microsoft Edge Add-ons. A manual run can retry Chrome, Edge, or both independently.
 
 ## One-time store setup
 
@@ -58,16 +60,18 @@ Edge API keys expire. Record the expiry date and rotate `EDGE_API_KEY` before it
 
 ## Releasing a version
 
-1. Update `apps/extension/manifest.base.json` to a higher store version, using one to four dot-separated integers.
-2. Update the changelog and commit the release.
-3. Create a tag that exactly matches the manifest version:
+1. Commit to `main` using a conventional message, for example `fix: correct profile detection` or `feat: support saved templates`.
+2. Wait for **Verify** to succeed. If the commit warrants a release, its `Create a versioned GitHub Release` job updates the extension version, creates a matching `v<version>` tag, and attaches the three ZIPs to the GitHub Release.
+3. The first run bootstraps the existing manifest version, so no manual version bump is required.
+
+To submit that release to the browser stores manually, open **Actions > Publish browser extension > Run workflow** and select the store. Alternatively, push a matching tag yourself:
 
    ```bash
    git tag v2.3.0
    git push origin v2.3.0
    ```
 
-The workflow rejects a tag whose value does not exactly equal `v` plus the manifest version. Successful Chrome and Edge API submission means the update entered each store's review process; actual public availability still depends on store approval.
+The store workflow rejects a tag whose value does not exactly equal `v` plus the manifest version. Successful Chrome and Edge API submission means the update entered each store's review process; actual public availability still depends on store approval.
 
 If only one store needs a retry, open **Actions > Publish browser extension > Run workflow** and select `chrome` or `edge`.
 

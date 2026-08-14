@@ -191,9 +191,11 @@ Firefox and Safari use event-page background scripts, while Chrome and Edge use 
 
 ## 📦 Store Releases
 
-Chrome Web Store and Microsoft Edge Add-ons updates are automated through GitHub Actions. A version tag such as `v2.3.0` must exactly match the version in `apps/extension/manifest.base.json`. The workflow runs the full test suite, validates Firefox, builds the Safari extension with Xcode, creates checksummed packages for all browsers, attaches them to the GitHub Release, and submits the Chromium package to Chrome and Edge.
+Every successful `main` verification evaluates conventional commits for a semantic release. The first release preserves the manifest version; later `fix:` commits create patch releases, `feat:` commits create minor releases, and `BREAKING CHANGE:` creates a major release. Each GitHub Release includes checksummed ZIPs for Chrome/Edge, Firefox, and Safari.
 
-Every branch and pull request runs the same verification pipeline and exposes the three ZIPs as workflow artifacts. Landing-page deployment now waits for a successful `Verify` run on `main` and deploys the exact commit that passed.
+Chrome Web Store and Microsoft Edge Add-ons publishing remains a separate workflow. For a release created by CI, start **Publish browser extension** manually and select the store; manually pushed tags must exactly match the manifest version, such as `v2.3.0`.
+
+Every branch and pull request runs commit validation plus the same verification pipeline and exposes the three ZIPs as workflow artifacts. Landing-page deployment waits for a successful `Verify` run on `main` and deploys the exact commit that passed.
 
 Maintainer setup, required secrets, release steps, retry controls, and safety behavior are documented in [Browser store release automation](./docs/store-release.md).
 
