@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./styles.css" />
+    <script defer src="./browser-api.js"></script>
     <script defer src="./i18n.js"></script>
     <script defer src="./form-filler.js"></script>
     <script defer src="./popup.js"></script>
@@ -258,12 +259,12 @@
         class="pt-2 border-t border-white/30 text-sm text-white/80 flex flex-col gap-2"
       >
         <p id="footerMade" class="leading-snug">
-          Made by
+          <span id="madeByText">Made by</span>
           <a
             class="underline decoration-dotted hover:decoration-solid"
             href="https://devm7mdali.github.io"
             target="_blank"
-            >Mohammed Alajmi</a
+            ><span id="authorName">Mohammed Alajmi</span></a
           >
         </p>
         <div class="flex items-center gap-3 text-white/90">
@@ -399,7 +400,7 @@
           <li id="shortcutWin">Windows / Linux: Alt + Shift + F</li>
           <li id="shortcutMac">macOS: Option + Shift + F</li>
           <li id="shortcutChange" class="pt-1 text-white/65">
-            Change it at chrome://extensions/shortcuts
+            Change it in your browser's extension shortcut settings
           </li>
         </ul>
         <div class="flex justify-end">

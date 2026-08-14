@@ -1,0 +1,116 @@
+name: Verify
+
+on:
+  push:
+    tags-ignore:
+      - "**"
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Test, validate, and package
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run the complete verification suite
+        run: pnpm check
+
+      - name: Upload browser packages
+        uses: actions/upload-artifact@v7
+        with:
+          name: formfully-browser-packages-${{ github.sha }}
+          path: |
+            artifacts/*.zip
+            artifacts/*.zip.sha256
+          if-no-files-found: error
+          retention-days: 14
+
+  safari:
+    name: Build Safari extension
+    runs-on: macos-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Safari web extension
+        run: pnpm build:extension safari
+
+      - name: Convert to an Xcode project
+        run: |
+          xcrun safari-web-extension-converter apps/extension/dist/safari \
+            --project-location "$RUNNER_TEMP/safari" \
+            --app-name "FormFully" \
+            --bundle-identifier io.github.devm7mdali.formfully \
+            --swift --macos-only --copy-resources \
+            --no-open --no-prompt --force
+
+      - name: Build the unsigned Safari app extension
+        run: |
+          project="$(find "$RUNNER_TEMP/safari" -maxdepth 2 -name '*.xcodeproj' -print -quit)"
+          if [ -z "$project" ]; then
+            echo "The converter produced no Xcode project" >&2
+            exit 1
+          fi
+          target="$(xcodebuild -list -project "$project" -json |
+            node -p 'JSON.parse(require("node:fs").readFileSync(0, "utf8")).project.targets.find((name) => name.endsWith("Extension"))')"
+          if [ "$target" = "undefined" ]; then
+            echo "The converted project has no extension target" >&2
+            exit 1
+          fi
+          xcodebuild build \
+            -project "$project" \
+            -target "$target" \
+            -destination 'platform=macOS' \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY=""
+
+      - name: Upload the Safari Xcode project
+        uses: actions/upload-artifact@v7
+        with:
+          name: formfully-safari-xcode-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/safari
+            !${{ runner.temp }}/safari/**/build/**
+          if-no-files-found: error
+          retention-days: 14

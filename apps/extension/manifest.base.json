@@ -5,28 +5,20 @@
   "version": "2.2.1",
   "homepage_url": "https://mohammed-alajmi.me/FormFully/",
   "icons": {
-    "16": "icon.png",
-    "48": "icon.png",
-    "128": "icon.png"
+    "16": "icons/icon-16.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
   },
-  
   "action": {
     "default_popup": "index.html",
-    "default_icon": "icon.png"
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    }
   },
-
-  "host_permissions": [
-    "https://www.developer.chrome.com/*"
-  ],
-  
-  "permissions": [
-    "activeTab",
-    "scripting",
-    "storage"
-  ],
-  "background": {
-    "service_worker": "background.js"
-  },
+  "host_permissions": ["https://www.developer.chrome.com/*"],
+  "permissions": ["activeTab", "scripting", "storage"],
   "commands": {
     "fill-form": {
       "suggested_key": {

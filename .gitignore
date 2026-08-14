@@ -1,9 +1,11 @@
 # Dependencies
 node_modules/
+.pnpm-store/
 
 # Generated builds and release artifacts
 dist/
 apps/*/dist/
+artifacts/
 *.tsbuildinfo
 
 # Logs and local configuration

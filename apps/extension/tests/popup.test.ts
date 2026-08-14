@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { JSDOM } from 'jsdom';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const buildRoot = path.join(root, 'dist');
+const buildRoot = path.join(root, 'dist/chrome');
 
 interface StorageWrite {
   fillMode?: FormFullyMode;
@@ -27,28 +27,46 @@ test('Popup defaults to Classic, persists mode changes, and supports Arabic RTL'
   });
   const { window } = dom;
   const writes: StorageWrite[] = [];
-  (window as unknown as { chrome: unknown }).chrome = {
+  let injectedTabId: number | undefined;
+  (window as unknown as { browser: unknown }).browser = {
     storage: {
       local: {
-        get(_keys: string[], callback: (values: Record<string, unknown>) => void) {
-          callback({
+        async get() {
+          return {
             defaultValue: '5',
             customRules: [{ field: 'Group number', value: '12' }]
-          });
+          };
         },
-        set(value: StorageWrite) {
+        async set(value: StorageWrite) {
           writes.push(value);
         }
       }
     },
-    tabs: {},
-    scripting: {},
+    tabs: {
+      async query() {
+        return [{ id: 27 }];
+      }
+    },
+    scripting: {
+      async executeScript(options: { target: { tabId: number } }) {
+        injectedTabId = options.target.tabId;
+        return [{ result: { mode: 'classic', filled: 2 } }];
+      }
+    },
     runtime: {}
   };
+  (window as unknown as { chrome: unknown }).chrome = {};
 
-  window.eval(fs.readFileSync(path.join(buildRoot, 'i18n.js'), 'utf8'));
-  window.eval(fs.readFileSync(path.join(buildRoot, 'form-filler.js'), 'utf8'));
-  window.eval(fs.readFileSync(path.join(buildRoot, 'popup.js'), 'utf8'));
+  window.eval(
+    [
+      'browser-api.js',
+      'i18n.js',
+      'form-filler.js',
+      'popup.js'
+    ]
+      .map((file) => fs.readFileSync(path.join(buildRoot, file), 'utf8'))
+      .join('\n')
+  );
   window.document.dispatchEvent(new window.Event('DOMContentLoaded'));
   await new Promise(resolve => window.setTimeout(resolve, 0));
 
@@ -65,6 +83,14 @@ test('Popup defaults to Classic, persists mode changes, and supports Arabic RTL'
       window.document.querySelector<HTMLInputElement>('[data-custom-property="field"]')
     ).value,
     'Group number'
+  );
+
+  requiredElement(window.document.getElementById('fillButton')).click();
+  await new Promise(resolve => window.setTimeout(resolve, 0));
+  assert.equal(injectedTabId, 27);
+  assert.equal(
+    requiredElement(window.document.getElementById('fillStatus')).textContent,
+    '2 fields filled.'
   );
 
   smart.click();

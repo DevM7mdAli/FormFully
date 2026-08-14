@@ -69,6 +69,7 @@ interface TranslationDictionary {
   fillError: string;
   invalidEmail: string;
   madeBy: string;
+  authorName: string;
   coffee: string;
   shortcutInfoLabel: string;
   shortcutTitle: string;
@@ -87,3 +88,6 @@ interface Window {
 }
 
 declare function importScripts(...urls: string[]): void;
+
+/** Firefox and Safari expose the standard promise-based namespace. */
+declare const browser: typeof chrome | undefined;

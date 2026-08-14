@@ -1,6 +1,6 @@
 # Browser store release automation
 
-The `Publish browser extension` workflow tests FormFully, creates one reviewed ZIP, verifies its checksum in each publishing job, and submits that same artifact to Chrome Web Store and Microsoft Edge Add-ons.
+The `Publish browser extension` workflow tests FormFully, validates the Firefox build, compiles the generated Safari extension project with Xcode, and creates separate checksummed ZIPs for Chrome, Firefox, and Safari. It submits the Chrome package to Chrome Web Store and Microsoft Edge Add-ons and attaches every browser package to the GitHub Release.
 
 Tag releases publish to both stores. A manual run can retry Chrome, Edge, or both independently.
 
@@ -58,7 +58,7 @@ Edge API keys expire. Record the expiry date and rotate `EDGE_API_KEY` before it
 
 ## Releasing a version
 
-1. Update `apps/extension/manifest.json` to a higher store version, using one to four dot-separated integers.
+1. Update `apps/extension/manifest.base.json` to a higher store version, using one to four dot-separated integers.
 2. Update the changelog and commit the release.
 3. Create a tag that exactly matches the manifest version:
 
@@ -67,7 +67,7 @@ Edge API keys expire. Record the expiry date and rotate `EDGE_API_KEY` before it
    git push origin v2.3.0
    ```
 
-The workflow rejects a tag whose value does not exactly equal `v` plus the manifest version. Successful API submission means the update entered each store's review process; actual public availability still depends on store approval.
+The workflow rejects a tag whose value does not exactly equal `v` plus the manifest version. Successful Chrome and Edge API submission means the update entered each store's review process; actual public availability still depends on store approval.
 
 If only one store needs a retry, open **Actions > Publish browser extension > Run workflow** and select `chrome` or `edge`.
 
@@ -77,25 +77,31 @@ Run:
 
 ```bash
 pnpm install --frozen-lockfile
-pnpm test
-pnpm package:extension
-unzip -l dist/formfully-extension.zip
+pnpm check
+VERSION="$(node -p "require('./apps/extension/manifest.base.json').version")"
+unzip -l "artifacts/formfully-firefox-$VERSION.zip"
 ```
 
-The ZIP intentionally contains only these runtime files:
+The ZIPs intentionally contain only runtime files. Shared entries include:
 
 - `manifest.json`
 - `icon.png`
+- correctly sized manifest icons under `icons/`
 - `index.html`
+- `browser-api.js`
 - `background.js`
 - `form-filler.js`
 - `i18n.js`
 - `popup.js`
 - `styles.css`
 
-Tests, TypeScript source, source CSS, documentation, dependency folders, landing-page files, and repository metadata are excluded from the store package.
+The Chromium package additionally includes its small `service-worker.js` loader. Tests, TypeScript source, source CSS, documentation, dependency folders, landing-page files, and repository metadata are excluded from every store package.
 
-The packager also writes `dist/formfully-extension.zip.sha256`. Both store jobs verify this checksum after downloading the GitHub artifact.
+The packager writes `artifacts/formfully-<browser>-<version>.zip.sha256` beside every archive. Store jobs verify the Chromium checksum after downloading the immutable workflow artifact.
+
+## Firefox and Safari distribution
+
+CI produces submission-ready web-extension ZIPs for both browsers. Firefox submission/signing through AMO and Safari App Store signing remain manual because those stores require their own developer accounts and signing identities. The macOS CI job also uploads a self-contained generated Xcode project so the Safari package can be signed without rerunning the converter.
 
 ## Safety behavior
 

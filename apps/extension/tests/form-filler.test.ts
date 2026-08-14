@@ -6,7 +6,10 @@ import { fileURLToPath } from 'node:url';
 import { JSDOM } from 'jsdom';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const engineSource = fs.readFileSync(path.join(root, 'dist/form-filler.js'), 'utf8');
+const engineSource = fs.readFileSync(
+  path.join(root, 'dist/chrome/form-filler.js'),
+  'utf8'
+);
 
 type FillTestWindow = Window & typeof globalThis & {
   __fillFields(settings?: FillSettings | string): Promise<FillSummary>;

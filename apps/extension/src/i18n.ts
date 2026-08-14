@@ -36,14 +36,15 @@ window.I18N = {
     noFields: 'No empty supported fields found.',
     fillError: 'This page cannot be filled. Try a regular website tab.',
     invalidEmail: 'Enter a valid email address.',
-    madeBy: 'Made by <a class="underline decoration-dotted hover:decoration-solid" target="_blank" href="https://devm7mdali.github.io">Mohammed Alajmi</a>',
+    madeBy: 'Made by',
+    authorName: 'Mohammed Alajmi',
     coffee: 'Buy me a coffee',
     shortcutInfoLabel: 'Shortcut info',
     shortcutTitle: 'Keyboard Shortcut',
     shortcutIntro: 'Keyboard shortcut details:',
     shortcutWin: 'Windows / Linux: Alt + Shift + F',
     shortcutMac: 'macOS: Option + Shift + F',
-    shortcutChange: 'Change it at chrome://extensions/shortcuts',
+    shortcutChange: "Change it in your browser's extension shortcut settings",
     shortcutClose: 'Close'
   },
   ar: {
@@ -83,14 +84,15 @@ window.I18N = {
     noFields: 'لم يتم العثور على حقول فارغة مدعومة.',
     fillError: 'لا يمكن تعبئة هذه الصفحة. جرّب صفحة ويب عادية.',
     invalidEmail: 'أدخل بريداً إلكترونياً صالحاً.',
-    madeBy: 'صُنع بواسطة <a class="underline decoration-dotted hover:decoration-solid" target="_blank" href="https://devm7mdali.github.io">محمد العجمي</a>',
+    madeBy: 'صُنع بواسطة',
+    authorName: 'محمد العجمي',
     coffee: 'اشترِ لي قهوة',
     shortcutInfoLabel: 'معلومات الاختصار',
     shortcutTitle: 'اختصار لوحة المفاتيح',
     shortcutIntro: 'تفاصيل اختصار لوحة المفاتيح:',
     shortcutWin: 'ويندوز / لينكس: Alt + Shift + F',
     shortcutMac: 'ماك: Option + Shift + F',
-    shortcutChange: 'يمكنك تغييره من chrome://extensions/shortcuts',
+    shortcutChange: 'يمكنك تغييره من إعدادات اختصارات الإضافات في متصفحك',
     shortcutClose: 'إغلاق'
   }
 };
@@ -147,8 +149,8 @@ window.setLanguage = function setLanguage(language = 'en') {
   window.setText('shortcutModalClose', t.shortcutClose);
   const input = document.getElementById('auto') as HTMLInputElement | null;
   if (input) input.placeholder = t.placeholder;
-  const footerMade = document.getElementById('footerMade');
-  if (footerMade) footerMade.innerHTML = t.madeBy;
+  window.setText('madeByText', t.madeBy);
+  window.setText('authorName', t.authorName);
 };
 
 window.setText = function setText(id, value) {

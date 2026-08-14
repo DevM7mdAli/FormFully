@@ -1,57 +1,24 @@
 import { createHash } from 'node:crypto';
-import {
-  lstat,
-  mkdir,
-  readFile,
-  unlink,
-  writeFile
-} from 'node:fs/promises';
+import { lstat, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
+import {
+  EXTENSION_TARGET_DEFINITIONS,
+  packageFilesForTarget,
+  resolveTargets,
+  type ExtensionTarget
+} from './targets.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const BUILD_ROOT = path.join(ROOT, 'apps/extension/dist');
+const ARTIFACT_ROOT = path.join(ROOT, 'artifacts');
 
-export const PACKAGE_FILES = Object.freeze([
-  'manifest.json',
-  'icon.png',
-  'index.html',
-  'background.js',
-  'form-filler.js',
-  'i18n.js',
-  'popup.js',
-  'styles.css'
-]);
-
-interface PackageArguments {
-  output: string;
-}
+export const PACKAGE_FILES = Object.freeze(packageFilesForTarget('chrome'));
 
 interface ExtensionManifest {
   version?: unknown;
-}
-
-function parseArgs(argv: string[]): PackageArguments {
-  const args = { output: 'dist/formfully-extension.zip' };
-
-  for (let index = 0; index < argv.length; index += 1) {
-    const argument = argv[index];
-    if (argument === '--') {
-      continue;
-    } else if (argument === '--output') {
-      args.output = argv[index + 1] || '';
-      index += 1;
-    } else {
-      throw new Error(`Unknown argument: ${argument}`);
-    }
-  }
-
-  if (!args.output) {
-    throw new Error('--output requires a file path.');
-  }
-
-  return args;
+  background?: unknown;
 }
 
 export function validateVersion(version: unknown): string {
@@ -81,47 +48,65 @@ export function assertReleaseTag(
   }
 }
 
-async function assertPackageFiles(): Promise<void> {
-  for (const relativePath of PACKAGE_FILES) {
-    const absolutePath = path.join(BUILD_ROOT, relativePath);
-    const file = await lstat(absolutePath);
-    if (!file.isFile() || file.isSymbolicLink()) {
-      throw new Error(`Package entry must be a regular file: ${relativePath}`);
+function backgroundEntries(background: unknown): readonly string[] {
+  if (!background || typeof background !== 'object') return [];
+  const value = background as { service_worker?: unknown; scripts?: unknown };
+  if (typeof value.service_worker === 'string') return [value.service_worker];
+  if (Array.isArray(value.scripts)) {
+    return value.scripts.filter((entry): entry is string => typeof entry === 'string');
+  }
+  return [];
+}
+
+async function assertPackageFiles(
+  target: ExtensionTarget,
+  buildRoot: string,
+  manifest: ExtensionManifest
+): Promise<readonly string[]> {
+  const packageFiles = packageFilesForTarget(target);
+  const declaredBackground = backgroundEntries(manifest.background);
+  if (declaredBackground.length === 0) {
+    throw new Error(`${target}: the manifest declares no background script.`);
+  }
+  for (const entry of declaredBackground) {
+    if (!packageFiles.includes(entry)) {
+      throw new Error(`${target}: background script "${entry}" is not packaged.`);
     }
   }
+
+  await Promise.all(
+    packageFiles.map(async (relativePath) => {
+      const absolutePath = path.join(buildRoot, relativePath);
+      const detail = await lstat(absolutePath).catch(() => undefined);
+      if (!detail) throw new Error(`${target}: missing package file: ${relativePath}`);
+      if (!detail.isFile() || detail.isSymbolicLink()) {
+        throw new Error(`${target}: package entry must be a regular file: ${relativePath}`);
+      }
+    })
+  );
+
+  return packageFiles;
 }
 
-async function removeExisting(filePath: string): Promise<void> {
-  try {
-    await unlink(filePath);
-  } catch (error: unknown) {
-    if (!(error instanceof Error && 'code' in error && error.code === 'ENOENT')) throw error;
-  }
-}
-
-async function main(): Promise<void> {
-  const { output } = parseArgs(process.argv.slice(2));
+async function packageTarget(target: ExtensionTarget): Promise<string> {
+  const buildRoot = path.join(BUILD_ROOT, target);
   const manifest = JSON.parse(
-    await readFile(path.join(BUILD_ROOT, 'manifest.json'), 'utf8')
+    await readFile(path.join(buildRoot, 'manifest.json'), 'utf8')
   ) as ExtensionManifest;
   const version = validateVersion(manifest.version);
   assertReleaseTag(version);
-  await assertPackageFiles();
+  const packageFiles = await assertPackageFiles(target, buildRoot, manifest);
 
-  const outputPath = path.resolve(ROOT, output);
-  if (path.extname(outputPath).toLowerCase() !== '.zip') {
-    throw new Error('The package output must use the .zip extension.');
-  }
+  const outputPath = path.join(ARTIFACT_ROOT, `formfully-${target}-${version}.zip`);
+  await Promise.all([
+    rm(outputPath, { force: true }),
+    rm(`${outputPath}.sha256`, { force: true })
+  ]);
 
-  await mkdir(path.dirname(outputPath), { recursive: true });
-  await removeExisting(outputPath);
-  await removeExisting(`${outputPath}.sha256`);
-
-  const result = spawnSync(
-    'zip',
-    ['-q', '-X', '-9', outputPath, ...PACKAGE_FILES],
-    { cwd: BUILD_ROOT, encoding: 'utf8' }
-  );
+  const result = spawnSync('zip', ['-q', '-X', '-9', outputPath, ...packageFiles], {
+    cwd: buildRoot,
+    encoding: 'utf8'
+  });
 
   if (result.error && 'code' in result.error && result.error.code === 'ENOENT') {
     throw new Error('The "zip" executable is required to package the extension.');
@@ -130,17 +115,33 @@ async function main(): Promise<void> {
     throw new Error(`zip failed: ${(result.stderr || result.stdout).trim()}`);
   }
 
-  const archive = await readFile(outputPath);
-  const digest = createHash('sha256').update(archive).digest('hex');
+  const digest = createHash('sha256')
+    .update(await readFile(outputPath))
+    .digest('hex');
   await writeFile(
     `${outputPath}.sha256`,
     `${digest}  ${path.basename(outputPath)}\n`,
     'utf8'
   );
 
-  console.log(`Packaged FormFully ${version}`);
-  console.log(`Archive: ${path.relative(ROOT, outputPath)}`);
-  console.log(`SHA-256: ${digest}`);
+  console.log(
+    `${EXTENSION_TARGET_DEFINITIONS[target].label}: ${path.relative(ROOT, outputPath)}`
+  );
+  console.log(`  SHA-256: ${digest}`);
+  return version;
+}
+
+async function main(): Promise<void> {
+  const targets = resolveTargets(process.argv.slice(2));
+  await mkdir(ARTIFACT_ROOT, { recursive: true });
+
+  const versions = new Set<string>();
+  for (const target of targets) versions.add(await packageTarget(target));
+  if (versions.size !== 1) {
+    throw new Error(`Browser builds disagree on the version: ${[...versions].join(', ')}`);
+  }
+
+  console.log(`Packaged FormFully ${[...versions][0]} for ${targets.join(', ')}`);
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

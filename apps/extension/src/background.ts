@@ -1,8 +1,6 @@
-// Shared page-side fill function used by the popup and keyboard shortcut.
-importScripts('form-filler.js');
-
-// Background service worker for keyboard shortcut command.
-chrome.commands.onCommand.addListener(async (command, tab) => {
+// Background handler shared by Chromium's service worker and the Firefox/Safari
+// event-page builds.
+browserApi.commands.onCommand.addListener(async (command, tab) => {
   // Keep both command IDs: released versions before 2.2 associated
   // Option+Shift+F with `fill-form-alt`, and Chrome persists shortcut
   // assignments by command ID across extension updates.
@@ -13,9 +11,9 @@ chrome.commands.onCommand.addListener(async (command, tab) => {
 
 async function runFill(existingTab?: chrome.tabs.Tab): Promise<void> {
   try {
-    const tab = existingTab || (await chrome.tabs.query({ active: true, currentWindow: true }))[0];
+    const tab = existingTab || (await browserApi.tabs.query({ active: true, currentWindow: true }))[0];
     if (!tab?.id) return;
-    const stored = await chrome.storage.local.get([
+    const stored = await browserApi.storage.local.get([
       'defaultValue',
       'fillMode',
       'smartProfile',
@@ -31,7 +29,7 @@ async function runFill(existingTab?: chrome.tabs.Tab): Promise<void> {
         ? stored.customRules as CustomRule[]
         : []
     };
-    await chrome.scripting.executeScript({
+    await browserApi.scripting.executeScript({
       target: { tabId: tab.id },
       func: fillFields,
       args: [settings]

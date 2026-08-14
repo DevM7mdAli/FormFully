@@ -76,7 +76,7 @@
     if (fillText) fillText.textContent = isSmart ? (t.fillSmartBtn || 'Smart Fill') : (t.fillBtn || 'Fill Form');
     setStatus('');
     if (persistMode) {
-      try { chrome.storage.local.set({ fillMode: currentMode }); } catch (e) { }
+      void browserApi.storage.local.set({ fillMode: currentMode }).catch(() => {});
     }
   }
 
@@ -90,11 +90,13 @@
   }
 
   function persistLegacyValue(): void {
-    try { chrome.storage.local.set({ defaultValue: legacyValueInput.value }); } catch (e) { }
+    void browserApi.storage.local
+      .set({ defaultValue: legacyValueInput.value })
+      .catch(() => {});
   }
 
   function persistProfile(): void {
-    try { chrome.storage.local.set({ smartProfile: getProfile() }); } catch (e) { }
+    void browserApi.storage.local.set({ smartProfile: getProfile() }).catch(() => {});
   }
 
   function cleanCustomRules(rules: unknown): PersistedCustomRule[] {
@@ -118,7 +120,7 @@
 
   function persistCustomRules(): void {
     const rules = customRuleState.map(({ field, value }) => ({ field, value }));
-    try { chrome.storage.local.set({ customRules: rules }); } catch (e) { }
+    void browserApi.storage.local.set({ customRules: rules }).catch(() => {});
   }
 
   function renderCustomRules(focusId?: string): void {
@@ -179,27 +181,23 @@
     }
   }
 
-  try {
-    chrome.storage.local.get(
-      ['defaultValue', 'fillMode', 'smartProfile', 'customRules'],
-      (stored) => {
-        if (typeof stored.defaultValue === 'string') legacyValueInput.value = stored.defaultValue;
-        if (stored.smartProfile && typeof stored.smartProfile === 'object') {
-          const smartProfile = stored.smartProfile as SmartProfile;
-          profileInputs.forEach(field => {
-            const key = field.dataset.profileKey as keyof SmartProfile | undefined;
-            const value = key ? smartProfile[key] : undefined;
-            if (typeof value === 'string') field.value = value;
-          });
-        }
-        customRuleState = cleanCustomRules(stored.customRules);
-        renderCustomRules();
-        updateModeUI(stored.fillMode, false);
+  void browserApi.storage.local
+    .get(['defaultValue', 'fillMode', 'smartProfile', 'customRules'])
+    .then((stored) => {
+      if (typeof stored.defaultValue === 'string') legacyValueInput.value = stored.defaultValue;
+      if (stored.smartProfile && typeof stored.smartProfile === 'object') {
+        const smartProfile = stored.smartProfile as SmartProfile;
+        profileInputs.forEach(field => {
+          const key = field.dataset.profileKey as keyof SmartProfile | undefined;
+          const value = key ? smartProfile[key] : undefined;
+          if (typeof value === 'string') field.value = value;
+        });
       }
-    );
-  } catch (e) {
-    updateModeUI('classic', false);
-  }
+      customRuleState = cleanCustomRules(stored.customRules);
+      renderCustomRules();
+      updateModeUI(stored.fillMode, false);
+    })
+    .catch(() => updateModeUI('classic', false));
 
   try {
     const lang = localStorage.getItem('ff_lang') || 'en';
@@ -292,7 +290,7 @@
     }
   });
 
-  fillBtn.addEventListener('click', () => {
+  fillBtn.addEventListener('click', async () => {
     const t = currentTranslations();
     const profile = getProfile();
     const emailField = document.getElementById('smartEmail') as HTMLInputElement | null;
@@ -301,25 +299,18 @@
       emailField.focus();
       return;
     }
-    if (typeof chrome === 'undefined' || !chrome.tabs || !chrome.scripting) {
-      setStatus(t.fillError || 'This page cannot be filled.', true);
-      return;
-    }
-
     fillBtn.disabled = true;
     fillBtn.classList.add('opacity-70');
     setStatus(t.filling || 'Filling…');
 
-    chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-      const activeTab = tabs && tabs[0];
+    try {
+      const tabs = await browserApi.tabs.query({ active: true, currentWindow: true });
+      const activeTab = tabs[0];
       if (!activeTab?.id) {
-        fillBtn.disabled = false;
-        fillBtn.classList.remove('opacity-70');
-        setStatus(t.fillError || 'This page cannot be filled.', true);
-        return;
+        throw new Error('The browser returned no active tab.');
       }
 
-      chrome.scripting.executeScript({
+      const results = await browserApi.scripting.executeScript({
         target: { tabId: activeTab.id },
         func: fillFields,
         args: [{
@@ -328,21 +319,19 @@
           profile,
           customRules: getCustomRules()
         }]
-      }, results => {
-        fillBtn.disabled = false;
-        fillBtn.classList.remove('opacity-70');
-        if (chrome.runtime.lastError) {
-          setStatus(t.fillError || 'This page cannot be filled.', true);
-          return;
-        }
-        const summary = results?.[0]?.result;
-        const count = Number(summary?.filled || 0);
-        if (currentMode === 'smart' && count === 0) {
-          setStatus(t.noFields || 'No empty supported fields found.');
-          return;
-        }
-        setStatus((t.fillSuccess || '{count} fields filled.').replace('{count}', String(count)));
       });
-    });
+      const summary = results?.[0]?.result as FillSummary | undefined;
+      const count = Number(summary?.filled || 0);
+      if (currentMode === 'smart' && count === 0) {
+        setStatus(t.noFields || 'No empty supported fields found.');
+        return;
+      }
+      setStatus((t.fillSuccess || '{count} fields filled.').replace('{count}', String(count)));
+    } catch {
+      setStatus(t.fillError || 'This page cannot be filled.', true);
+    } finally {
+      fillBtn.disabled = false;
+      fillBtn.classList.remove('opacity-70');
+    }
   });
 })();

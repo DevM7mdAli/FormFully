@@ -2,12 +2,16 @@
   "name": "formfully",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@10.0.0",
+  "packageManager": "pnpm@11.18.0",
   "engines": {
-    "node": ">=20.19.0"
+    "node": ">=22.14.0"
   },
   "scripts": {
     "dev:landing": "pnpm --filter @formfully/landing-page dev",
+    "dev:extension": "pnpm dev:extension:chrome",
+    "dev:extension:chrome": "pnpm build:extension chrome && web-ext run --source-dir apps/extension/dist/chrome --target chromium --no-config-discovery",
+    "dev:extension:firefox": "pnpm build:extension firefox && web-ext run --source-dir apps/extension/dist/firefox --target firefox-desktop --devtools --no-config-discovery",
+    "dev:extension:safari": "pnpm build:extension safari && safari_project_dir=$(mktemp -d /tmp/formfully-safari.XXXXXX) && xcrun safari-web-extension-converter apps/extension/dist/safari --project-location \"$safari_project_dir\" --app-name \"FormFully\" --bundle-identifier io.github.devm7mdali.formfully --swift --macos-only --copy-resources --no-open --no-prompt && open \"$safari_project_dir/FormFully/FormFully.xcodeproj\"",
     "build": "pnpm build:extension && pnpm build:landing",
     "build:extension": "pnpm --filter @formfully/extension build",
     "build:landing": "pnpm --filter @formfully/landing-page build",
@@ -15,13 +19,17 @@
     "typecheck": "pnpm --filter @formfully/extension typecheck && pnpm --filter @formfully/landing-page typecheck && tsc -p tsconfig.tooling.json",
     "lint": "pnpm --filter @formfully/landing-page lint",
     "test": "pnpm build:extension && pnpm --filter @formfully/extension test && node --import tsx --test tooling/tests/*.test.ts",
+    "verify": "pnpm typecheck && pnpm lint && pnpm test && pnpm build:landing",
     "package:extension": "pnpm build:extension && node --import tsx tooling/extension/package.ts",
+    "lint:firefox": "web-ext lint --source-dir apps/extension/dist/firefox --no-config-discovery",
+    "check": "pnpm verify && pnpm package:extension && pnpm lint:firefox",
     "publish:chrome": "node --import tsx tooling/release/publish-stores.ts --store chrome",
     "publish:edge": "node --import tsx tooling/release/publish-stores.ts --store edge"
   },
   "devDependencies": {
     "@types/node": "^24.12.3",
     "tsx": "^4.20.6",
-    "typescript": "~6.0.2"
+    "typescript": "~6.0.2",
+    "web-ext": "^10.5.0"
   }
 }

@@ -35,7 +35,7 @@ Website: [mohammed-alajmi.me/FormFully](https://mohammed-alajmi.me/FormFully/)
 	- `date`, `month`, `week`, `time`, `datetime-local`
 	- `color` gets a random hex
 - Bilingual UI: English + Arabic with full RTL support & instant switching
-- Persistent value stored via `chrome.storage` (shared across popup & shortcut)
+- Persistent value stored in browser-local extension storage (shared across popup & shortcut)
 - Global keyboard shortcut: `Alt + Shift + F` on Windows/Linux or `Option + Shift + F` on macOS (customizable)
 - Accessible glassmorphism UI with semantic focus styles
 - Smart week number (ISO week) & date/time generation
@@ -45,10 +45,7 @@ Website: [mohammed-alajmi.me/FormFully](https://mohammed-alajmi.me/FormFully/)
 ## ⌨️ Keyboard Shortcut
 Default: `Alt + Shift + F` on Windows/Linux and `Option + Shift + F` on macOS.
 
-The legacy `fill-form-alt` command ID remains registered because Chrome retains shortcut assignments by command ID across updates. Removing it would silently break Option + Shift + F for existing macOS users. You can customize the shortcut anytime:
-1. Open `chrome://extensions/shortcuts`
-2. Locate “FormFully – Fill inputs using FormFully”
-3. Click the pencil icon and press your preferred combo (avoid reserved ones)
+The legacy `fill-form-alt` command ID remains registered because browsers retain shortcut assignments by command ID across updates. Removing it would silently break Option + Shift + F for existing macOS users. You can customize the shortcut in your browser's extension shortcut settings. In Chrome and Edge, open `chrome://extensions/shortcuts`; in Firefox, use **Manage Extension Shortcuts** from `about:addons`.
 
 The popup’s shortcut modal also lists platform specific guidance.
 
@@ -93,12 +90,26 @@ Smart mode never submits the form or moves to the next page. Existing answers ar
 * Edge: [Install](https://microsoftedge.microsoft.com/addons/detail/formfully/giahhadiaaljamhigkeggghcadfnofce)
 
 ### Manual (Dev Mode)
+
+Launch an isolated development browser with the extension already loaded:
+
+```bash
+pnpm dev:extension          # Chrome (default)
+pnpm dev:extension:chrome
+pnpm dev:extension:firefox
+```
+
+The launchers build the correct target and use a temporary browser profile, so they do not modify your normal Chrome or Firefox profile. Stop the development browser with `Ctrl+C`.
+
+To load the extension into an existing browser profile manually:
+
 1. Clone the repository
 2. Run `pnpm install`
 3. Run `pnpm build:extension`
-4. Visit `chrome://extensions` (or the equivalent Edge page)
-5. Enable Developer Mode
-6. Click “Load unpacked” and select `apps/extension/dist`
+4. Load the browser-specific output:
+   - Chrome or Edge: enable Developer Mode at `chrome://extensions`, choose **Load unpacked**, and select `apps/extension/dist/chrome`.
+   - Firefox: open `about:debugging#/runtime/this-firefox`, choose **Load Temporary Add-on**, and select `apps/extension/dist/firefox/manifest.json`.
+   - Safari: run `xcrun safari-web-extension-converter apps/extension/dist/safari --macos-only`, then build the generated project in Xcode.
 
 ## 🧪 Usage
 1. Click the FormFully icon to open the popup
@@ -121,10 +132,10 @@ The keyboard shortcut uses whichever mode is currently selected.
 | `scripting` | Execute the fill function safely (MV3 requirement) |
 | `storage` | Persist the selected mode, Classic value, optional Smart profile, and custom field rules |
 
-Privacy: No data leaves your browser. There are no network requests, analytics, or trackers inside the extension. Classic values, Smart profile details, and custom rules stay in `chrome.storage.local` on the device.
+Privacy: No data leaves your browser. There are no network requests, analytics, or trackers inside the extension. Classic values, Smart profile details, and custom rules stay in the browser's local extension storage on the device.
 
 ## 🧩 Tech Stack
-* Manifest V3
+* Manifest V3 for Chrome, Edge, Firefox, and Safari
 * Strict TypeScript compiled to framework-free JavaScript
 * TailwindCSS (utility + a few custom component classes)
 * i18n via a lightweight typed in-repo dictionary
@@ -138,7 +149,7 @@ apps/
   extension/      Browser extension source, tests, manifest, and build output
   landing-page/   React landing page and hosting configuration
 tooling/
-  extension/      Deterministic extension build and packaging tools
+  extension/      Multi-browser build, manifest, and packaging tools
   release/        Chrome and Edge publishing clients
   tests/          Release automation tests
 docs/             Maintainer documentation
@@ -149,10 +160,14 @@ Common commands:
 | Command | Purpose |
 | --- | --- |
 | `pnpm install` | Install the entire workspace from one lockfile |
+| `pnpm dev:extension` | Build and launch FormFully in an isolated Chrome profile |
+| `pnpm dev:extension:firefox` | Build and launch FormFully in an isolated Firefox profile |
 | `pnpm typecheck` | Strictly type-check both apps and release tooling |
 | `pnpm test` | Build the extension and run all behavior/automation tests |
 | `pnpm build` | Build the extension and landing page |
-| `pnpm package:extension` | Create the reviewed store ZIP and checksum |
+| `pnpm package:extension` | Create versioned Chrome, Firefox, and Safari ZIPs plus checksums |
+| `pnpm lint:firefox` | Validate the Firefox build with Mozilla's add-on linter |
+| `pnpm check` | Run the same full verification and packaging gate used by CI |
 
 ## 🤝 Contributing
 1. Fork & create a feature branch
@@ -162,9 +177,23 @@ Common commands:
 
 Ideas welcome: configurable presets, per‑domain profiles, side panel, options page for advanced patterns.
 
+## 🌍 Browser Builds
+
+`apps/extension/manifest.base.json` contains the shared Manifest V3 metadata. The build adds only the engine-specific background and compatibility keys, producing:
+
+| Target | Development build | Release package |
+| --- | --- | --- |
+| Chrome and Edge | `apps/extension/dist/chrome` | `artifacts/formfully-chrome-<version>.zip` |
+| Firefox | `apps/extension/dist/firefox` | `artifacts/formfully-firefox-<version>.zip` |
+| Safari | `apps/extension/dist/safari` | `artifacts/formfully-safari-<version>.zip` |
+
+Firefox and Safari use event-page background scripts, while Chrome and Edge use a service worker. Runtime API calls prefer the standard promise-based `browser` namespace and fall back to Chromium's `chrome` namespace.
+
 ## 📦 Store Releases
 
-Chrome Web Store and Microsoft Edge Add-ons updates are automated through GitHub Actions. A version tag such as `v2.3.0` must exactly match the version in `apps/extension/manifest.json`; the workflow then tests, packages, checksum-verifies, and submits the same ZIP to both stores.
+Chrome Web Store and Microsoft Edge Add-ons updates are automated through GitHub Actions. A version tag such as `v2.3.0` must exactly match the version in `apps/extension/manifest.base.json`. The workflow runs the full test suite, validates Firefox, builds the Safari extension with Xcode, creates checksummed packages for all browsers, attaches them to the GitHub Release, and submits the Chromium package to Chrome and Edge.
+
+Every branch and pull request runs the same verification pipeline and exposes the three ZIPs as workflow artifacts. Landing-page deployment now waits for a successful `Verify` run on `main` and deploys the exact commit that passed.
 
 Maintainer setup, required secrets, release steps, retry controls, and safety behavior are documented in [Browser store release automation](./docs/store-release.md).
 
