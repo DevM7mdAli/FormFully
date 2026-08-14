@@ -17,8 +17,14 @@
       "128": "icons/icon-128.png"
     }
   },
-  "host_permissions": ["https://www.developer.chrome.com/*"],
-  "permissions": ["activeTab", "scripting", "storage"],
+  "host_permissions": [
+    "https://www.developer.chrome.com/*"
+  ],
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
   "commands": {
     "fill-form": {
       "suggested_key": {
