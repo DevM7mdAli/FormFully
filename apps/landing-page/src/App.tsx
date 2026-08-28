@@ -39,7 +39,7 @@ const SOCIAL_LINKS: Array<{ href: string; label: string; icon: IconType }> = [
   { href: LINKS.github, label: "GitHub", icon: FaGithub },
 ];
 
-/* Vite replaces import.meta.env.BASE_URL with the configured base (/FormFully/) at build time */
+/* Vite replaces import.meta.env.BASE_URL with the configured base at build time */
 const ICON_URL = `${import.meta.env.BASE_URL}icon.png`;
 
 /* shared class recipes — utility-first, composed in JS to stay DRY */
