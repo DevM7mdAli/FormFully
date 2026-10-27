@@ -207,7 +207,7 @@
   try {
     const isMac = /Mac/i.test(navigator.platform);
     const target = document.getElementById(isMac ? 'shortcutMac' : 'shortcutWin');
-    target?.classList.add('font-semibold', 'text-white');
+    target?.classList.add('font-semibold', 'text-ink');
   } catch (e) { }
 
   legacyValueInput.addEventListener('input', persistLegacyValue, { passive: true });

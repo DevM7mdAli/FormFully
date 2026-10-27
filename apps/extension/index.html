@@ -10,70 +10,37 @@
     <script defer src="./popup.js"></script>
     <title>FormFully</title>
   </head>
-  <body
-    class="w-[340px] font-sans text-gray-100 bg-brand-gradient p-4 relative overflow-hidden select-none"
-  >
-    <div class="relative z-10 glass-panel p-5 flex flex-col gap-4">
-      <!-- Header / Language Toggle -->
-      <div class="flex items-start justify-between">
-        <div class="flex items-center gap-3">
-          <img
-            src="./icon.png"
-            alt="FormFully logo"
-            class="w-14 h-14 drop-shadow"
-          />
-          <div>
-            <h1
-              id="title"
-              class="text-2xl font-bold tracking-wide text-white drop-shadow-sm"
-            >
-              FormFully
-            </h1>
-            <p id="tagline" class="text-xs text-white/90 leading-snug">
-              Instant form filler
-            </p>
-          </div>
-        </div>
-        <div class="flex flex-col gap-3">
-          <div class="lang-switch">
-            <button
-              id="btnLangEn"
-              class="lang-btn px-2 py-1 text-xs font-semibold rounded-full bg-white text-indigo-700 shadow"
-              data-lang="en"
-            >
-              EN
-            </button>
-            <button
-              id="btnLangAr"
-              class="lang-btn px-2 py-1 text-xs font-semibold rounded-full text-white/90 hover:bg-white/40 transition"
-              data-lang="ar"
-            >
-              AR
-            </button>
-          </div>
-
-          <div class="flex justify-end">
-            <button
-              id="shortcutOpenBtn"
-              class="icon-btn w-8 h-8 flex items-center justify-center text-xs font-bold"
-              type="button"
-              aria-haspopup="dialog"
-              aria-controls="shortcutModal"
-              aria-label="Shortcut info"
-            >
-              ?
-            </button>
-          </div>
+  <body class="w-[340px] select-none bg-white font-sans text-ink antialiased">
+    <!-- Header / Language Toggle -->
+    <header class="flex items-center justify-between gap-3 border-b border-line px-4 py-3">
+      <div class="flex min-w-0 items-center gap-2.5">
+        <img src="./icon.png" alt="FormFully logo" class="h-8 w-8 shrink-0" />
+        <div class="min-w-0">
+          <h1 id="title" class="text-[15px] font-semibold leading-tight text-ink">FormFully</h1>
+          <p id="tagline" class="truncate text-xs leading-snug text-ink-subtle">Instant form filler</p>
         </div>
       </div>
+      <div class="flex shrink-0 items-center gap-1.5">
+        <div class="lang-switch" role="group" aria-label="Language">
+          <button id="btnLangEn" class="lang-btn lang-btn-active" type="button" data-lang="en">EN</button>
+          <button id="btnLangAr" class="lang-btn" type="button" data-lang="ar">AR</button>
+        </div>
+        <button
+          id="shortcutOpenBtn"
+          class="icon-btn h-7 w-7 text-xs font-semibold"
+          type="button"
+          aria-haspopup="dialog"
+          aria-controls="shortcutModal"
+          aria-label="Shortcut info"
+        >
+          ?
+        </button>
+      </div>
+    </header>
 
+    <main class="flex flex-col gap-4 p-4">
       <!-- Mode switch: Classic remains the default for existing users. -->
-      <div
-        id="modeTabs"
-        class="mode-tabs"
-        role="tablist"
-        aria-label="Fill mode"
-      >
+      <div id="modeTabs" class="mode-tabs" role="tablist" aria-label="Fill mode">
         <button
           id="classicModeTab"
           class="mode-tab mode-tab-active"
@@ -101,30 +68,23 @@
 
       <!-- Original value input -->
       <div id="classicPanel" class="flex flex-col gap-2" role="tabpanel">
-        <label
-          id="valueLabel"
-          for="auto"
-          class="text-sm font-medium text-white/90"
-          >Value to fill</label
-        >
-        <div class="flex items-center gap-2">
-          <input id="auto" placeholder="Enter a number" class="input-glass" />
-        </div>
-        <div class="flex flex-wrap gap-2" id="presets">
+        <label id="valueLabel" for="auto" class="field-label">Value to fill</label>
+        <input id="auto" placeholder="Enter a number" class="input-glass" />
+        <div class="flex flex-wrap gap-1.5" id="presets">
           <button data-val="1" class="preset-chip">1</button>
           <button data-val="5" class="preset-chip">5</button>
           <button data-val="10" class="preset-chip">10</button>
           <button data-val="50" class="preset-chip">50</button>
           <button data-val="100" class="preset-chip">100</button>
         </div>
-        <p id="hint" class="text-[11px] leading-snug text-white/70">
+        <p id="hint" class="text-xs leading-snug text-ink-subtle">
           Leave empty for random per input.
         </p>
       </div>
 
       <!-- Opt-in profile-aware fill -->
       <div id="smartPanel" class="hidden flex-col gap-3" role="tabpanel">
-        <p id="smartIntro" class="text-[11px] leading-snug text-white/80">
+        <p id="smartIntro" class="text-xs leading-snug text-ink-muted">
           Add your details once. Blank fields use safe demo values.
         </p>
         <div class="grid grid-cols-2 gap-2">
@@ -175,7 +135,7 @@
         </div>
         <details class="smart-details">
           <summary id="moreDetailsText">More details</summary>
-          <div class="grid grid-cols-2 gap-2 pt-3">
+          <div class="grid grid-cols-2 gap-2 pt-2">
             <label class="profile-field col-span-2">
               <span id="smartAddressLabel">Address</span>
               <input
@@ -223,12 +183,12 @@
             <span id="customFieldsText">Custom fields</span>
             <span id="customRuleCount" class="custom-count">0</span>
           </summary>
-          <div class="pt-3">
-            <p id="customFieldsHint" class="text-[10px] leading-snug text-white/70">
+          <div class="pt-2">
+            <p id="customFieldsHint" class="text-xs leading-snug text-ink-subtle">
               Match a field label or keyword and fill your saved value.
             </p>
             <div id="customRules" class="mt-3 flex flex-col gap-2"></div>
-            <p id="customRulesEmpty" class="mt-3 text-center text-[10px] text-white/55">
+            <p id="customRulesEmpty" class="mt-3 text-center text-xs text-ink-subtle">
               No custom fields yet.
             </p>
             <button id="addCustomRule" type="button" class="custom-add">
@@ -237,48 +197,42 @@
             </button>
           </div>
         </details>
-        <p id="smartPrivacy" class="text-[10px] leading-snug text-white/65">
+        <p id="smartPrivacy" class="text-xs leading-snug text-ink-subtle">
           Stored only on this device. Passwords, files, and payment fields are skipped.
         </p>
       </div>
 
       <!-- Action Button -->
-      <button id="fillButton" class="group btn-primary">
-        <span id="fillBtnText" class="relative z-10">Fill Form</span>
-        <div class="overlay-accent"></div>
+      <button id="fillButton" class="btn-primary" type="button">
+        <span id="fillBtnText">Fill Form</span>
       </button>
-      <p
-        id="fillStatus"
-        class="hidden status-message"
-        role="status"
-        aria-live="polite"
-      ></p>
+      <p id="fillStatus" class="hidden status-message" role="status" aria-live="polite"></p>
+    </main>
 
-      <!-- Footer -->
-      <footer
-        class="pt-2 border-t border-white/30 text-sm text-white/80 flex flex-col gap-2"
-      >
+    <!-- Footer -->
+    <footer class="flex flex-col gap-3 border-t border-line bg-canvas px-4 py-3 text-xs text-ink-muted">
+      <div class="flex items-center justify-between gap-3">
         <p id="footerMade" class="leading-snug">
           <span id="madeByText">Made by</span>
           <a
-            class="underline decoration-dotted hover:decoration-solid"
+            class="font-medium text-ink underline decoration-line-strong underline-offset-2 hover:decoration-ink"
             href="https://devm7mdali.github.io"
             target="_blank"
             ><span id="authorName">Mohammed Alajmi</span></a
           >
         </p>
-        <div class="flex items-center gap-3 text-white/90">
-          <a
+        <div class="flex items-center gap-2.5">
+      <a
             href="https://formfully.mohammed.win/"
             target="_blank"
             rel="noopener"
-            class="hover:text-white transition"
+            class="footer-link"
             aria-label="FormFully website"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
+              width="16"
+              height="16"
               fill="none"
               stroke="currentColor"
               stroke-width="1.6"
@@ -292,16 +246,16 @@
               <path d="M12 3c-2.25 2.45-3.5 5.5-3.5 9s1.25 6.55 3.5 9" />
             </svg>
           </a>
-          <a
+      <a
             href="https://twitter.com/DevM7mdAli"
             target="_blank"
-            class="hover:text-white transition"
+            class="footer-link"
             aria-label="Twitter / X"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
+              width="16"
+              height="16"
               fill="currentColor"
               viewBox="0 0 16 16"
             >
@@ -310,16 +264,16 @@
               />
             </svg>
           </a>
-          <a
+      <a
             href="https://www.linkedin.com/in/mohammed-alajmi-b5a327206/"
             target="_blank"
-            class="hover:text-white transition"
+            class="footer-link"
             aria-label="LinkedIn"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
+              width="16"
+              height="16"
               fill="currentColor"
               viewBox="0 0 16 16"
             >
@@ -328,16 +282,16 @@
               />
             </svg>
           </a>
-          <a
+      <a
             href="https://github.com/DevM7mdAli"
             target="_blank"
-            class="hover:text-white transition"
+            class="footer-link"
             aria-label="GitHub"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
+              width="16"
+              height="16"
               fill="currentColor"
               viewBox="0 0 16 16"
             >
@@ -347,15 +301,16 @@
             </svg>
           </a>
         </div>
-        <div id="supportWrapper" class="mt-3 flex justify-center">
-          <a
-            href="https://buymeacoffee.com/devm7mdali"
-            target="_blank"
-            rel="noopener"
-            class="bmc-btn shadow-inner-glow"
-            id="coffeeButton"
-          >
-            <svg
+      </div>
+      <div id="supportWrapper">
+        <a
+          href="https://buymeacoffee.com/devm7mdali"
+          target="_blank"
+          rel="noopener"
+          class="bmc-btn"
+          id="coffeeButton"
+        >
+          <svg
               class="bmc-icon"
               viewBox="0 0 24 24"
               fill="none"
@@ -371,11 +326,10 @@
               <path d="M12 4h.01" />
               <path d="M16 4h.01" />
             </svg>
-            <span id="coffeeText">Buy me a coffee</span>
-          </a>
-        </div>
-      </footer>
-    </div>
+          <span id="coffeeText">Buy me a coffee</span>
+        </a>
+      </div>
+    </footer>
 
     <!-- Shortcut Modal -->
     <div
@@ -385,30 +339,23 @@
       aria-modal="true"
       aria-labelledby="shortcutModalTitle"
     >
-      <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
-      <div class="relative glass-panel p-4 w-full max-w-xs flex flex-col gap-3">
-        <h2 id="shortcutModalTitle" class="text-sm font-semibold tracking-wide">
+      <div class="absolute inset-0 bg-ink/40"></div>
+      <div class="relative flex w-full max-w-xs flex-col gap-3 rounded-lg border border-line bg-white p-4 shadow-dialog">
+        <h2 id="shortcutModalTitle" class="text-sm font-semibold text-ink">
           Keyboard Shortcut
         </h2>
-        <p
-          id="shortcutModalDesc"
-          class="text-[11px] leading-snug text-white/80"
-        >
+        <p id="shortcutModalDesc" class="text-xs leading-snug text-ink-muted">
           Keyboard shortcut details:
         </p>
-        <ul class="text-[11px] text-white/80 space-y-1" id="shortcutList">
+        <ul class="space-y-1 text-xs text-ink-muted" id="shortcutList">
           <li id="shortcutWin">Windows / Linux: Alt + Shift + F</li>
           <li id="shortcutMac">macOS: Option + Shift + F</li>
-          <li id="shortcutChange" class="pt-1 text-white/65">
+          <li id="shortcutChange" class="pt-1 text-ink-subtle">
             Change it in your browser's extension shortcut settings
           </li>
         </ul>
         <div class="flex justify-end">
-          <button
-            id="shortcutModalClose"
-            class="icon-btn text-[11px] px-3 h-7 flex items-center font-medium"
-            type="button"
-          >
+          <button id="shortcutModalClose" class="icon-btn h-8 px-3 text-xs font-medium text-ink" type="button">
             Close
           </button>
         </div>

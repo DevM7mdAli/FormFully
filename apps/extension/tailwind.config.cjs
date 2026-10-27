@@ -10,39 +10,37 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Brand gradient stops (used for backgrounds)
-        'brand-start': '#4E65FF88',
-        'brand-mid': '#3b8FfFe6', // sky-ish mid tone
-        'brand-end': '#FFFFF077', // white-ish end tone
-
-        // Accent gradient stops (used for interactive hover overlays)
-        'accent-fuchsia': '#f5d0fe',
-        'accent-rose': '#fecdd3',
-        'accent-amber': '#fde68a',
-
-        // Glass surfaces (semi–transparent whites)
-        surface: {
-          glass: 'rgba(255,255,255,0.20)',
-          'glass-hover': 'rgba(255,255,255,0.35)',
-          'glass-strong': 'rgba(255,255,255,0.55)'
+        // Text on light surfaces (all pass WCAG AA on white)
+        ink: {
+          DEFAULT: '#141a33',
+          muted: '#4a5272',
+          subtle: '#6b7290'
         },
-
-        // Semantic tokens
-        primary: {
-          DEFAULT: '#6366f1',
-          dark: '#4338ca',
-          foreground: '#1e1b4b'
+        canvas: '#f6f7fb',
+        line: {
+          DEFAULT: '#e3e6ef',
+          strong: '#cdd2e0'
+        },
+        // FormFully cornflower blue
+        brand: {
+          DEFAULT: '#4e65ff',
+          hover: '#3d52e6',
+          soft: '#eef1ff',
+          ink: '#2f3fbf'
+        },
+        danger: {
+          DEFAULT: '#b42318',
+          soft: '#fef3f2',
+          line: '#fecdca'
+        },
+        coffee: {
+          DEFAULT: '#ffdd00',
+          ink: '#0d0c22'
         }
       },
       boxShadow: {
-        'inner-glow': 'inset 0 0 0 1px rgba(255,255,255,0.25), 0 4px 16px -2px rgba(0,0,0,0.25)',
-        'chip': '0 1px 2px rgba(0,0,0,0.25)'
-      },
-      backdropBlur: {
-        xs: '2px'
-      },
-      animation: {
-        'pulse-soft': 'pulse 1.5s cubic-bezier(0.4,0,0.6,1) infinite'
+        card: '0 1px 2px rgba(20,26,51,0.06)',
+        dialog: '0 2px 8px rgba(20,26,51,0.12)'
       }
     },
   },

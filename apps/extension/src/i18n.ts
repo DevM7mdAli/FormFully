@@ -103,13 +103,9 @@ window.setLanguage = function setLanguage(language = 'en') {
   document.documentElement.lang = lang;
   document.body.dir = lang === 'ar' ? 'rtl' : 'ltr';
   document.querySelectorAll<HTMLButtonElement>('.lang-btn').forEach(b => {
-    if (b.dataset.lang === lang) {
-      b.classList.add('bg-white', 'text-indigo-700');
-      b.classList.remove('text-white/90');
-    } else {
-      b.classList.remove('bg-white', 'text-indigo-700');
-      b.classList.add('text-white/90');
-    }
+    const active = b.dataset.lang === lang;
+    b.classList.toggle('lang-btn-active', active);
+    b.setAttribute('aria-pressed', String(active));
   });
   const t = window.I18N[lang] ?? window.I18N.en;
   if (!t) return;
