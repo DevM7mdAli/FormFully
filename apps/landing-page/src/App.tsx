@@ -44,7 +44,7 @@ const SOCIAL_LINKS: Array<{ href: string; label: string; icon: IconType }> = [
 /* Vite replaces import.meta.env.BASE_URL with the configured base at build time */
 const ICON_URL = `${import.meta.env.BASE_URL}icon.png`;
 
-/* shared class recipes — utility-first, composed in JS to stay DRY */
+/* shared class recipes, composed in JS to stay DRY */
 const WRAP = "w-full max-w-[1140px] mx-auto px-6 max-[720px]:px-4";
 const SECTION = "py-20 max-[720px]:py-14";
 const CARD = "rounded-xl border border-line bg-white shadow-card";
@@ -125,7 +125,7 @@ const Brand = () => (
 );
 
 /* ------------------------------------------------------------------ */
-/* live value generators — exactly what the extension does            */
+/* live value generators (same rules as the extension)              */
 /* ------------------------------------------------------------------ */
 const pad = (n: number) => String(n).padStart(2, "0");
 
@@ -159,7 +159,7 @@ function randomHex() {
 const rand1to5 = () => String(Math.floor(Math.random() * 5) + 1);
 
 /* ------------------------------------------------------------------ */
-/* hero demo — the signature: a form that fills itself                */
+/* hero demo: a form that fills itself                               */
 /* ------------------------------------------------------------------ */
 type FieldType =
   | "text"
@@ -683,7 +683,7 @@ function Bilingual() {
         <div className="grid grid-cols-[0.9fr_1.1fr] gap-12 items-center max-[960px]:grid-cols-1 max-[960px]:gap-8">
           <div>
             <h2 className="text-[clamp(26px,3.2vw,36px)] mb-3">
-              {t("bilingual.title")} {t("bilingual.titleAccent")}.
+              {t("bilingual.title")}
             </h2>
             <p className="text-ink-muted text-[17px] max-w-[420px]">
               {t("bilingual.body")}
@@ -891,7 +891,7 @@ function App() {
             <h1 className="text-[clamp(36px,5vw,56px)] font-bold leading-[1.05] tracking-[-0.03em]">
               {t("hero.title1")}
               <span className="block">
-                {t("hero.title2")} {t("hero.titleAccent")}
+                {t("hero.title2")}
               </span>
             </h1>
             <p className="mt-5 text-[18px] text-ink-muted max-w-[480px]">
@@ -954,7 +954,7 @@ function App() {
       {/* HOW IT WORKS */}
       <section className={cx(SECTION, "bg-canvas border-y border-line")} id="how">
         <div className={WRAP}>
-          <SectionHeader title={t("how.title")} subtitle={t("how.subtitle")} />
+          <SectionHeader title={t("how.title")} />
           <ol className="grid grid-cols-3 gap-6 max-[720px]:grid-cols-1">
             {(["0", "1", "2"] as const).map((k, i) => (
               <li key={k} className={cx(CARD, "p-6")}>
@@ -979,7 +979,7 @@ function App() {
       {/* VIDEO DEMO */}
       <section className={SECTION} id="demo-video">
         <div className={WRAP}>
-          <SectionHeader title={t("video.title")} subtitle={t("video.subtitle")} />
+          <SectionHeader title={t("video.title")} />
           <div className="rounded-xl border border-line overflow-hidden aspect-video max-w-[900px] bg-canvas">
             <iframe
               className="w-full h-full"
@@ -995,10 +995,7 @@ function App() {
       {/* FEATURES */}
       <section className={cx(SECTION, "pt-0 max-[720px]:pt-0")} id="features">
         <div className={WRAP}>
-          <SectionHeader
-            title={t("features.title")}
-            subtitle={t("features.subtitle")}
-          />
+          <SectionHeader title={t("features.title")} />
           <div className="grid grid-cols-3 gap-4 max-[960px]:grid-cols-2 max-[720px]:grid-cols-1">
             <div className="rounded-xl border border-brand/30 bg-brand-soft p-6 flex flex-col">
               <LuZap size={20} className="text-brand" />
@@ -1063,7 +1060,7 @@ function App() {
           <div className={cx(CARD, "p-10 grid grid-cols-2 gap-12 items-center max-[960px]:grid-cols-1 max-[960px]:gap-8 max-[720px]:p-6")}>
             <div>
               <h2 className="text-[clamp(26px,3.2vw,36px)]">
-                {t("privacy.title")} {t("privacy.titleAccent")}.
+                {t("privacy.title")}
               </h2>
               <p className="mt-3 text-ink-muted text-[17px]">
                 {t("privacy.body")}

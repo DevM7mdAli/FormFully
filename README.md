@@ -1,12 +1,12 @@
 <div align="center">
 	<img src="./apps/extension/icon.png" width="108" alt="FormFully icon" />
 	<h1>FormFully</h1>
-	<p><em>Instant, intelligent, bilingual form filling.</em></p>
+	<p>A browser extension that fills web forms in one click, in English or Arabic.</p>
 	<a href="https://formfully.mohammed.win/" target="_blank">Website</a>
 	·
 	<a href="https://chromewebstore.google.com/detail/formfully/ojlpggfkjhgadcjdmkgdmpilhmnghlmj" target="_blank">Chrome Web Store</a>
 	·
-	<a href="https://microsoftedge.microsoft.com/addons/detail/formfully/giahhadiaaljamhigkeggghcadfnofce" target="_blank">Edge Add‑ons</a>
+	<a href="https://microsoftedge.microsoft.com/addons/detail/formfully/giahhadiaaljamhigkeggghcadfnofce" target="_blank">Edge Add-ons</a>
 	·
 	<a href="https://buymeacoffee.com/devm7mdali" target="_blank">Support</a>
 </div>
@@ -14,84 +14,81 @@
 ---
 
 ## Overview
-FormFully is a lightweight browser extension that saves you time while testing or completing web forms. Version 2.1 adds two deliberately separate modes:
 
-- **Classic** is the original FormFully behavior and remains the default, so existing users and workflows continue to work unchanged.
-- **Smart** is an opt-in, profile-aware filler for Google Forms and general web forms. It understands names, email, phone, company, address, common field types, textareas, selects, and accessible choice controls.
+FormFully fills web forms for you, which is mostly useful when you test forms or fill the same ones often. It has two modes:
+
+- **Classic** is the original behavior and is still the default. It fills every field with one value.
+- **Smart** is opt-in. It fills Google Forms and regular web forms from a saved profile: names, email, phone, company, address, common field types, textareas, selects, and custom choice controls.
 
 Website: [formfully.mohammed.win](https://formfully.mohammed.win/)
 
-## ✨ Features
-- Backward-compatible Classic mode with the original one-value workflow
-- Opt-in Smart mode for Google Forms and general web forms
-- Saved custom field rules such as `Group number → 12`, with the most specific matching rule taking priority
-- Smart matching for full/first/last name, email, phone, company, address, city, country, URL, job title, and more
-- Support for inputs, textareas, native selects, contenteditable fields, radio groups, checkbox questions, and accessible custom controls
-- Framework-compatible `input` and `change` events for React and other controlled form libraries
-- Safe defaults: Smart mode preserves existing values and skips passwords, files, payment/security fields, consent, marketing, and submission buttons
-- Leave the Classic value blank to auto‑generate random numbers (1–5) per input
-- Classic mode randomly selects one option in each unanswered radio group
-- Field aware formatting:
-	- `date`, `month`, `week`, `time`, `datetime-local`
-	- `color` gets a random hex
-- Bilingual UI: English + Arabic with full RTL support & instant switching
-- Persistent value stored in browser-local extension storage (shared across popup & shortcut)
-- Global keyboard shortcut: `Alt + Shift + F` on Windows/Linux or `Option + Shift + F` on macOS (customizable)
-- Accessible glassmorphism UI with semantic focus styles
-- Smart week number (ISO week) & date/time generation
-- Lightweight: pure JS + Tailwind build (no heavy frameworks)
-- Buy Me A Coffee support link integrated
+## Features
 
-## ⌨️ Keyboard Shortcut
-Default: `Alt + Shift + F` on Windows/Linux and `Option + Shift + F` on macOS.
+- Classic mode fills every field with one value. Leave the value blank to get a random number from 1 to 5 per field.
+- Classic mode picks a random option in each unanswered radio group.
+- Date and color fields get valid values: `date`, `month`, `week` (ISO week), `time`, and `datetime-local` use the current date or time, and `color` gets a random hex.
+- Smart mode recognizes full, first, and last name, email, phone, company, address, city, country, URL, job title, and more.
+- Custom field rules such as `Group number → 12`. When several rules match, the most specific one wins.
+- Fills inputs, textareas, native selects, contenteditable fields, radio groups, checkbox questions, and custom ARIA controls.
+- Fires native `input` and `change` events, so React and other controlled form libraries pick up the values.
+- Smart mode keeps existing answers and skips passwords, file uploads, payment and security fields, consent and marketing checkboxes, and submit buttons.
+- English and Arabic interface with right-to-left layout. The language switches instantly.
+- Your value and settings live in the browser's local extension storage, shared by the popup and the shortcut.
+- Keyboard shortcut: `Alt + Shift + F` on Windows and Linux, `Option + Shift + F` on macOS. You can change it.
+- Plain JavaScript and Tailwind, no UI framework.
 
-The legacy `fill-form-alt` command ID remains registered because browsers retain shortcut assignments by command ID across updates. Removing it would silently break Option + Shift + F for existing macOS users. You can customize the shortcut in your browser's extension shortcut settings. In Chrome and Edge, open `chrome://extensions/shortcuts`; in Firefox, use **Manage Extension Shortcuts** from `about:addons`.
+## Keyboard shortcut
 
-The popup’s shortcut modal also lists platform specific guidance.
+The default is `Alt + Shift + F` on Windows and Linux, and `Option + Shift + F` on macOS.
 
-## 🌐 Languages
-| Language | Status | Direction |
-|----------|--------|-----------|
-| English  | ✅     | LTR       |
-| العربية  | ✅     | RTL       |
+The extension still registers the old `fill-form-alt` command ID. Browsers remember shortcut assignments by command ID, so removing it would break Option + Shift + F for existing macOS users.
 
-Language preference is remembered (localStorage) and updates immediately with correct direction & typography.
+To change the shortcut in Chrome or Edge, open `chrome://extensions/shortcuts`. In Firefox, use **Manage Extension Shortcuts** in `about:addons`. The popup's shortcut dialog shows the default for your platform.
 
-## 🧠 How It Chooses Values
+## Languages
+
+| Language | Direction |
+|----------|-----------|
+| English  | LTR       |
+| العربية  | RTL       |
+
+The popup remembers your language in localStorage and switches text direction and fonts right away.
+
+## How values are chosen
 
 ### Classic mode
 
-Classic mode intentionally keeps the established behavior:
-
-| Input Type | Strategy |
-|------------|----------|
-| text / number (with user value) | Use your provided value |
-| text / number (blank) | Random integer 1–5 |
+| Input type | Value |
+|------------|-------|
+| text / number (you set a value) | Your value |
+| text / number (blank) | Random integer from 1 to 5 |
 | date | Today (YYYY-MM-DD) |
 | month | Current month (YYYY-MM) |
-| week | ISO week format (YYYY-Www) |
+| week | ISO week (YYYY-Www) |
 | time | Current time (HH:MM) |
-| datetime / datetime-local | Current ISO slice (YYYY-MM-DDTHH:MM) |
+| datetime / datetime-local | Current date and time (YYYY-MM-DDTHH:MM) |
 | color | Random hex `#RRGGBB` |
 
-Classic mode also preserves the existing `a_next` click behavior for compatible legacy workflows.
+Classic mode also keeps the `a_next` click behavior that some older workflows rely on.
 
 ### Smart mode
 
-Smart mode uses field type, `autocomplete`, name/id, placeholder, ARIA attributes, associated labels, nearby question text, and English/Arabic keywords. Profile details are saved locally. Any blank profile item receives a safe demo value, while generic questions use the optional “Default answer.”
+Smart mode looks at the field type, `autocomplete`, name and id, placeholder, ARIA attributes, the associated label, nearby question text, and English and Arabic keywords. Your profile is saved locally. Blank profile items get a safe demo value, and general questions use the optional "Default answer".
 
-For uncommon fields, add a custom rule using the field’s visible label or a distinctive keyword and the value to fill. Rules are saved locally and override the built-in Smart guess. They also select matching options in supported dropdown, radio, and checkbox questions.
+For unusual fields, add a custom rule with the field's visible label (or a keyword in it) and the value you want. Rules are saved locally and win over Smart mode's own guess. They also pick matching options in dropdowns, radio groups, and checkbox questions.
 
-Smart mode never submits the form or moves to the next page. Existing answers are preserved.
+Smart mode never submits a form or moves to the next page, and it doesn't change answers that are already filled in.
 
-## 🚀 Installation
-### From Stores
+## Installation
+
+### From the stores
+
 * Chrome: [Install](https://chromewebstore.google.com/detail/formfully/ojlpggfkjhgadcjdmkgdmpilhmnghlmj)
 * Edge: [Install](https://microsoftedge.microsoft.com/addons/detail/formfully/giahhadiaaljamhigkeggghcadfnofce)
 
-### Manual (Dev Mode)
+### For development
 
-Launch an isolated development browser with the extension already loaded:
+These commands open a separate browser with the extension loaded:
 
 ```bash
 pnpm dev:extension          # Chrome (default)
@@ -99,50 +96,54 @@ pnpm dev:extension:chrome
 pnpm dev:extension:firefox
 ```
 
-The launchers build the correct target and use a temporary browser profile, so they do not modify your normal Chrome or Firefox profile. Stop the development browser with `Ctrl+C`.
+Each one builds the right target and uses a temporary browser profile, so your normal Chrome or Firefox profile isn't touched. Press `Ctrl+C` to stop it.
 
-To load the extension into an existing browser profile manually:
+To load the extension into your own browser profile:
 
-1. Clone the repository
-2. Run `pnpm install`
-3. Run `pnpm build:extension`
-4. Load the browser-specific output:
-   - Chrome or Edge: enable Developer Mode at `chrome://extensions`, choose **Load unpacked**, and select `apps/extension/dist/chrome`.
-   - Firefox: open `about:debugging#/runtime/this-firefox`, choose **Load Temporary Add-on**, and select `apps/extension/dist/firefox/manifest.json`.
+1. Clone the repository.
+2. Run `pnpm install`.
+3. Run `pnpm build:extension`.
+4. Load the build for your browser:
+   - Chrome or Edge: turn on Developer Mode at `chrome://extensions`, click **Load unpacked**, and select `apps/extension/dist/chrome`.
+   - Firefox: open `about:debugging#/runtime/this-firefox`, click **Load Temporary Add-on**, and select `apps/extension/dist/firefox/manifest.json`.
    - Safari: run `xcrun safari-web-extension-converter apps/extension/dist/safari --macos-only`, then build the generated project in Xcode.
 
-## 🧪 Usage
-1. Click the FormFully icon to open the popup
-2. Keep **Classic** selected for the original one-value behavior, or select **Smart**
-3. In Classic, enter a value or leave it blank for random values
-4. In Smart, optionally add your name, email, phone, company, and other details
-5. Press the fill button or use `Alt + Shift + F`
+## Usage
 
-The keyboard shortcut uses whichever mode is currently selected.
+1. Click the FormFully icon to open the popup.
+2. Leave **Classic** selected for the one-value behavior, or switch to **Smart**.
+3. In Classic, enter a value or leave it blank for random values.
+4. In Smart, add your name, email, phone, company, and other details if you want.
+5. Click the fill button or press `Alt + Shift + F`.
 
-## 📸 Screenshot
+The shortcut uses whichever mode is selected in the popup.
+
+## Screenshot
+
 <div align="center">
 	<img src="./apps/extension/assets/sample-run.png" alt="FormFully popup screenshot" width="340" />
 </div>
 
-## 🔐 Permissions & Privacy
+## Permissions and privacy
+
 | Permission | Why |
 |------------|-----|
-| `activeTab` | Inject fill script into the current page when requested |
-| `scripting` | Execute the fill function safely (MV3 requirement) |
-| `storage` | Persist the selected mode, Classic value, optional Smart profile, and custom field rules |
+| `activeTab` | Run the fill script on the current page when you ask |
+| `scripting` | Run the fill function (required by Manifest V3) |
+| `storage` | Save the selected mode, Classic value, Smart profile, and custom rules |
 
-Privacy: No data leaves your browser. There are no network requests, analytics, or trackers inside the extension. Classic values, Smart profile details, and custom rules stay in the browser's local extension storage on the device.
+The extension makes no network requests and has no analytics or trackers. Classic values, your Smart profile, and custom rules stay in the browser's local extension storage on your device.
 
-## 🧩 Tech Stack
+## Tech stack
+
 * Manifest V3 for Chrome, Edge, Firefox, and Safari
-* Strict TypeScript compiled to framework-free JavaScript
-* TailwindCSS (utility + a few custom component classes)
-* i18n via a lightweight typed in-repo dictionary
+* Strict TypeScript compiled to plain JavaScript
+* Tailwind CSS, plus a few custom component classes
+* A small typed i18n dictionary in the repo
 * React, Vite, and TypeScript for the landing page
-* Nx task orchestration and local caching over pnpm workspaces with one lockfile
+* Nx for running tasks and caching, on top of pnpm workspaces with one lockfile
 
-## 🗂️ Repository Structure
+## Repository structure
 
 ```text
 apps/
@@ -156,36 +157,37 @@ docs/             Maintainer documentation
 nx.json           Shared Nx inputs, cache, and target defaults
 ```
 
-Every project declares its targets in its own `project.json`. Root scripts call Nx, so tasks run in dependency order (`test`, `lint`, and `package` build the extension first) and unchanged work is restored from the local cache.
+Each project defines its targets in its own `project.json`. The root scripts call Nx, which runs tasks in dependency order (`test`, `lint`, and `package` build the extension first) and restores unchanged results from the local cache.
 
 Common commands:
 
 | Command | Purpose |
 | --- | --- |
-| `pnpm install` | Install the entire workspace from one lockfile |
-| `pnpm dev:extension` | Build and launch FormFully in an isolated Chrome profile |
-| `pnpm dev:extension:firefox` | Build and launch FormFully in an isolated Firefox profile |
-| `pnpm typecheck` | Strictly type-check both apps and release tooling |
-| `pnpm test` | Build the extension and run all behavior/automation tests |
-| `pnpm build` | Build the extension and landing page |
-| `pnpm package:extension` | Create versioned Chrome, Firefox, and Safari ZIPs plus checksums |
-| `pnpm lint:firefox` | Validate the Firefox build with Mozilla's add-on linter |
-| `pnpm check` | Run the same full verification and packaging gate used by CI |
+| `pnpm install` | Install the whole workspace from one lockfile |
+| `pnpm dev:extension` | Build and open FormFully in a separate Chrome profile |
+| `pnpm dev:extension:firefox` | Build and open FormFully in a separate Firefox profile |
+| `pnpm typecheck` | Type-check both apps and the release tooling |
+| `pnpm test` | Build the extension and run all tests |
+| `pnpm build` | Build the extension and the landing page |
+| `pnpm package:extension` | Create versioned Chrome, Firefox, and Safari ZIPs with checksums |
+| `pnpm lint:firefox` | Check the Firefox build with Mozilla's add-on linter |
+| `pnpm check` | Run the same checks and packaging as CI |
 | `pnpm affected` | Type-check, lint, test, and build only projects changed since `main` |
-| `pnpm graph` | Open the interactive Nx project graph |
-| `pnpm nx run <project>:<target>` | Run any single target, e.g. `pnpm nx run extension:build safari` |
+| `pnpm graph` | Open the Nx project graph |
+| `pnpm nx run <project>:<target>` | Run one target, for example `pnpm nx run extension:build safari` |
 
-## 🤝 Contributing
-1. Fork & create a feature branch
-2. Make changes (keep UI lightweight & performant)
-3. Update README / i18n if adding user‑visible text
-4. Open a PR describing rationale & screenshots (EN + AR if visual)
+## Contributing
 
-Ideas welcome: configurable presets, per‑domain profiles, side panel, options page for advanced patterns.
+1. Fork the repo and create a feature branch.
+2. Make your changes. Keep the popup small and fast.
+3. If you add text users will see, update the README and both languages in i18n.
+4. Open a PR that explains why, with screenshots in English and Arabic for visual changes.
 
-## 🌍 Browser Builds
+Some ideas: configurable presets, per-domain profiles, a side panel, and an options page for advanced patterns.
 
-`apps/extension/manifest.base.json` contains the shared Manifest V3 metadata. The build adds only the engine-specific background and compatibility keys, producing:
+## Browser builds
+
+`apps/extension/manifest.base.json` holds the shared Manifest V3 metadata. The build adds only the background and compatibility keys each browser needs:
 
 | Target | Development build | Release package |
 | --- | --- | --- |
@@ -193,33 +195,36 @@ Ideas welcome: configurable presets, per‑domain profiles, side panel, options 
 | Firefox | `apps/extension/dist/firefox` | `artifacts/formfully-firefox-<version>.zip` |
 | Safari | `apps/extension/dist/safari` | `artifacts/formfully-safari-<version>.zip` |
 
-Firefox and Safari use event-page background scripts, while Chrome and Edge use a service worker. Runtime API calls prefer the standard promise-based `browser` namespace and fall back to Chromium's `chrome` namespace.
+Firefox and Safari use an event-page background script. Chrome and Edge use a service worker. Runtime API calls use the promise-based `browser` namespace when it exists and fall back to Chromium's `chrome` namespace.
 
-## 📦 Store Releases
+## Store releases
 
-Every successful `main` verification evaluates conventional commits for a semantic release. The first release preserves the manifest version; later `fix:` commits create patch releases, `feat:` commits create minor releases, and `BREAKING CHANGE:` creates a major release. Each GitHub Release includes checksummed ZIPs for Chrome/Edge, Firefox, and Safari.
+After each successful verification on `main`, semantic-release reads the conventional commits. The first release keeps the manifest version. After that, `fix:` commits make a patch release, `feat:` a minor release, and `BREAKING CHANGE:` a major release. Each GitHub Release includes checksummed ZIPs for Chrome/Edge, Firefox, and Safari.
 
-Chrome Web Store and Microsoft Edge Add-ons publishing remains a separate workflow. For a release created by CI, start **Publish browser extension** manually and select the store; manually pushed tags must exactly match the manifest version, such as `v2.3.0`.
+Publishing to the Chrome Web Store and Microsoft Edge Add-ons is a separate workflow. For a release made by CI, run **Publish browser extension** by hand and pick the store. A tag you push yourself must match the manifest version exactly, for example `v2.3.0`.
 
-Every branch and pull request runs commit validation plus the same verification pipeline and exposes the three ZIPs as workflow artifacts. Landing-page deployment waits for a successful `Verify` run on `main` and deploys the exact commit that passed.
+Every branch and pull request runs commit validation and the same verification pipeline, and uploads the three ZIPs as workflow artifacts. The landing page deploys only after `Verify` passes on `main`, and it deploys that exact commit.
 
-Maintainer setup, required secrets, release steps, retry controls, and safety behavior are documented in [Browser store release automation](./docs/store-release.md).
+Setup, required secrets, release steps, retries, and safety checks for maintainers are in [Browser store release automation](./docs/store-release.md).
 
-## 🗒️ Changelog (Highlights)
+## Changelog highlights
+
 | Version | Summary |
 |---------|---------|
 | 2.2.0 | Added saved Smart custom-field rules and random Classic radio-group selection |
-| 2.1.0 | Added opt-in Smart mode for Google Forms and general forms; Classic remains the default and unchanged |
-| 2.0.2 | Shortcut modal (platform specific), simplified command, footer size tweak |
-| 2.0.1 | Added keyboard shortcut, background service worker, storage migration |
-| 2.0.0 | Major redesign: glass UI, Arabic support (RTL), presets, i18n extraction, donation button |
-| 1.x   | Initial minimal popup & basic fill logic |
+| 2.1.0 | Added opt-in Smart mode for Google Forms and general forms. Classic stayed the default and didn't change |
+| 2.0.2 | Shortcut dialog with per-platform details, simpler command, smaller footer |
+| 2.0.1 | Added the keyboard shortcut, a background service worker, and storage migration |
+| 2.0.0 | Redesign with a glass UI, Arabic (RTL) support, presets, i18n extraction, and a donation button |
+| 1.x   | First version: a small popup and basic filling |
 
-## ☕ Support
-If FormFully saves you time, consider supporting: [Buy me a coffee](https://buymeacoffee.com/devm7mdali)
+## Support
 
-## 📝 License
-MIT — see [LICENSE](./LICENSE).
+If FormFully saves you time, you can [buy me a coffee](https://buymeacoffee.com/devm7mdali).
+
+## License
+
+MIT. See [LICENSE](./LICENSE).
 
 ---
-Made by [Mohammed Alajmi](https://devm7mdali.github.io) with care for testers, QA, and builders.
+Made by [Mohammed Alajmi](https://devm7mdali.github.io) for testers, QA engineers, and developers.

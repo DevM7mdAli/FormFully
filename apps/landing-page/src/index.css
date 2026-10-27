@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* =========================================================================
-   Formfully — landing page (Tailwind v4)
+   Formfully landing page (Tailwind v4)
    Only design tokens, keyframes, and base element defaults live here.
    All component styling is authored as utility classes in App.tsx.
    ========================================================================= */
@@ -11,7 +11,7 @@
   --font-body: "Inter", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
 
-  /* text — every step passes WCAG AA on white and canvas */
+  /* text colors, all WCAG AA on white and canvas */
   --color-ink: #141a33;
   --color-ink-muted: #4a5272;
   --color-ink-subtle: #646b8a;
@@ -51,7 +51,7 @@
     scroll-behavior: smooth;
     scroll-padding-top: 72px;
   }
-  /* Arabic — Cairo replaces Space Grotesk/Inter; keeps mono as-is */
+  /* Arabic: Cairo replaces Space Grotesk and Inter, mono stays */
   :lang(ar) body {
     font-family: "Cairo", system-ui, sans-serif;
   }

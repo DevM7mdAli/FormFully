@@ -40,11 +40,11 @@ window.I18N = {
     authorName: 'Mohammed Alajmi',
     coffee: 'Buy me a coffee',
     shortcutInfoLabel: 'Shortcut info',
-    shortcutTitle: 'Keyboard Shortcut',
-    shortcutIntro: 'Keyboard shortcut details:',
+    shortcutTitle: 'Keyboard shortcut',
+    shortcutIntro: 'Press it on any page to fill the form:',
     shortcutWin: 'Windows / Linux: Alt + Shift + F',
     shortcutMac: 'macOS: Option + Shift + F',
-    shortcutChange: "Change it in your browser's extension shortcut settings",
+    shortcutChange: "You can change it in your browser's extension shortcut settings.",
     shortcutClose: 'Close'
   },
   ar: {
@@ -89,7 +89,7 @@ window.I18N = {
     coffee: 'اشترِ لي قهوة',
     shortcutInfoLabel: 'معلومات الاختصار',
     shortcutTitle: 'اختصار لوحة المفاتيح',
-    shortcutIntro: 'تفاصيل اختصار لوحة المفاتيح:',
+    shortcutIntro: 'اضغطه في أي صفحة لملء النموذج:',
     shortcutWin: 'ويندوز / لينكس: Alt + Shift + F',
     shortcutMac: 'ماك: Option + Shift + F',
     shortcutChange: 'يمكنك تغييره من إعدادات اختصارات الإضافات في متصفحك',
