@@ -1,0 +1,88 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "extension",
+  "projectType": "application",
+  "sourceRoot": "apps/extension/src",
+  "tags": ["type:app", "scope:extension", "platform:browser"],
+  "implicitDependencies": ["tooling"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "metadata": {
+        "description": "Compile the extension for Chrome/Edge, Firefox, and Safari. Pass browser names to build a subset."
+      },
+      "inputs": [
+        "production",
+        "^production",
+        { "externalDependencies": ["typescript", "tailwindcss", "tsx"] }
+      ],
+      "outputs": ["{projectRoot}/dist"],
+      "options": {
+        "command": "node --import tsx ../../tooling/extension/build.ts",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "inputs": ["default", "^production", { "externalDependencies": ["typescript"] }],
+      "options": {
+        "commands": ["tsc -p tsconfig.json --noEmit", "tsc -p tsconfig.tests.json --noEmit"],
+        "cwd": "{projectRoot}",
+        "parallel": false
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "inputs": ["default", "^production", { "externalDependencies": ["jsdom", "tsx"] }],
+      "options": {
+        "command": "node --import tsx --test tests/*.test.ts",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "metadata": {
+        "description": "Validate the Firefox build with Mozilla's add-on linter."
+      },
+      "dependsOn": ["build"],
+      "inputs": ["production", "^production", { "externalDependencies": ["web-ext"] }],
+      "options": {
+        "command": "web-ext lint --source-dir apps/extension/dist/firefox --no-config-discovery"
+      }
+    },
+    "package": {
+      "executor": "nx:run-commands",
+      "metadata": {
+        "description": "Create versioned browser ZIPs and SHA-256 checksums in artifacts/."
+      },
+      "cache": true,
+      "dependsOn": ["build"],
+      "inputs": ["production", "^production", { "env": "RELEASE_TAG" }],
+      "outputs": ["{workspaceRoot}/artifacts"],
+      "options": {
+        "command": "node --import tsx tooling/extension/package.ts"
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "metadata": {
+        "description": "Launch the built extension in an isolated browser profile."
+      },
+      "dependsOn": ["build"],
+      "defaultConfiguration": "chrome",
+      "options": {},
+      "configurations": {
+        "chrome": {
+          "command": "web-ext run --source-dir apps/extension/dist/chrome --target chromium --no-config-discovery"
+        },
+        "firefox": {
+          "command": "web-ext run --source-dir apps/extension/dist/firefox --target firefox-desktop --devtools --no-config-discovery"
+        },
+        "safari": {
+          "command": "safari_project_dir=$(mktemp -d /tmp/formfully-safari.XXXXXX) && xcrun safari-web-extension-converter apps/extension/dist/safari --project-location \"$safari_project_dir\" --app-name \"FormFully\" --bundle-identifier io.github.devm7mdali.formfully --swift --macos-only --copy-resources --no-open --no-prompt && open \"$safari_project_dir/FormFully/FormFully.xcodeproj\""
+        }
+      }
+    }
+  }
+}

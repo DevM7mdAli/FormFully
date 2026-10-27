@@ -140,20 +140,23 @@ Privacy: No data leaves your browser. There are no network requests, analytics, 
 * TailwindCSS (utility + a few custom component classes)
 * i18n via a lightweight typed in-repo dictionary
 * React, Vite, and TypeScript for the landing page
-* pnpm workspaces with one repository lockfile
+* Nx task orchestration and local caching over pnpm workspaces with one lockfile
 
 ## 🗂️ Repository Structure
 
 ```text
 apps/
-  extension/      Browser extension source, tests, manifest, and build output
-  landing-page/   React landing page and hosting configuration
-tooling/
+  extension/      Nx project `extension`: browser extension source, tests, and manifest
+  landing-page/   Nx project `landing-page`: React landing page and hosting configuration
+tooling/          Nx project `tooling` (an implicit dependency of `extension`)
   extension/      Multi-browser build, manifest, and packaging tools
   release/        Chrome and Edge publishing clients
   tests/          Release automation tests
 docs/             Maintainer documentation
+nx.json           Shared Nx inputs, cache, and target defaults
 ```
+
+Every project declares its targets in its own `project.json`. Root scripts call Nx, so tasks run in dependency order (`test`, `lint`, and `package` build the extension first) and unchanged work is restored from the local cache.
 
 Common commands:
 
@@ -168,6 +171,9 @@ Common commands:
 | `pnpm package:extension` | Create versioned Chrome, Firefox, and Safari ZIPs plus checksums |
 | `pnpm lint:firefox` | Validate the Firefox build with Mozilla's add-on linter |
 | `pnpm check` | Run the same full verification and packaging gate used by CI |
+| `pnpm affected` | Type-check, lint, test, and build only projects changed since `main` |
+| `pnpm graph` | Open the interactive Nx project graph |
+| `pnpm nx run <project>:<target>` | Run any single target, e.g. `pnpm nx run extension:build safari` |
 
 ## 🤝 Contributing
 1. Fork & create a feature branch

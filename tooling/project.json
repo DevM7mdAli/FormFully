@@ -1,0 +1,27 @@
+{
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "name": "tooling",
+  "projectType": "library",
+  "sourceRoot": "tooling",
+  "tags": ["type:tooling", "scope:shared", "platform:node"],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "inputs": [
+        "default",
+        "{workspaceRoot}/tsconfig.tooling.json",
+        { "externalDependencies": ["typescript"] }
+      ],
+      "options": {
+        "command": "tsc -p tsconfig.tooling.json"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "inputs": ["default", { "externalDependencies": ["tsx"] }],
+      "options": {
+        "command": "node --import tsx --test tooling/tests/*.test.ts"
+      }
+    }
+  }
+}

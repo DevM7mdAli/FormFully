@@ -1,0 +1,68 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "landing-page",
+  "projectType": "application",
+  "sourceRoot": "apps/landing-page/src",
+  "tags": ["type:app", "scope:landing", "platform:web"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "inputs": [
+        "production",
+        "^production",
+        { "externalDependencies": ["typescript", "vite", "@vitejs/plugin-react", "@tailwindcss/vite"] }
+      ],
+      "outputs": ["{projectRoot}/dist"],
+      "options": {
+        "command": "tsc -b && vite build",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "build-sites": {
+      "executor": "nx:run-commands",
+      "metadata": {
+        "description": "Add the Workers entry point and site metadata on top of the static build."
+      },
+      "cache": true,
+      "dependsOn": ["build"],
+      "inputs": ["production", "^production"],
+      "outputs": ["{projectRoot}/dist/server", "{projectRoot}/dist/.openai"],
+      "options": {
+        "command": "node --import tsx scripts/prepare-sites-build.ts",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "inputs": ["default", "^production", { "externalDependencies": ["typescript"] }],
+      "options": {
+        "command": "tsc -b --pretty false",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "inputs": ["default", "^production", { "externalDependencies": ["eslint"] }],
+      "options": {
+        "command": "eslint .",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vite",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "preview": {
+      "executor": "nx:run-commands",
+      "continuous": true,
+      "dependsOn": ["build"],
+      "options": {
+        "command": "vite preview",
+        "cwd": "{projectRoot}"
+      }
+    }
+  }
+}
