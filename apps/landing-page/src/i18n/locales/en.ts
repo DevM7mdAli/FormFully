@@ -25,6 +25,7 @@ const en = {
     stat2l: "nothing leaves your browser",
     stat3n: "EN / عربي",
     stat3l: "full RTL support",
+    typesLabel: "Fills every input type",
   },
 
   demo: {

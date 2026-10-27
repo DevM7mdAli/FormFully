@@ -11,49 +11,45 @@
   --font-body: "Inter", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
 
-  /* brand blues (extension: brand-start #4E65FF, brand-mid #3b8fff) */
-  --color-blue: #4e65ff;
-  --color-sky: #3b8fff;
-  --color-navy: #1c2660;
-  --color-ice: #e4ecff;
+  /* text — every step passes WCAG AA on white and canvas */
+  --color-ink: #141a33;
+  --color-ink-muted: #4a5272;
+  --color-ink-subtle: #646b8a;
 
-  /* signal colors */
-  --color-mint: #5ef0bb;
+  /* surfaces */
+  --color-canvas: #f6f7fb;
+  --color-line: #e3e6ef;
+  --color-line-strong: #cdd2e0;
+
+  /* brand cornflower (matches the extension's #4E65FF) */
+  --color-brand: #4e65ff;
+  --color-brand-hover: #3d52e6;
+  --color-brand-soft: #eef1ff;
+  --color-brand-ink: #2f3fbf;
+
+  /* filled / success */
+  --color-ok: #0e7f58;
+  --color-ok-soft: #e7f6ef;
+  --color-ok-line: #a8dcc4;
+
   --color-coffee: #ffdd00;
+  --color-coffee-ink: #0d0c22;
 
-  /* glass surfaces over the blue gradient */
-  --color-glass: rgba(255, 255, 255, 0.1);
-  --color-glass-2: rgba(255, 255, 255, 0.16);
-  --color-glass-3: rgba(255, 255, 255, 0.24);
-  --color-line: rgba(255, 255, 255, 0.24);
-  --color-line-strong: rgba(255, 255, 255, 0.42);
+  --shadow-card: 0 1px 2px rgba(20, 26, 51, 0.06);
 
-  --animate-marquee: marquee 34s linear infinite;
   --animate-blink: blink 1s steps(1) infinite;
 }
 
-@keyframes marquee {
-  to {
-    transform: translateX(-50%);
-  }
-}
 @keyframes blink {
   50% {
     opacity: 0;
-  }
-}
-@keyframes pulse-glow {
-  0%, 100% {
-    box-shadow: 0 0 0 0 rgba(94, 240, 187, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.1);
-  }
-  50% {
-    box-shadow: 0 0 0 8px rgba(94, 240, 187, 0), inset 0 1px 2px rgba(255, 255, 255, 0.1);
   }
 }
 
 @layer base {
   html {
     scroll-behavior: smooth;
+    scroll-padding-top: 72px;
   }
   /* Arabic — Cairo replaces Space Grotesk/Inter; keeps mono as-is */
   :lang(ar) body {
@@ -64,7 +60,7 @@
   :lang(ar) h3 {
     font-family: "Cairo", system-ui, sans-serif;
     letter-spacing: 0;
-    line-height: 1.2;
+    line-height: 1.25;
   }
   @media (prefers-reduced-motion: reduce) {
     html {
@@ -74,37 +70,33 @@
   body {
     margin: 0;
     font-family: var(--font-body);
-    font-size: 17px;
+    font-size: 16px;
     line-height: 1.6;
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--color-ink);
+    background: #fff;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     overflow-x: hidden;
-    /* the periwinkle → sky gradient that defines the brand */
-    background:
-      radial-gradient(58rem 40rem at 88% -6%, rgba(220, 232, 255, 0.5), transparent 58%),
-      radial-gradient(50rem 42rem at 6% 2%, rgba(150, 165, 248, 0.45), transparent 55%),
-      linear-gradient(150deg, #5365e6 0%, #5a82ee 48%, #6f9ff3 100%);
-    background-attachment: fixed;
   }
   h1,
   h2,
-  h3 {
+  h3,
+  h4 {
     font-family: var(--font-display);
-    color: #fff;
+    color: var(--color-ink);
     font-weight: 600;
     letter-spacing: -0.02em;
-    line-height: 1.05;
+    line-height: 1.15;
     margin: 0;
   }
   ::selection {
-    background: #fff;
-    color: var(--color-navy);
+    background: var(--color-brand-soft);
+    color: var(--color-ink);
   }
   :focus-visible {
-    outline: 2px solid #fff;
-    outline-offset: 3px;
-    border-radius: 6px;
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+    border-radius: 4px;
   }
 }

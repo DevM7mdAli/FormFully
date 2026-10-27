@@ -27,6 +27,7 @@ const ar: Translation = {
     stat2l: "لا شيء يغادر متصفحك",
     stat3n: "EN / عربي",
     stat3l: "دعم كامل للكتابة من اليمين",
+    typesLabel: "يملأ جميع أنواع الحقول",
   },
 
   demo: {

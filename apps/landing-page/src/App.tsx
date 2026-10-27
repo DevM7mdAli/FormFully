@@ -10,6 +10,8 @@ import {
   LuSave,
   LuFeather,
   LuCoffee,
+  LuPlus,
+  LuMinus,
 } from "react-icons/lu";
 import { FaChrome, FaEdge, FaLinkedin, FaGithub } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
@@ -43,78 +45,81 @@ const SOCIAL_LINKS: Array<{ href: string; label: string; icon: IconType }> = [
 const ICON_URL = `${import.meta.env.BASE_URL}icon.png`;
 
 /* shared class recipes — utility-first, composed in JS to stay DRY */
-const WRAP = "w-full max-w-[1140px] mx-auto px-7 max-[720px]:px-5";
-const SECTION = "relative py-24 max-[720px]:py-[70px]";
-const GLASS = "rounded-[20px] bg-glass border border-line backdrop-blur-[14px]";
+const WRAP = "w-full max-w-[1140px] mx-auto px-6 max-[720px]:px-4";
+const SECTION = "py-20 max-[720px]:py-14";
+const CARD = "rounded-xl border border-line bg-white shadow-card";
 
 const BTN =
-  "inline-flex items-center justify-center gap-[9px] font-display font-semibold tracking-[-0.01em] rounded-[14px] border border-transparent cursor-pointer whitespace-nowrap transition duration-200 active:translate-y-px";
+  "inline-flex items-center justify-center gap-2 rounded-lg border font-medium whitespace-nowrap cursor-pointer transition-colors duration-150";
+const BTN_SIZE = {
+  sm: "h-9 px-3 text-[14px]",
+  md: "h-10 px-4 text-[15px]",
+  lg: "h-11 px-5 text-[15px]",
+  icon: "h-9 w-9",
+};
 const BTN_PRIMARY = cx(
   BTN,
-  "text-[15px] px-[22px] py-[13px] text-navy bg-[linear-gradient(180deg,#fff,#eef3ff)]",
-  "shadow-[0_14px_32px_-14px_rgba(20,30,90,0.55),inset_0_1px_0_rgba(255,255,255,0.8)]",
-  "hover:-translate-y-0.5 hover:shadow-[0_20px_44px_-16px_rgba(20,30,90,0.6)]",
+  "border-brand bg-brand text-white hover:bg-brand-hover hover:border-brand-hover",
 );
-const BTN_GHOST = cx(
+const BTN_SECONDARY = cx(
   BTN,
-  "text-[15px] px-[22px] py-[13px] text-white bg-glass-2 border-line-strong backdrop-blur-md",
-  "hover:bg-glass-3 hover:border-white",
+  "border-line-strong bg-white text-ink hover:bg-canvas",
 );
 const BTN_COFFEE = cx(
   BTN,
-  "text-[16px] px-[26px] py-[15px] text-[#0d0c22] bg-[linear-gradient(120deg,#ffdd00,#ffc400)]",
-  "shadow-[0_14px_34px_-14px_rgba(255,200,0,0.85),inset_0_1px_0_rgba(255,255,255,0.55)]",
-  "hover:-translate-y-0.5 hover:shadow-[0_22px_48px_-16px_rgba(255,200,0,0.95)]",
+  "border-coffee bg-coffee text-coffee-ink font-semibold hover:brightness-95",
 );
-
-const REVEAL =
-  "opacity-0 translate-y-[22px] transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform " +
-  "motion-reduce:opacity-100 motion-reduce:translate-y-0 motion-reduce:transition-none";
 
 /* ------------------------------------------------------------------ */
 /* primitives                                                         */
 /* ------------------------------------------------------------------ */
 const Kbd = ({ children }: { children: ReactNode }) => (
-  <span
+  <kbd
     dir="ltr"
-    className="font-mono font-bold text-[0.85em] text-navy bg-white rounded-[7px] px-2 py-[3px] leading-none inline-flex items-center border border-white/90 shadow-[0_2px_6px_-2px_rgba(20,30,90,0.35),inset_0_-2px_0_rgba(28,38,96,0.28)]"
+    className="inline-flex items-center font-mono text-[12px] font-medium leading-none text-ink bg-white border border-line-strong border-b-2 rounded-[5px] px-1.5 py-1"
   >
     {children}
-  </span>
+  </kbd>
 );
 
-const Eyebrow = ({ children }: { children: ReactNode }) => (
-  <p className="inline-flex items-center gap-[9px] font-mono text-[12px] font-medium uppercase tracking-[0.16em] text-ice mb-[18px]">
-    <span className="w-[22px] h-px bg-[linear-gradient(90deg,#fff,transparent)] rtl:bg-[linear-gradient(270deg,#fff,transparent)]" />
-    {children}
-  </p>
-);
-
-const Grad = ({ children }: { children: ReactNode }) => (
-  <span className="bg-[linear-gradient(90deg,#fff,#cfe0ff)] bg-clip-text text-transparent">
-    {children}
+const Shortcut = () => (
+  <span dir="ltr" className="inline-flex items-center gap-1">
+    <Kbd>Alt</Kbd>
+    <Kbd>Shift</Kbd>
+    <Kbd>F</Kbd>
   </span>
 );
 
 const Code = ({ children }: { children: ReactNode }) => (
   <code
     dir="ltr"
-    className="font-mono text-[0.88em] text-white bg-white/18 rounded-[5px] px-1.5 py-0.5 inline-block"
+    className="font-mono text-[0.88em] text-ink bg-canvas border border-line rounded px-1 py-px inline-block"
   >
     {children}
   </code>
 );
 
+const SectionHeader = ({
+  title,
+  subtitle,
+}: {
+  title: ReactNode;
+  subtitle?: ReactNode;
+}) => (
+  <div className="max-w-[640px] mb-10">
+    <h2 className="text-[clamp(26px,3.2vw,36px)]">{title}</h2>
+    {subtitle && (
+      <p className="mt-3 text-ink-muted text-[17px]">{subtitle}</p>
+    )}
+  </div>
+);
+
 const Brand = () => (
   <a
-    className="inline-flex items-center gap-[11px] font-display font-bold text-[19px] text-white tracking-[-0.02em]"
+    className="inline-flex items-center gap-2.5 font-display font-semibold text-[17px] text-ink"
     href="#top"
   >
-    <img
-      src={ICON_URL}
-      alt=""
-      className="w-8 h-8 rounded-[9px] p-0.5 bg-white/85"
-    />
+    <img src={ICON_URL} alt="" className="w-7 h-7" />
     Formfully
   </a>
 );
@@ -152,36 +157,6 @@ function randomHex() {
   );
 }
 const rand1to5 = () => String(Math.floor(Math.random() * 5) + 1);
-
-/* ------------------------------------------------------------------ */
-/* scroll-reveal — removes the hide classes once in view              */
-/* ------------------------------------------------------------------ */
-function useReveal() {
-  useEffect(() => {
-    const els = Array.from(
-      document.querySelectorAll<HTMLElement>("[data-reveal]"),
-    );
-    const show = (el: HTMLElement) =>
-      el.classList.remove("opacity-0", "translate-y-[22px]");
-    if (!("IntersectionObserver" in window)) {
-      els.forEach(show);
-      return;
-    }
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            show(e.target as HTMLElement);
-            io.unobserve(e.target);
-          }
-        });
-      },
-      { threshold: 0.12, rootMargin: "0px 0px -8% 0px" },
-    );
-    els.forEach((el) => io.observe(el));
-    return () => io.disconnect();
-  }, []);
-}
 
 /* ------------------------------------------------------------------ */
 /* hero demo — the signature: a form that fills itself                */
@@ -230,6 +205,52 @@ function valueFor(field: Field, input: string, mode: DemoMode): string {
       }
       return input || rand1to5();
   }
+}
+
+/* segmented control shared by the demo and the bilingual preview */
+function Segmented<T extends string>({
+  items,
+  value,
+  onChange,
+  label,
+  render,
+  className,
+}: {
+  items: readonly T[];
+  value: T;
+  onChange: (item: T) => void;
+  label: string;
+  render: (item: T) => ReactNode;
+  className?: string;
+}) {
+  return (
+    <div
+      className={cx(
+        "grid gap-0.5 p-0.5 rounded-lg border border-line bg-canvas",
+        className,
+      )}
+      style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}
+      role="tablist"
+      aria-label={label}
+    >
+      {items.map((item) => (
+        <button
+          key={item}
+          role="tab"
+          aria-selected={value === item}
+          className={cx(
+            "rounded-md py-1.5 px-3 text-[13px] font-medium cursor-pointer transition-colors",
+            value === item
+              ? "bg-white text-ink shadow-card"
+              : "text-ink-subtle hover:text-ink",
+          )}
+          onClick={() => onChange(item)}
+        >
+          {render(item)}
+        </button>
+      ))}
+    </div>
+  );
 }
 
 function FillDemo() {
@@ -317,174 +338,148 @@ function FillDemo() {
   }, [fill]);
 
   return (
-    <div
-      className={cx("relative max-[960px]:max-w-[520px]", REVEAL)}
-      data-reveal
-    >
-      <div className="relative rounded-[26px] p-[26px] bg-glass-2 border border-line-strong backdrop-blur-[22px] shadow-[0_40px_80px_-40px_rgba(20,30,90,0.55),inset_0_1px_0_rgba(255,255,255,0.4)]">
-        <div
+    <div className={cx(CARD, "overflow-hidden max-[960px]:max-w-[560px]")}>
+      <div className="flex items-center justify-between gap-3 px-5 py-3 border-b border-line">
+        <span className="text-[13px] font-medium text-ink-muted">
+          {t("demo.tryIt")}
+        </span>
+        <span
           className={cx(
-            "absolute -top-4 end-[18px] inline-flex items-center gap-1.5 px-3 py-2 rounded-[12px] z-[3]",
-            "bg-white/90 border border-white/90 shadow-[0_14px_28px_-14px_rgba(20,30,90,0.6)] transition-[transform,box-shadow] duration-150",
-            pressed && "translate-y-0.5",
+            "rounded-md transition-shadow duration-150",
+            pressed && "ring-2 ring-brand/30",
           )}
           aria-hidden="true"
-          dir="ltr"
         >
-          <Kbd>Alt</Kbd>
-          <Kbd>Shift</Kbd>
-          <Kbd>F</Kbd>
+          <Shortcut />
+        </span>
+      </div>
+
+      <div
+        className="grid grid-cols-2 gap-x-3 gap-y-3.5 p-5"
+        aria-hidden="true"
+      >
+        {FIELDS.map((f) => {
+          const v = filled[f.key];
+          const isFilled = v !== undefined;
+          const isActive = active === f.key;
+          return (
+            <div
+              key={f.key}
+              className={cx("flex flex-col gap-1.5", f.span && "col-span-full")}
+            >
+              <span className="text-[13px] font-medium text-ink-muted">
+                {t(f.labelKey)}
+              </span>
+              <div
+                className={cx(
+                  "relative h-10 rounded-md flex items-center px-3 font-mono text-[13.5px] text-ink overflow-hidden border transition-colors duration-200",
+                  isFilled
+                    ? "bg-ok-soft border-ok-line"
+                    : isActive
+                      ? "bg-white border-brand ring-2 ring-brand/15"
+                      : "bg-canvas border-line",
+                )}
+              >
+                {f.type === "color" && (
+                  <span
+                    className="w-5 h-5 rounded me-2 shrink-0 border border-line-strong bg-white"
+                    style={isFilled ? { background: v } : undefined}
+                  />
+                )}
+                <span
+                  className={cx(
+                    "truncate transition-opacity duration-200",
+                    isFilled ? "opacity-100" : "opacity-0",
+                  )}
+                >
+                  {v ?? ""}
+                </span>
+                <span
+                  className={cx(
+                    "w-[1.5px] h-4 bg-ink ms-px",
+                    isActive ? "opacity-100 animate-blink" : "opacity-0",
+                  )}
+                />
+                <LuCheck
+                  size={15}
+                  className={cx(
+                    "absolute end-3 text-ok transition-opacity duration-200",
+                    isFilled ? "opacity-100" : "opacity-0",
+                  )}
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* the extension popup, in miniature */}
+      <div className="p-5 border-t border-line bg-canvas">
+        <Segmented
+          className="mb-3 bg-white"
+          items={["classic", "smart"] as const}
+          value={mode}
+          label={t("demo.modeLabel")}
+          render={(item) => t(`demo.${item}`)}
+          onChange={(item) => {
+            setMode(item);
+            setFilled({});
+            window.setTimeout(() => fill(item), 80);
+          }}
+        />
+
+        <div className="flex items-center gap-2.5">
+          <img
+            className="w-8 h-8 shrink-0"
+            src={ICON_URL}
+            alt=""
+            aria-hidden="true"
+          />
+          {mode === "classic" ? (
+            <input
+              className="flex-1 min-w-0 h-10 rounded-md text-ink font-mono text-[13.5px] px-3 bg-white border border-line-strong placeholder:text-ink-subtle focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition-colors"
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              placeholder={t("demo.placeholder")}
+              aria-label={t("demo.valueLabel")}
+            />
+          ) : (
+            <div className="flex-1 min-w-0 grid grid-cols-[1fr_auto_0.6fr] gap-2 items-center">
+              <span className="h-10 px-3 rounded-md bg-white border border-line-strong flex items-center text-[13px] text-ink truncate">
+                {t("demo.customField")}
+              </span>
+              <span className="text-ink-subtle rtl:rotate-180" aria-hidden="true">
+                →
+              </span>
+              <span className="h-10 px-3 rounded-md bg-white border border-line-strong flex items-center font-mono text-[13.5px] text-ink">
+                12
+              </span>
+            </div>
+          )}
+          <button
+            className={cx(BTN_PRIMARY, BTN_SIZE.md, "disabled:opacity-60 disabled:cursor-progress")}
+            onClick={() => fill()}
+            disabled={running}
+            title={t("demo.fill")}
+          >
+            <LuZap size={15} />
+            {running ? t("demo.filling") : t("demo.fill")}
+          </button>
         </div>
 
         <div
-          className="grid grid-cols-2 gap-x-3.5 gap-y-[13px]"
-          aria-hidden="true"
+          className={cx(
+            "gap-1.5 mt-3 flex-wrap items-center",
+            mode === "classic" ? "flex" : "hidden",
+          )}
         >
-          {FIELDS.map((f) => {
-            const v = filled[f.key];
-            const isFilled = v !== undefined;
-            const isActive = active === f.key;
-            return (
-              <div
-                key={f.key}
-                className={cx(
-                  "flex flex-col gap-1.5",
-                  f.span && "col-span-full",
-                )}
-              >
-                <span className="font-mono text-[10.5px] uppercase tracking-[0.06em] text-white/65">
-                  {t(f.labelKey)}
-                </span>
-                <div
-                  className={cx(
-                    "relative h-10 rounded-[11px] flex items-center px-3 font-mono text-[13.5px] text-white overflow-hidden border transition-[border-color,box-shadow,background] duration-300",
-                    isFilled
-                      ? "bg-mint/12 border-mint/70 shadow-[0_0_18px_-6px_rgba(94,240,187,0.8)]"
-                      : isActive
-                        ? "bg-white/24 border-white"
-                        : "bg-white/16 border-white/28",
-                  )}
-                >
-                  {f.type === "color" && (
-                    <span
-                      className="w-[22px] h-[22px] rounded-[6px] me-[9px] shrink-0 border border-white/50 bg-white/25 transition-[background] duration-300"
-                      style={isFilled ? { background: v } : undefined}
-                    />
-                  )}
-                  <span
-                    className={cx(
-                      "transition-[opacity,transform] duration-[280ms]",
-                      isFilled
-                        ? "opacity-100 translate-y-0"
-                        : "opacity-0 translate-y-1",
-                    )}
-                  >
-                    {v ?? ""}
-                  </span>
-                  <span
-                    className={cx(
-                      "w-[1.5px] h-[17px] bg-white ms-px",
-                      isActive ? "opacity-100 animate-blink" : "opacity-0",
-                    )}
-                  />
-                  <span
-                    className={cx(
-                      "absolute end-2.5 w-[17px] h-[17px] rounded-full grid place-items-center bg-mint text-[#06241a]",
-                      "transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]",
-                      isFilled ? "opacity-100 scale-100" : "opacity-0 scale-50",
-                    )}
-                  >
-                    <LuCheck size={11} />
-                  </span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* try it now hint */}
-        <div className="flex items-center gap-2 mb-[16px]">
-          <span className="inline-block w-2 h-2 rounded-full bg-mint animate-pulse" />
-          <span className="font-mono text-[11px] font-semibold text-mint uppercase tracking-[0.08em]">
-            {t("demo.tryIt")}
-          </span>
-        </div>
-
-        {/* the extension popup, in miniature */}
-        <div className="mt-0 p-3.5 rounded-[15px] border border-line-strong bg-white/16">
-          <div
-            className="grid grid-cols-2 gap-1 p-1 mb-3 rounded-[11px] bg-navy/15"
-            role="tablist"
-            aria-label={t("demo.modeLabel")}
-          >
-            {(["classic", "smart"] as const).map((item) => (
-              <button
-                key={item}
-                role="tab"
-                aria-selected={mode === item}
-                className={cx(
-                  "rounded-[8px] py-1.5 border-0 cursor-pointer font-display font-semibold text-[12px] transition",
-                  mode === item
-                    ? "bg-white text-navy shadow-sm"
-                    : "bg-transparent text-white/68",
-                )}
-                onClick={() => {
-                  setMode(item);
-                  setFilled({});
-                  window.setTimeout(() => fill(item), 80);
-                }}
-              >
-                {t(`demo.${item}`)}
-              </button>
-            ))}
-          </div>
-
-          <div className="flex items-center gap-3">
-            <img
-              className="w-[34px] h-[34px] rounded-[9px] shrink-0 p-0.5 bg-white/85"
-              src={ICON_URL}
-              alt=""
-              aria-hidden="true"
-            />
-            {mode === "classic" ? (
-              <input
-                className="flex-1 min-w-0 h-[38px] rounded-[10px] text-white font-mono text-[13.5px] px-3 bg-white/16 border border-white/30 placeholder:text-white/60 focus:outline-none focus:border-mint/60 focus:ring-4 focus:ring-mint/20 transition-all duration-200"
-                value={value}
-                onChange={(e) => setValue(e.target.value)}
-                placeholder={t("demo.placeholder")}
-                aria-label={t("demo.valueLabel")}
-              />
-            ) : (
-              <div className="flex-1 min-w-0 grid grid-cols-[1fr_auto_0.65fr] gap-2 items-center">
-                <span className="h-[38px] px-3 rounded-[10px] bg-white/16 border border-white/30 flex items-center font-mono text-[11px] text-white/85 truncate">
-                  {t("demo.customField")}
-                </span>
-                <span className="text-white/50" aria-hidden="true">→</span>
-                <span className="h-[38px] px-3 rounded-[10px] bg-mint/12 border border-mint/55 flex items-center font-mono text-[13px] text-white">
-                  12
-                </span>
-              </div>
-            )}
-            <button
-              className="h-[38px] px-[18px] rounded-[10px] border-0 cursor-pointer font-display font-semibold text-[13.5px] text-navy bg-white inline-flex items-center gap-[7px] whitespace-nowrap transition-[transform,box-shadow,filter] duration-200 shadow-[0_8px_20px_-8px_rgba(20,30,90,0.6)] hover:-translate-y-px hover:shadow-[0_12px_28px_-8px_rgba(20,30,90,0.8)] disabled:opacity-65 disabled:cursor-progress active:translate-y-0.5"
-              onClick={() => fill()}
-              disabled={running}
-              title={t("demo.fill")}
-            >
-              <LuZap size={14} />
-              {running ? t("demo.filling") : t("demo.fill")}
-            </button>
-          </div>
-        </div>
-
-        <div className={cx("gap-[7px] mt-3 flex-wrap items-center", mode === "classic" ? "flex" : "hidden")}>
-          <span className="font-mono text-[11px] text-white/55 me-0.5">
+          <span className="text-[13px] text-ink-subtle me-1">
             {t("demo.presetsLabel")}
           </span>
           {["1", "5", "10", "50", "100"].map((p) => (
             <button
               key={p}
-              className="font-mono text-[12px] text-white rounded-full px-[13px] py-1 cursor-pointer bg-white/16 border border-white/28 transition-[background,border-color] duration-150 hover:bg-white/32 hover:border-white"
+              className="font-mono text-[12.5px] text-ink-muted rounded-md px-2.5 py-1 cursor-pointer bg-white border border-line transition-colors hover:border-line-strong hover:text-ink"
               onClick={() => setValue(p)}
             >
               {p}
@@ -497,9 +492,9 @@ function FillDemo() {
 }
 
 /* ------------------------------------------------------------------ */
-/* marquee                                                            */
+/* supported input types                                              */
 /* ------------------------------------------------------------------ */
-const MQ_ITEMS = [
+const INPUT_TYPES = [
   "text",
   "email",
   "number",
@@ -513,24 +508,25 @@ const MQ_ITEMS = [
   "tel",
   "url",
 ];
-function Marquee() {
-  const items = [...MQ_ITEMS, ...MQ_ITEMS];
+function InputTypes() {
+  const { t } = useTranslation();
   return (
-    <div
-      className="relative overflow-hidden border-y border-line py-[18px] bg-white/[0.07] group [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)] [-webkit-mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)]"
-      aria-hidden="true"
-      dir="ltr"
-    >
-      <div className="flex gap-3.5 w-max animate-marquee group-hover:[animation-play-state:paused] motion-reduce:animate-none">
-        {items.map((t, i) => (
-          <span
-            key={i}
-            className="inline-flex items-center gap-[9px] font-mono text-[13px] text-white/85 whitespace-nowrap"
-          >
-            <span className="text-ice">&lt;input type="{t}"&gt;</span>
-            <span className="text-white/50 text-[16px]">✦</span>
-          </span>
-        ))}
+    <div className="border-y border-line bg-canvas py-5">
+      <div
+        className={cx(WRAP, "flex flex-wrap items-center gap-x-4 gap-y-2.5")}
+      >
+        <span className="text-[14px] font-medium text-ink me-2">
+          {t("hero.typesLabel")}
+        </span>
+        <ul className="flex flex-wrap gap-2" dir="ltr">
+          {INPUT_TYPES.map((type) => (
+            <li key={type}>
+              <code className="font-mono text-[12.5px] text-ink-muted bg-white border border-line rounded-md px-2 py-1 inline-block">
+                {type}
+              </code>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );
@@ -539,92 +535,78 @@ function Marquee() {
 /* ------------------------------------------------------------------ */
 /* two modes                                                          */
 /* ------------------------------------------------------------------ */
+const CheckList = ({ items }: { items: string[] }) => (
+  <ul className="space-y-2.5">
+    {items.map((item) => (
+      <li key={item} className="flex items-start gap-2.5 text-[15px] text-ink-muted">
+        <LuCheck className="mt-1 shrink-0 text-ok" size={15} />
+        {item}
+      </li>
+    ))}
+  </ul>
+);
+
 function Modes() {
   const { t } = useTranslation();
+  const points = (prefix: string) =>
+    (["0", "1", "2"] as const).map((k) => t(`modes.${prefix}${k}`));
   return (
     <section className={SECTION} id="modes">
       <div className={WRAP}>
-        <div className={cx("max-w-[700px] mb-[52px]", REVEAL)} data-reveal>
-          <Eyebrow>{t("modes.eyebrow")}</Eyebrow>
-          <h2 className="text-[clamp(30px,4.4vw,46px)]">{t("modes.title")}</h2>
-          <p className="mt-[18px] text-white/74 text-[18px]">{t("modes.subtitle")}</p>
-        </div>
-        <div className="grid grid-cols-2 gap-5 max-[820px]:grid-cols-1">
-          <article className={cx(GLASS, "p-7", REVEAL)} data-reveal>
-            <div className="flex items-start justify-between gap-4 mb-7">
-              <div>
-                <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-white/55">
-                  {t("modes.classicTag")}
-                </span>
-                <h3 className="text-[28px] mt-1">{t("modes.classicTitle")}</h3>
-              </div>
-              <div className="w-11 h-11 rounded-[13px] grid place-items-center bg-white/14 border border-line">
-                <LuDices size={22} />
-              </div>
+        <SectionHeader title={t("modes.title")} subtitle={t("modes.subtitle")} />
+        <div className="grid grid-cols-2 gap-6 max-[820px]:grid-cols-1">
+          <article className={cx(CARD, "p-6 flex flex-col")}>
+            <div className="flex items-center gap-2.5 mb-1">
+              <LuDices size={20} className="text-brand" />
+              <h3 className="text-[22px]">{t("modes.classicTitle")}</h3>
             </div>
-            <p className="text-white/74 mb-7">{t("modes.classicBody")}</p>
-            <div className="p-4 rounded-[14px] bg-white/[0.09] border border-line mb-6">
-              <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-white/55">
+            <p className="text-[13px] text-ink-subtle mb-4">
+              {t("modes.classicTag")}
+            </p>
+            <p className="text-ink-muted mb-5">{t("modes.classicBody")}</p>
+            <div className="p-4 rounded-lg bg-canvas border border-line mb-5">
+              <span className="text-[13px] font-medium text-ink-muted">
                 {t("modes.classicValue")}
               </span>
-              <div className="mt-2 h-11 rounded-[10px] bg-white/14 border border-white/25 px-3 flex items-center font-mono text-white">
+              <div className="mt-1.5 h-10 rounded-md bg-white border border-line-strong px-3 flex items-center font-mono text-ink">
                 50
               </div>
             </div>
-            <ul className="space-y-3">
-              {(["0", "1", "2"] as const).map((key) => (
-                <li key={key} className="flex items-start gap-2.5 text-[14.5px] text-white/78">
-                  <LuCheck className="mt-1 shrink-0 text-mint" size={15} />
-                  {t(`modes.classicPoint${key}`)}
-                </li>
-              ))}
-            </ul>
+            <CheckList items={points("classicPoint")} />
           </article>
 
-          <article
-            className={cx(
-              "rounded-[20px] p-7 border border-mint/45 backdrop-blur-[16px] bg-[linear-gradient(145deg,rgba(94,240,187,0.14),rgba(255,255,255,0.1))] shadow-[0_24px_60px_-36px_rgba(7,58,43,0.8)]",
-              REVEAL,
-            )}
-            data-reveal
-          >
-            <div className="flex items-start justify-between gap-4 mb-7">
-              <div>
-                <span className="inline-flex rounded-full px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.11em] text-[#073a2b] bg-mint">
-                  {t("modes.smartTag")}
-                </span>
-                <h3 className="text-[28px] mt-2">{t("modes.smartTitle")}</h3>
-              </div>
-              <div className="w-11 h-11 rounded-[13px] grid place-items-center bg-mint/16 border border-mint/35">
-                <LuWand size={22} />
-              </div>
+          <article className={cx(CARD, "p-6 flex flex-col border-brand/50")}>
+            <div className="flex items-center gap-2.5 mb-1">
+              <LuWand size={20} className="text-brand" />
+              <h3 className="text-[22px]">{t("modes.smartTitle")}</h3>
+              <span className="ms-auto rounded-md bg-brand-soft px-2 py-0.5 text-[12px] font-medium text-brand-ink">
+                {t("modes.smartTag")}
+              </span>
             </div>
-            <p className="text-white/78 mb-7">{t("modes.smartBody")}</p>
-            <div className="p-4 rounded-[14px] bg-[#162459]/25 border border-mint/28 mb-6">
-              <div className="flex justify-between gap-3 mb-3">
-                <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-white/55">
+            <p className="text-ink-muted mt-4 mb-5">{t("modes.smartBody")}</p>
+            <div className="p-4 rounded-lg bg-canvas border border-line mb-5">
+              <div className="flex justify-between gap-3 mb-1.5">
+                <span className="text-[13px] font-medium text-ink-muted">
                   {t("modes.customRule")}
                 </span>
-                <span className="font-mono text-[10px] text-mint">{t("modes.saved")}</span>
+                <span className="inline-flex items-center gap-1 text-[13px] font-medium text-ok">
+                  <LuCheck size={13} />
+                  {t("modes.saved")}
+                </span>
               </div>
               <div className="grid grid-cols-[1fr_auto_0.55fr] gap-2 items-center">
-                <span className="h-11 rounded-[10px] bg-white/14 border border-white/25 px-3 flex items-center font-mono text-[13px] text-white">
+                <span className="h-10 rounded-md bg-white border border-line-strong px-3 flex items-center text-[14px] text-ink">
                   {t("modes.ruleField")}
                 </span>
-                <span className="text-white/45" aria-hidden="true">→</span>
-                <span className="h-11 rounded-[10px] bg-mint/13 border border-mint/45 px-3 flex items-center font-mono text-[14px] text-white">
+                <span className="text-ink-subtle rtl:rotate-180" aria-hidden="true">
+                  →
+                </span>
+                <span className="h-10 rounded-md bg-white border border-line-strong px-3 flex items-center font-mono text-[14px] text-ink">
                   12
                 </span>
               </div>
             </div>
-            <ul className="space-y-3">
-              {(["0", "1", "2"] as const).map((key) => (
-                <li key={key} className="flex items-start gap-2.5 text-[14.5px] text-white/82">
-                  <LuCheck className="mt-1 shrink-0 text-mint" size={15} />
-                  {t(`modes.smartPoint${key}`)}
-                </li>
-              ))}
-            </ul>
+            <CheckList items={points("smartPoint")} />
           </article>
         </div>
       </div>
@@ -636,7 +618,7 @@ function Modes() {
 /* value ledger                                                       */
 /* ------------------------------------------------------------------ */
 const LEDGER_GRID =
-  "grid grid-cols-[230px_1fr_160px] gap-[18px] items-center px-6 py-[15px]";
+  "grid grid-cols-[220px_1fr_170px] gap-4 items-center px-5 py-3.5";
 function LedgerRow({
   type,
   desc,
@@ -650,14 +632,17 @@ function LedgerRow({
     <div
       className={cx(
         LEDGER_GRID,
-        "border-t border-line font-mono text-[14px] hover:bg-white/[0.07] max-[720px]:grid-cols-1 max-[720px]:gap-1",
+        "border-t border-line text-[14.5px] max-[720px]:grid-cols-1 max-[720px]:gap-1",
       )}
     >
-      <span className="text-ice" dir="ltr">
+      <span className="font-mono text-[13.5px] text-brand-ink" dir="ltr">
         {type}
       </span>
-      <span className="text-white/74 font-body text-[14.5px]">{desc}</span>
-      <span className="text-white text-end" dir="ltr">
+      <span className="text-ink-muted">{desc}</span>
+      <span
+        className="font-mono text-[13.5px] text-ink text-end max-[720px]:text-start"
+        dir="ltr"
+      >
         {out}
       </span>
     </div>
@@ -696,39 +681,24 @@ function Bilingual() {
     <section className={SECTION} id="languages">
       <div className={WRAP}>
         <div className="grid grid-cols-[0.9fr_1.1fr] gap-12 items-center max-[960px]:grid-cols-1 max-[960px]:gap-8">
-          <div className={REVEAL} data-reveal>
-            <Eyebrow>{t("bilingual.eyebrow")}</Eyebrow>
-            <h2 className="text-[clamp(28px,3.6vw,40px)] mb-[18px]">
-              {t("bilingual.title")} <Grad>{t("bilingual.titleAccent")}</Grad>.
+          <div>
+            <h2 className="text-[clamp(26px,3.2vw,36px)] mb-3">
+              {t("bilingual.title")} {t("bilingual.titleAccent")}.
             </h2>
-            <p className="text-white/74 text-[18px] max-w-[420px]">
+            <p className="text-ink-muted text-[17px] max-w-[420px]">
               {t("bilingual.body")}
             </p>
-            <div
-              className="inline-flex p-[5px] rounded-full bg-glass-2 border border-line gap-1 mt-7"
-              role="tablist"
-              aria-label="Language"
-            >
-              {(["en", "ar"] as const).map((l) => (
-                <button
-                  key={l}
-                  role="tab"
-                  aria-selected={lang === l}
-                  onClick={() => setLang(l)}
-                  className={cx(
-                    "font-mono text-[13px] font-medium rounded-full px-5 py-2 cursor-pointer transition-colors border-0",
-                    lang === l
-                      ? "text-navy bg-white"
-                      : "text-white/78 bg-transparent",
-                  )}
-                >
-                  {l.toUpperCase()}
-                </button>
-              ))}
-            </div>
+            <Segmented
+              className="inline-grid mt-6 w-[180px]"
+              items={["en", "ar"] as const}
+              value={lang}
+              label="Language"
+              render={(l) => l.toUpperCase()}
+              onChange={setLang}
+            />
           </div>
 
-          <div className={cx(GLASS, "p-7", REVEAL)} dir={data.dir} data-reveal>
+          <div className={cx(CARD, "p-6")} dir={data.dir}>
             {data.rows.map((r, i) => (
               <div
                 key={r.label}
@@ -737,17 +707,15 @@ function Bilingual() {
                   i > 0 && "border-t border-line",
                 )}
               >
-                <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-white/60">
+                <span className="text-[13px] font-medium text-ink-muted">
                   {r.label}
                 </span>
-                <div className="h-[42px] rounded-[11px] flex items-center px-3.5 font-mono text-[14px] text-white bg-white/16 border border-white/28">
+                <div className="h-10 rounded-md flex items-center px-3 font-mono text-[14px] text-ink bg-canvas border border-line">
                   {r.value}
                 </div>
               </div>
             ))}
-            <p className="mt-[18px] font-mono text-[12px] text-ice">
-              {data.note}
-            </p>
+            <p className="mt-3 text-[13px] text-ink-subtle">{data.note}</p>
           </div>
         </div>
       </div>
@@ -766,7 +734,12 @@ function FAQ() {
 
   // shared Trans components map
   const transComponents = {
-    a: <a href={LINKS.coffee} className="text-[#ffdd00]" />,
+    a: (
+      <a
+        href={LINKS.coffee}
+        className="text-brand-ink underline underline-offset-2"
+      />
+    ),
     code: <Code>x</Code>,
     inputTag: <Code>x</Code>,
     date: <Code>x</Code>,
@@ -776,45 +749,34 @@ function FAQ() {
     cmdF: <Code>x</Code>,
     altF: <Code>x</Code>,
     shortcuts: <Code>x</Code>,
-    strong: <strong />,
+    strong: <strong className="text-ink font-semibold" />,
   };
 
   return (
     <section className={SECTION} id="faq">
-      <div className={WRAP}>
-        <div className={cx("max-w-[640px] mb-[52px]", REVEAL)} data-reveal>
-          <Eyebrow>{t("faq.eyebrow")}</Eyebrow>
-          <h2 className="text-[clamp(30px,4.4vw,46px)]">{t("faq.title")}</h2>
-        </div>
-        <div className={cx("border-t border-line", REVEAL)} data-reveal>
+      <div className={cx(WRAP, "max-w-[860px]")}>
+        <SectionHeader title={t("faq.title")} />
+        <div className="border-t border-line">
           {FAQ_KEYS.map((k, i) => {
             const isOpen = open === i;
+            const panelId = `faq-panel-${k}`;
             return (
               <div key={k} className="border-b border-line">
                 <button
-                  className="w-full bg-transparent border-0 text-white font-display font-medium text-[19px] text-start py-6 px-1 cursor-pointer flex items-center justify-between gap-5 transition-colors hover:text-ice"
+                  className="w-full bg-transparent border-0 text-ink font-display font-medium text-[17px] text-start py-5 cursor-pointer flex items-center justify-between gap-5 hover:text-brand-ink transition-colors"
                   aria-expanded={isOpen}
+                  aria-controls={panelId}
                   onClick={() => setOpen(isOpen ? null : i)}
                 >
                   {t(`faq.q${k}`)}
-                  <span
-                    className={cx(
-                      "relative shrink-0 w-[26px] h-[26px] text-white transition-transform duration-300",
-                      isOpen && "rotate-45",
-                    )}
-                    aria-hidden="true"
-                  >
-                    <span className="absolute top-1/2 left-1 right-1 h-0.5 -translate-y-1/2 bg-current rounded-sm" />
-                    <span className="absolute left-1/2 top-1 bottom-1 w-0.5 -translate-x-1/2 bg-current rounded-sm" />
-                  </span>
-                </button>
-                <div
-                  className={cx(
-                    "overflow-hidden transition-[max-height] duration-300",
-                    isOpen ? "max-h-[320px]" : "max-h-0",
+                  {isOpen ? (
+                    <LuMinus size={18} className="shrink-0 text-ink-subtle" />
+                  ) : (
+                    <LuPlus size={18} className="shrink-0 text-ink-subtle" />
                   )}
-                >
-                  <p className="text-white/74 text-[16px] pb-[26px] px-1 max-w-[760px]">
+                </button>
+                <div id={panelId} hidden={!isOpen}>
+                  <p className="text-ink-muted text-[16px] pb-5 max-w-[720px]">
                     <Trans i18nKey={`faq.a${k}`} components={transComponents} />
                   </p>
                 </div>
@@ -832,28 +794,13 @@ function FAQ() {
 /* ------------------------------------------------------------------ */
 function Nav() {
   const { t, i18n } = useTranslation();
-  const [scrolled, setScrolled] = useState(false);
   const isAr = i18n.language === "ar";
 
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
   return (
-    <nav
-      className={cx(
-        "sticky top-0 z-50 border-b transition-[background,border-color] duration-300",
-        scrolled
-          ? "bg-[rgba(83,101,230,0.55)] backdrop-blur-xl border-white/[0.18]"
-          : "bg-transparent border-transparent",
-      )}
-    >
-      <div className={cx(WRAP, "flex items-center justify-between h-[70px]")}>
+    <nav className="sticky top-0 z-50 border-b border-line bg-white">
+      <div className={cx(WRAP, "flex items-center justify-between gap-4 h-16")}>
         <Brand />
-        <div className="flex items-center gap-[30px] max-[960px]:hidden">
+        <div className="flex items-center gap-7 max-[960px]:hidden">
           {[
             [t("nav.howItWorks"), "#how"],
             [t("nav.modes"), "#modes"],
@@ -863,37 +810,37 @@ function Nav() {
             <a
               key={href}
               href={href}
-              className="text-[14.5px] text-white/78 transition-colors hover:text-white"
+              className="text-[14.5px] text-ink-muted transition-colors hover:text-ink"
             >
               {label}
             </a>
           ))}
         </div>
-        <div className="flex items-center gap-3">
-          {/* language toggle */}
+        <div className="flex items-center gap-2">
           <button
-            className="font-mono text-[13px] font-semibold text-white/80 hover:text-white border border-line-strong rounded-full px-4 py-[7px] bg-glass-2 hover:bg-glass-3 transition cursor-pointer"
+            className={cx(BTN_SECONDARY, BTN_SIZE.sm)}
             onClick={() => switchLang(isAr ? "en" : "ar")}
             aria-label="Toggle language"
           >
             {isAr ? "EN" : "عربي"}
           </button>
           <a
-            className={BTN_GHOST}
+            className={cx(BTN_SECONDARY, BTN_SIZE.icon)}
             href={LINKS.github}
             target="_blank"
             rel="noopener"
+            aria-label="GitHub"
           >
-            <FaGithub size={18} />
+            <FaGithub size={17} />
           </a>
           <a
-            className={BTN_PRIMARY}
+            className={cx(BTN_PRIMARY, BTN_SIZE.sm)}
             href={LINKS.chrome}
             target="_blank"
             rel="noopener"
           >
-            <FaChrome size={18} />
-            <p className="hidden sm:block">{t("nav.addToChrome")}</p>
+            <FaChrome size={16} />
+            <span className="hidden sm:inline">{t("nav.addToChrome")}</span>
           </a>
         </div>
       </div>
@@ -911,7 +858,6 @@ const FEATURE_ICONS: IconType[] = [LuList, LuWand, LuDices, LuSave, LuFeather];
 /* ------------------------------------------------------------------ */
 function App() {
   const { t } = useTranslation();
-  useReveal();
 
   const ledgerRows = (["0", "1", "2", "3", "4", "5", "6"] as const).map(
     (k) => ({
@@ -934,56 +880,31 @@ function App() {
       <Nav />
 
       {/* HERO */}
-      <header className="relative pt-[72px] pb-[90px]">
+      <header className="pt-16 pb-20 max-[720px]:pt-10 max-[720px]:pb-14">
         <div
           className={cx(
             WRAP,
-            "grid grid-cols-[1.05fr_0.95fr] gap-16 items-center max-[960px]:grid-cols-1 max-[960px]:gap-12",
+            "grid grid-cols-[1fr_1fr] gap-14 items-center max-[960px]:grid-cols-1 max-[960px]:gap-10",
           )}
         >
-          <div className="max-w-[560px]">
-            <span
-              className="inline-flex items-center gap-2.5 font-mono text-[12.5px] text-white bg-glass-2 border border-line-strong rounded-full ps-2 pe-3.5 py-1.5 mb-[26px] backdrop-blur-md opacity-0 translate-y-[22px] transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:opacity-100 motion-reduce:translate-y-0"
-              data-reveal
-            >
-              <span className="w-[7px] h-[7px] rounded-full bg-mint shadow-[0_0_0_4px_rgba(94,240,187,0.25)]" />
-              {t("hero.badge")}
-            </span>
-            <h1
-              className={cx(
-                "text-[clamp(40px,6.4vw,70px)] font-bold leading-[0.98] [text-shadow:0_4px_30px_rgba(20,30,90,0.25)]",
-                REVEAL,
-              )}
-              data-reveal
-            >
+          <div className="max-w-[540px]">
+            <h1 className="text-[clamp(36px,5vw,56px)] font-bold leading-[1.05] tracking-[-0.03em]">
               {t("hero.title1")}
               <span className="block">
-                {t("hero.title2")} <Grad>{t("hero.titleAccent")}</Grad>
+                {t("hero.title2")} {t("hero.titleAccent")}
               </span>
             </h1>
-            <p
-              className={cx(
-                "mt-[26px] text-[19px] text-white/85 max-w-[480px]",
-                REVEAL,
-              )}
-              data-reveal
-            >
+            <p className="mt-5 text-[18px] text-ink-muted max-w-[480px]">
               <Trans
                 i18nKey="hero.description"
                 components={{
-                  strong: <b className="text-white font-semibold" />,
+                  strong: <b className="text-ink font-semibold" />,
                 }}
               />
             </p>
-            <div
-              className={cx(
-                "mt-[34px] flex flex-wrap gap-3.5 items-center",
-                REVEAL,
-              )}
-              data-reveal
-            >
+            <div className="mt-8 flex flex-wrap gap-3 items-center">
               <a
-                className={BTN_PRIMARY}
+                className={cx(BTN_PRIMARY, BTN_SIZE.lg)}
                 href={LINKS.chrome}
                 target="_blank"
                 rel="noopener"
@@ -992,7 +913,7 @@ function App() {
                 {t("hero.addToChrome")}
               </a>
               <a
-                className={BTN_GHOST}
+                className={cx(BTN_SECONDARY, BTN_SIZE.lg)}
                 href={LINKS.edge}
                 target="_blank"
                 rel="noopener"
@@ -1001,110 +922,67 @@ function App() {
                 {t("hero.getOnEdge")}
               </a>
             </div>
-            <p
-              className={cx(
-                "mt-[22px] text-[14px] text-white/70 flex items-center gap-2 flex-wrap",
-                REVEAL,
-              )}
-              data-reveal
-            >
+            <p className="mt-5 text-[14px] text-ink-muted flex items-center gap-2 flex-wrap">
               {t("hero.shortcutHint")}
-              <span dir="ltr" className="inline-flex items-center gap-2">
-                <Kbd>Alt</Kbd>
-                <Kbd>Shift</Kbd>
-                <Kbd>F</Kbd>
-              </span>
+              <Shortcut />
               {t("hero.shortcutSuffix")}
             </p>
-            <div
-              className={cx(
-                "mt-10 flex gap-7 flex-wrap max-[720px]:gap-5",
-                REVEAL,
-              )}
-              data-reveal
-            >
+            <dl className="mt-10 pt-6 border-t border-line grid grid-cols-3 gap-6 max-[480px]:gap-3">
               {(["1", "2", "3"] as const).map((k) => (
                 <div key={k} className="flex flex-col gap-0.5">
-                  <span className="font-display font-bold text-2xl text-white">
+                  <dt className="font-display font-semibold text-[18px] text-ink order-1">
                     {t(`hero.stat${k}n`)}
-                  </span>
-                  <span className="text-[12.5px] text-white/65">
+                  </dt>
+                  <dd className="m-0 text-[13px] text-ink-subtle order-2">
                     {t(`hero.stat${k}l`)}
-                  </span>
+                  </dd>
                 </div>
               ))}
-            </div>
+            </dl>
           </div>
 
           <FillDemo />
         </div>
       </header>
 
-      {/* MARQUEE */}
-      <Marquee />
+      {/* INPUT TYPES */}
+      <InputTypes />
 
       {/* MODES */}
       <Modes />
 
       {/* HOW IT WORKS */}
-      <section className={SECTION} id="how">
+      <section className={cx(SECTION, "bg-canvas border-y border-line")} id="how">
         <div className={WRAP}>
-          <div className={cx("max-w-[640px] mb-[52px]", REVEAL)} data-reveal>
-            <Eyebrow>{t("how.eyebrow")}</Eyebrow>
-            <h2 className="text-[clamp(30px,4.4vw,46px)]">{t("how.title")}</h2>
-            <p className="mt-[18px] text-white/74 text-[18px]">
-              {t("how.subtitle")}
-            </p>
-          </div>
-          <div className="grid grid-cols-3 gap-[22px] max-[720px]:grid-cols-1">
+          <SectionHeader title={t("how.title")} subtitle={t("how.subtitle")} />
+          <ol className="grid grid-cols-3 gap-6 max-[720px]:grid-cols-1">
             {(["0", "1", "2"] as const).map((k, i) => (
-              <div
-                key={k}
-                className={cx(GLASS, "relative p-[26px] pt-[30px]", REVEAL)}
-                data-reveal
-              >
-                <div className="font-mono font-bold text-[14px] text-navy w-[34px] h-[34px] rounded-[10px] bg-white grid place-items-center mb-[18px] shadow-[0_6px_16px_-8px_rgba(20,30,90,0.5)]">
+              <li key={k} className={cx(CARD, "p-6")}>
+                <span className="font-mono font-semibold text-[13px] text-brand-ink w-7 h-7 rounded-md bg-brand-soft grid place-items-center mb-4">
                   {i + 1}
-                </div>
-                <h3 className="text-xl mb-[9px]">{t(`how.step${k}h`)}</h3>
-                <p className="text-white/74 text-[15.5px]">
+                </span>
+                <h3 className="text-[18px] mb-1.5">{t(`how.step${k}h`)}</h3>
+                <p className="text-ink-muted text-[15px]">
                   {t(`how.step${k}p`)}
                 </p>
                 {k === "1" && (
-                  <p className="mt-3.5 flex gap-1.5" dir="ltr">
-                    <Kbd>Alt</Kbd>
-                    <Kbd>Shift</Kbd>
-                    <Kbd>F</Kbd>
+                  <p className="mt-3.5">
+                    <Shortcut />
                   </p>
                 )}
-              </div>
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
       </section>
 
       {/* VIDEO DEMO */}
       <section className={SECTION} id="demo-video">
         <div className={WRAP}>
-          <div className={cx("max-w-[640px] mb-[52px]", REVEAL)} data-reveal>
-            <Eyebrow>{t("video.eyebrow")}</Eyebrow>
-            <h2 className="text-[clamp(30px,4.4vw,46px)]">
-              {t("video.title")}
-            </h2>
-            <p className="mt-[18px] text-white/74 text-[18px]">
-              {t("video.subtitle")}
-            </p>
-          </div>
-          <div
-            className={cx(
-              GLASS,
-              "relative p-0 overflow-hidden aspect-video max-w-[900px]",
-              REVEAL,
-            )}
-            data-reveal
-          >
+          <SectionHeader title={t("video.title")} subtitle={t("video.subtitle")} />
+          <div className="rounded-xl border border-line overflow-hidden aspect-video max-w-[900px] bg-canvas">
             <iframe
-              className="w-full h-full rounded-[20px]"
+              className="w-full h-full"
               src="https://www.youtube.com/embed/gWSfH33ZQ7c?controls=1&modestbranding=1"
               title="Formfully demo video"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -1115,63 +993,32 @@ function App() {
       </section>
 
       {/* FEATURES */}
-      <section className={SECTION} id="features">
+      <section className={cx(SECTION, "pt-0 max-[720px]:pt-0")} id="features">
         <div className={WRAP}>
-          <div className={cx("max-w-[640px] mb-[52px]", REVEAL)} data-reveal>
-            <Eyebrow>{t("features.eyebrow")}</Eyebrow>
-            <h2 className="text-[clamp(30px,4.4vw,46px)]">
-              {t("features.title")}
-            </h2>
-            <p className="mt-[18px] text-white/74 text-[18px]">
-              {t("features.subtitle")}
-            </p>
-          </div>
-          <div className="grid grid-cols-6 gap-[18px] max-[960px]:grid-cols-2 max-[720px]:grid-cols-1">
-            {/* hero feature card */}
-            <div
-              className={cx(
-                "rounded-[20px] border border-line backdrop-blur-[14px] relative p-[26px] overflow-hidden flex flex-col justify-between min-h-[230px]",
-                "col-span-3 max-[960px]:col-span-2 max-[720px]:col-span-1",
-                "bg-[linear-gradient(150deg,rgba(255,255,255,0.22),rgba(255,255,255,0.08))]",
-                REVEAL,
-              )}
-              data-reveal
-            >
-              <div>
-                <div className="w-[42px] h-[42px] rounded-[12px] grid place-items-center text-white mb-[18px] border border-line-strong bg-white/18">
-                  <LuZap size={21} />
-                </div>
-                <h3 className="text-[19px] mb-2">{t("features.mainTitle")}</h3>
-                <p className="text-white/74 text-[15px]">
-                  {t("features.mainBody")}
-                </p>
-              </div>
-              <div
-                className="font-mono font-bold text-[clamp(26px,3vw,38px)] text-white tracking-[-0.01em]"
-                dir="ltr"
-              >
-                ⌥ + ⇧ + F
+          <SectionHeader
+            title={t("features.title")}
+            subtitle={t("features.subtitle")}
+          />
+          <div className="grid grid-cols-3 gap-4 max-[960px]:grid-cols-2 max-[720px]:grid-cols-1">
+            <div className="rounded-xl border border-brand/30 bg-brand-soft p-6 flex flex-col">
+              <LuZap size={20} className="text-brand" />
+              <h3 className="text-[17px] mt-3 mb-1.5">
+                {t("features.mainTitle")}
+              </h3>
+              <p className="text-ink-muted text-[15px] mb-4">
+                {t("features.mainBody")}
+              </p>
+              <div className="mt-auto">
+                <Shortcut />
               </div>
             </div>
-            {/* feature cards */}
             {FEATURE_ICONS.map((Icon, i) => (
-              <div
-                key={i}
-                className={cx(
-                  GLASS,
-                  "relative p-[26px] overflow-hidden transition hover:border-line-strong hover:bg-glass-2 hover:-translate-y-[3px]",
-                  "col-span-2 max-[720px]:col-span-1",
-                  REVEAL,
-                )}
-                data-reveal
-              >
-                <div className="w-[42px] h-[42px] rounded-[12px] grid place-items-center text-white mb-[18px] border border-line-strong bg-white/18">
-                  <Icon size={21} />
-                </div>
-                <h3 className="text-[19px] mb-2">
+              <div key={i} className={cx(CARD, "p-6")}>
+                <Icon size={20} className="text-brand" />
+                <h3 className="text-[17px] mt-3 mb-1.5">
                   {t(`features.item${i}title`)}
                 </h3>
-                <p className="text-white/74 text-[15px]">
+                <p className="text-ink-muted text-[15px]">
                   {t(`features.item${i}body`)}
                 </p>
               </div>
@@ -1181,22 +1028,14 @@ function App() {
       </section>
 
       {/* VALUE LEDGER */}
-      <section className={SECTION} id="values">
+      <section className={cx(SECTION, "bg-canvas border-y border-line")} id="values">
         <div className={WRAP}>
-          <div className={cx("max-w-[640px] mb-[52px]", REVEAL)} data-reveal>
-            <Eyebrow>{t("values.eyebrow")}</Eyebrow>
-            <h2 className="text-[clamp(30px,4.4vw,46px)]">
-              {t("values.title")}
-            </h2>
-            <p className="mt-[18px] text-white/74 text-[18px]">
-              {t("values.subtitle")}
-            </p>
-          </div>
-          <div className={cx(GLASS, "overflow-hidden", REVEAL)} data-reveal>
+          <SectionHeader title={t("values.title")} subtitle={t("values.subtitle")} />
+          <div className={cx(CARD, "overflow-hidden")}>
             <div
               className={cx(
                 LEDGER_GRID,
-                "font-mono text-[11.5px] uppercase tracking-[0.12em] text-white bg-white/12 max-[720px]:hidden",
+                "text-[13px] font-semibold text-ink-muted bg-canvas max-[720px]:hidden",
               )}
             >
               <span>{t("values.colType")}</span>
@@ -1219,38 +1058,27 @@ function App() {
       <Bilingual />
 
       {/* PRIVACY */}
-      <section className={SECTION} id="privacy">
+      <section className={cx(SECTION, "pt-0 max-[720px]:pt-0")} id="privacy">
         <div className={WRAP}>
-          <div
-            className={cx(
-              GLASS,
-              "relative p-14 grid grid-cols-2 gap-12 items-center max-[960px]:grid-cols-1 max-[960px]:gap-8 max-[720px]:p-6",
-              REVEAL,
-            )}
-            data-reveal
-          >
+          <div className={cx(CARD, "p-10 grid grid-cols-2 gap-12 items-center max-[960px]:grid-cols-1 max-[960px]:gap-8 max-[720px]:p-6")}>
             <div>
-              <Eyebrow>{t("privacy.eyebrow")}</Eyebrow>
-              <h2 className="text-[clamp(28px,3.6vw,40px)]">
-                {t("privacy.title")} <Grad>{t("privacy.titleAccent")}</Grad>.
+              <h2 className="text-[clamp(26px,3.2vw,36px)]">
+                {t("privacy.title")} {t("privacy.titleAccent")}.
               </h2>
-              <p className="mt-[18px] text-white/74 text-[17px]">
+              <p className="mt-3 text-ink-muted text-[17px]">
                 {t("privacy.body")}
               </p>
             </div>
-            <div className="flex flex-col gap-3">
+            <div className="rounded-lg border border-line divide-y divide-line">
               {(["0", "1", "2"] as const).map((k) => (
                 <div
                   key={k}
-                  className="grid grid-cols-[130px_1fr] gap-4 items-center p-4 rounded-[12px] border border-line bg-white/[0.1] max-[720px]:grid-cols-1 max-[720px]:gap-1.5"
+                  className="grid grid-cols-[130px_1fr] gap-4 items-center p-4 max-[720px]:grid-cols-1 max-[720px]:gap-1.5"
                 >
-                  <span
-                    className="font-mono text-[13px] rounded-[7px] px-2 py-[3px] justify-self-start text-[#0c3a2a] bg-mint"
-                    dir="ltr"
-                  >
-                    {t(`privacy.perm${k}name`)}
+                  <span className="justify-self-start">
+                    <Code>{t(`privacy.perm${k}name`)}</Code>
                   </span>
-                  <span className="text-[14px] text-white/74">
+                  <span className="text-[14.5px] text-ink-muted">
                     {t(`privacy.perm${k}why`)}
                   </span>
                 </div>
@@ -1264,28 +1092,31 @@ function App() {
       <FAQ />
 
       {/* SUPPORT */}
-      <section
-        className="relative py-[60px] max-[720px]:py-[70px]"
-        id="support"
-      >
+      <section className="pb-20 max-[720px]:pb-14" id="support">
         <div className={WRAP}>
-          <div
-            className={cx(
-              "relative text-center rounded-[26px] py-16 px-10 overflow-hidden backdrop-blur-[16px] border border-[rgba(255,221,0,0.5)] max-[720px]:p-6",
-              "bg-glass-2 bg-[radial-gradient(70%_120%_at_50%_0%,rgba(255,221,0,0.22),transparent_60%)]",
-              REVEAL,
-            )}
-            data-reveal
-          >
-            <div className="text-[44px] leading-none mb-[18px]">☕</div>
-            <h2 className="text-[clamp(28px,4vw,42px)]">
-              {t("support.title")}
-            </h2>
-            <p className="mx-auto mt-4 mb-[30px] text-white/82 max-w-[520px] text-[17px]">
-              {t("support.body")}
-            </p>
+          <div className={cx(CARD, "px-10 py-12 flex items-center justify-between gap-8 max-[820px]:flex-col max-[820px]:items-start max-[720px]:p-6")}>
+            <div className="max-w-[560px]">
+              <h2 className="text-[clamp(24px,2.8vw,30px)]">
+                {t("support.title")}
+              </h2>
+              <p className="mt-3 text-ink-muted text-[16px]">
+                {t("support.body")}
+              </p>
+              <p className="mt-4 text-[14px] text-ink-subtle">
+                {t("support.creditPrefix")}{" "}
+                <a
+                  href={LINKS.author}
+                  target="_blank"
+                  rel="noopener"
+                  className="text-ink font-medium underline decoration-line-strong underline-offset-2 hover:decoration-ink"
+                >
+                  {t("support.authorName")}
+                </a>{" "}
+                {t("support.creditSuffix")}
+              </p>
+            </div>
             <a
-              className={BTN_COFFEE}
+              className={cx(BTN_COFFEE, BTN_SIZE.lg, "shrink-0")}
               href={LINKS.coffee}
               target="_blank"
               rel="noopener"
@@ -1293,31 +1124,19 @@ function App() {
               <LuCoffee size={18} />
               {t("support.cta")}
             </a>
-            <p className="mt-[26px] text-[14px] text-white/70">
-              {t("support.creditPrefix")}{" "}
-              <a
-                href={LINKS.author}
-                target="_blank"
-                rel="noopener"
-                className="text-white border-b border-dotted border-white/60"
-              >
-                {t("support.authorName")}
-              </a>{" "}
-              {t("support.creditSuffix")}
-            </p>
           </div>
         </div>
       </section>
 
       {/* FOOTER */}
-      <footer className="border-t border-line pt-[54px] pb-10 bg-[rgba(83,101,230,0.18)]">
+      <footer className="border-t border-line bg-canvas pt-12 pb-8">
         <div className={WRAP}>
           <div className="grid grid-cols-[1.4fr_1fr_1fr_1fr] gap-9 max-[960px]:grid-cols-2 max-[960px]:gap-7 max-[720px]:grid-cols-1">
             <div>
-              <div className="mb-3.5">
+              <div className="mb-3">
                 <Brand />
               </div>
-              <p className="text-white/70 text-[14.5px] max-w-[280px]">
+              <p className="text-ink-muted text-[14.5px] max-w-[280px]">
                 {t("footer.tagline")}
               </p>
             </div>
@@ -1348,7 +1167,7 @@ function App() {
               },
             ].map((col) => (
               <div key={col.hKey}>
-                <h4 className="font-mono text-[11.5px] uppercase tracking-[0.12em] text-white/60 mb-4 font-medium">
+                <h4 className="text-[14px] font-semibold mb-3">
                   {t(col.hKey)}
                 </h4>
                 {col.links.map((link) => {
@@ -1360,7 +1179,7 @@ function App() {
                       href={href}
                       target={href.startsWith("#") ? undefined : "_blank"}
                       rel={href.startsWith("#") ? undefined : "noopener"}
-                      className="block text-white/85 text-[14.5px] py-[5px] transition-colors hover:text-white"
+                      className="block text-ink-muted text-[14.5px] py-1 transition-colors hover:text-ink"
                     >
                       {label}
                     </a>
@@ -1369,11 +1188,11 @@ function App() {
               </div>
             ))}
           </div>
-          <div className="mt-11 pt-6 border-t border-line flex items-center justify-between gap-4 text-white/65 text-[13.5px] font-mono max-[720px]:flex-col max-[720px]:items-start">
+          <div className="mt-10 pt-6 border-t border-line flex items-center justify-between gap-4 text-ink-subtle text-[13.5px] max-[720px]:flex-col max-[720px]:items-start">
             <span>
               © {new Date().getFullYear()} {t("footer.copyright")}
             </span>
-            <div className="flex gap-3.5">
+            <div className="flex gap-2">
               {SOCIAL_LINKS.map((s) => (
                 <a
                   key={s.label}
@@ -1381,9 +1200,9 @@ function App() {
                   target="_blank"
                   rel="noopener"
                   aria-label={s.label}
-                  className="w-9 h-9 rounded-[10px] grid place-items-center text-white border border-line bg-glass transition hover:bg-glass-2 hover:border-white hover:-translate-y-0.5"
+                  className="w-8 h-8 rounded-md grid place-items-center text-ink-muted border border-line bg-white transition-colors hover:text-ink hover:border-line-strong"
                 >
-                  <s.icon size={17} aria-hidden={true} />
+                  <s.icon size={16} aria-hidden={true} />
                 </a>
               ))}
             </div>
