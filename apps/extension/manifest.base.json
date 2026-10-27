@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "FormFully",
   "description": "Fill web forms in one click, with one value for every field or from a saved profile.",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "homepage_url": "https://formfully.mohammed.win/",
   "icons": {
     "16": "icons/icon-16.png",
