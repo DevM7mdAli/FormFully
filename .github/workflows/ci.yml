@@ -167,6 +167,9 @@ jobs:
     timeout-minutes: 20
     permissions:
       contents: write
+    env:
+      # Release commits are made by CI, so skip the local typecheck and commitlint hooks.
+      HUSKY: 0
     concurrency:
       group: semantic-release-main
       cancel-in-progress: false
