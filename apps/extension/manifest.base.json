@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "FormFully",
-  "description": "Fill forms instantly with the original one-value mode or smart profile-aware autofill.",
+  "description": "Fill web forms in one click, with one value for every field or from a saved profile.",
   "version": "2.2.1",
   "homepage_url": "https://formfully.mohammed.win/",
   "icons": {
